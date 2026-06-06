@@ -1,0 +1,169 @@
+.loading { text-align: center; padding: 80px 20px; color: var(--text-dim); font-style: italic; }
+.page { max-width: 1100px; margin: 0 auto; padding: 50px 40px 80px; }
+
+.hero { text-align: center; margin-bottom: 32px; }
+.eyebrow { font-size: .72em; letter-spacing: 5px; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 10px; }
+.pageTitle { font-size: 2.5em; color: var(--gold); letter-spacing: 4px; text-shadow: 0 0 24px rgba(201,162,39,.25); }
+.divider { width: 80px; height: 1px; background: linear-gradient(90deg,transparent,var(--gold),transparent); margin: 14px auto; }
+.lead { color: var(--text-dim); font-size: .9em; line-height: 1.7; font-style: italic; max-width: 620px; margin: 0 auto; }
+
+/* Main tabs */
+.mainTabs {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  border-bottom: 2px solid var(--border); margin-bottom: 0;
+}
+.mainTab {
+  padding: 11px 20px; background: none; border: none; border-bottom: 3px solid transparent;
+  color: var(--text-dim); font-family: inherit; font-size: .88em;
+  letter-spacing: .5px; cursor: pointer; transition: all .2s; margin-bottom: -2px;
+}
+.mainTab:hover { color: var(--text); }
+.mainTabActive { color: var(--gold); border-bottom-color: var(--gold); font-weight: bold; }
+
+/* Sub tabs */
+.subTabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  margin-bottom: 20px; overflow-x: auto; scrollbar-width: none;
+}
+.subTabs::-webkit-scrollbar { display: none; }
+.subTab {
+  padding: 10px 16px; background: none; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim); font-family: inherit; font-size: .82em;
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.subTab:hover { color: var(--text); }
+.subTabActive { font-weight: bold; }
+
+.content { padding-top: 20px; }
+
+/* Table */
+.tableWrap { overflow-x: auto; }
+.table {
+  width: 100%; border-collapse: collapse;
+  font-size: .84em;
+}
+.table thead tr {
+  border-bottom: 2px solid var(--border);
+}
+.table th {
+  text-align: left; padding: 10px 12px;
+  font-size: .75em; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold-dim); white-space: nowrap;
+}
+.table td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: top; color: var(--text);
+}
+.table tr:hover td { background: rgba(201,162,39,.04); }
+
+.tdNome { font-weight: bold; color: var(--gold) !important; white-space: nowrap; min-width: 130px; }
+.tdDano { color: #e0a030 !important; font-family: monospace; white-space: nowrap; }
+.tdProp { color: var(--text-dim) !important; font-size: .82em; max-width: 280px; }
+.tdDesc { color: var(--text-dim) !important; font-size: .82em; max-width: 380px; }
+.tdPreco { color: var(--gold-dim) !important; white-space: nowrap; text-align: right; }
+
+/* Tier note */
+.tierNote {
+  background: var(--bg3); border-left: 3px solid var(--gold-dim);
+  border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 20px;
+  font-size: .84em; color: var(--text-dim); line-height: 1.6;
+}
+
+/* Intermediate cards */
+.interList { display: flex; flex-direction: column; gap: 8px; }
+.interCard {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 10px; overflow: hidden; transition: border-color .2s;
+}
+.interCard:hover, .interCardOpen { border-color: var(--gold-dim); }
+
+.interCardHeader {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; background: none; border: none; cursor: pointer;
+  font-family: inherit; gap: 12px;
+}
+.interCardLeft { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.interNome { font-size: .92em; font-weight: bold; color: var(--gold); }
+.interBase { font-size: .74em; color: var(--text-dim); font-style: italic; }
+.interCardRight { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.interDano { font-size: .8em; color: #e0a030; font-family: monospace; }
+.interPreco { font-size: .8em; color: var(--gold-dim); }
+
+.interBody { padding: 0 16px 16px; border-top: 1px solid var(--border); }
+.interMeta {
+  display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 8px;
+  font-size: .78em; color: var(--text-dim);
+}
+.interMeta span {
+  background: var(--bg3); border-radius: 6px; padding: 3px 10px;
+  border: 1px solid var(--border);
+}
+
+/* Efeitos list */
+.efeitosList { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.efeito {
+  display: flex; flex-direction: column; gap: 2px;
+  background: rgba(0,0,0,.2); border-radius: 6px; padding: 10px 12px;
+  border-left: 2px solid var(--gold-dim);
+}
+.efeitoNome { font-size: .8em; font-weight: bold; color: var(--gold); letter-spacing: .3px; }
+.efeitoDesc { font-size: .81em; color: var(--text); line-height: 1.6; }
+
+/* Maldicao */
+.maldicaoBox {
+  margin-top: 12px; background: rgba(120,0,0,.15);
+  border: 1px solid #8b0000; border-radius: 8px; padding: 12px 14px;
+}
+.maldicaoLabel { font-size: .76em; letter-spacing: 2px; text-transform: uppercase; color: #cc4444; margin-bottom: 8px; }
+.maldicaoBox .efeito { border-left-color: #cc444455; }
+.maldicaoBox .efeitoNome { color: #e05555; }
+
+/* Legendary cards */
+.lendList { display: flex; flex-direction: column; gap: 12px; }
+.lendCard {
+  background: var(--card-bg); border: 1px solid var(--gold-dim);
+  border-radius: 12px; overflow: hidden; transition: border-color .2s;
+}
+.lendCard:hover, .lendCardOpen { border-color: var(--gold); }
+.lendCardCorrupto { border-color: #8b0000 !important; }
+.lendCardCorrupto:hover, .lendCardCorrupto.lendCardOpen { border-color: #cc4444 !important; }
+
+.lendHeader {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; background: none; border: none; cursor: pointer;
+  font-family: inherit; text-align: left; gap: 12px;
+}
+.lendHeaderRight { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.lendSub { display: block; font-size: .7em; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 4px; }
+.lendNome { display: block; font-size: 1em; font-weight: bold; color: var(--gold); margin-bottom: 3px; }
+.lendTipo { display: block; font-size: .76em; color: var(--text-dim); font-style: italic; }
+.corruptoBadge { font-size: .68em; letter-spacing: 1.5px; text-transform: uppercase; color: #cc4444; padding: 2px 8px; border: 1px solid #cc444455; border-radius: 10px; }
+
+.lendBody { padding: 0 20px 20px; border-top: 1px solid var(--border); }
+.lendLore {
+  font-size: .84em; color: var(--text-dim); line-height: 1.8;
+  font-style: italic; padding: 16px 0 12px;
+  border-bottom: 1px solid var(--border); margin-bottom: 14px;
+}
+.lendStats {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;
+}
+.lendStats > div {
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--bg3); border-radius: 7px; padding: 8px 12px;
+  font-size: .8em;
+}
+.statLabel { font-size: .7em; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-dim); }
+.lendStats > div > span:last-child { color: var(--text); }
+.sectionLabel { font-size: .74em; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; margin-top: 4px; }
+
+.chevron { font-size: .72em; color: var(--text-dim); }
+
+@media (max-width: 800px) {
+  .page { padding: 30px 16px 60px; }
+  .mainTabs { gap: 2px; }
+  .mainTab { padding: 10px 12px; font-size: .82em; }
+  .table { font-size: .78em; }
+  .table th, .table td { padding: 7px 8px; }
+}

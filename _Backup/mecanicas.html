@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mecânicas — Reino Mágico</title>
+<style>
+:root{
+  --bg:#0f0c0a;--bg2:#1a1510;--bg3:#241d14;
+  --border:#4a3820;--gold:#c9a227;--gold-dim:#8a6d1a;
+  --text:#e8d9b8;--text-dim:#9a8870;
+  --card-bg:#1e1710;--card-border:#3a2e1e;
+  --green:#4a9a5a;--red:#c44;--blue:#4a7fc4;--purple:#8a4ac4;
+  --nav-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;
+  background-image:radial-gradient(ellipse at center,#1a130a 0%,#080503 100%);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);
+  background:rgba(15,12,10,.96);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;}
+.nav-brand{font-size:1.2em;color:var(--gold);letter-spacing:3px;text-decoration:none;
+  text-shadow:0 0 18px rgba(201,162,39,.35);}
+.nav-brand span{font-size:.6em;color:var(--text-dim);display:block;letter-spacing:1px;}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none;}
+.nav-links a{display:block;padding:8px 14px;color:var(--text-dim);text-decoration:none;
+  border-radius:5px;font-size:.85em;letter-spacing:.5px;transition:all .2s;}
+.nav-links a:hover{color:var(--gold);background:rgba(201,162,39,.08);}
+.nav-links a.active{color:var(--gold);}
+.dropdown{position:relative;}
+.dropdown-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;
+  color:var(--text-dim);border:none;background:none;font-family:inherit;font-size:.85em;
+  letter-spacing:.5px;border-radius:5px;cursor:pointer;transition:all .2s;}
+.dropdown-btn:hover{color:var(--gold);background:rgba(201,162,39,.08);}
+.dropdown-btn::after{content:'▾';font-size:.7em;color:var(--gold-dim);transition:transform .2s;}
+.dropdown:hover .dropdown-btn::after{transform:rotate(-180deg);}
+.dropdown-menu{position:absolute;top:calc(100%+4px);right:0;background:var(--bg2);
+  border:1px solid var(--border);border-radius:8px;min-width:200px;overflow:hidden;
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .2s,transform .2s,visibility .2s;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0);}
+.dropdown-menu a{display:flex;align-items:center;gap:10px;padding:12px 18px;
+  color:var(--text-dim);text-decoration:none;font-size:.85em;
+  border-bottom:1px solid var(--bg3);transition:all .15s;}
+.dropdown-menu a:last-child{border-bottom:none;}
+.dropdown-menu a:hover{background:var(--bg3);color:var(--gold);}
+.dm-icon{font-size:1.1em;}
+.dm-info{display:flex;flex-direction:column;gap:2px;}
+.dm-title{color:var(--text);font-size:.9em;}
+.dm-desc{font-size:.75em;color:var(--text-dim);}
+
+/* CHAPTER TABS */
+.chapter-tabs{position:sticky;top:var(--nav-h);z-index:900;
+  background:rgba(15,12,10,.96);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);display:flex;gap:0;padding:0 40px;}
+.tab-btn{padding:14px 22px;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:inherit;font-size:.85em;letter-spacing:.8px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* LAYOUT */
+.content-wrap{max-width:1000px;margin:0 auto;padding:40px 40px 80px;}
+
+/* CHAPTER SECTION */
+.chapter{display:none;}
+.chapter.visible{display:block;}
+.chapter-hero{text-align:center;padding:50px 0 40px;border-bottom:1px solid var(--border);margin-bottom:48px;}
+.ch-number{font-size:.72em;letter-spacing:5px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:10px;}
+.ch-title{font-size:2.2em;color:var(--gold);letter-spacing:3px;
+  text-shadow:0 0 20px rgba(201,162,39,.25);margin-bottom:12px;}
+.ch-divider{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 16px;}
+.ch-lead{color:var(--text-dim);font-size:.92em;font-style:italic;line-height:1.7;max-width:600px;margin:0 auto;}
+
+/* SECTION BLOCK */
+.sec{margin-bottom:44px;}
+.sec-title{font-size:1.15em;color:var(--gold);letter-spacing:2px;
+  border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:20px;}
+.sec-title::before{content:'◈ ';color:var(--gold-dim);}
+.sec-text{color:var(--text);line-height:1.8;font-size:.9em;margin-bottom:14px;}
+.sec-text+.sec-text{margin-top:-6px;}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:16px;}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:16px;}
+.card-title{font-size:.95em;font-weight:bold;color:var(--gold);margin-bottom:8px;}
+.card-abbr{font-size:.72em;color:var(--gold-dim);letter-spacing:1px;margin-bottom:6px;}
+.card-body{font-size:.8em;color:var(--text);line-height:1.55;}
+.card-formula{font-size:.78em;color:var(--green);font-style:italic;margin-top:8px;
+  padding:6px 10px;background:rgba(74,154,90,.08);border-radius:4px;border-left:2px solid var(--green);}
+
+/* ATTRIBUTE BARS */
+.attr-row{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:start;
+  padding:14px 0;border-bottom:1px solid var(--bg3);}
+.attr-row:last-child{border-bottom:none;}
+.attr-name{font-size:.88em;color:var(--gold);font-weight:bold;}
+.attr-abbr-badge{display:inline-block;font-size:.65em;padding:2px 6px;border-radius:4px;
+  background:var(--bg3);border:1px solid var(--border);color:var(--gold-dim);margin-left:6px;}
+.attr-desc{font-size:.8em;color:var(--text);line-height:1.55;}
+.attr-formula{font-size:.75em;color:var(--green);margin-top:6px;font-style:italic;}
+
+/* SKILLS TABLE */
+.skills-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.82em;}
+.skills-table th{text-align:left;padding:8px 12px;background:var(--bg3);
+  color:var(--gold-dim);font-weight:normal;letter-spacing:1px;border-bottom:1px solid var(--border);}
+.skills-table td{padding:8px 12px;border-bottom:1px solid var(--bg3);color:var(--text);line-height:1.4;}
+.skills-table tr:hover td{background:rgba(201,162,39,.04);}
+.skill-attr{display:inline-block;font-size:.75em;padding:2px 7px;border-radius:10px;
+  border:1px solid var(--border);color:var(--text-dim);}
+.skill-attr.FOR{border-color:#e07028;color:#e07028;}
+.skill-attr.DES{border-color:#4a9a5a;color:#4a9a5a;}
+.skill-attr.VIT{border-color:#c44;color:#c44;}
+.skill-attr.INT{border-color:#7a7aca;color:#7a7aca;}
+.skill-attr.PRE{border-color:#c9a227;color:#c9a227;}
+
+/* MONEY TABLE */
+.money-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:14px;}
+.money-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;
+  padding:14px;text-align:center;}
+.money-code{font-size:1.3em;font-weight:bold;color:var(--gold);margin-bottom:4px;}
+.money-name{font-size:.75em;color:var(--text-dim);margin-bottom:8px;}
+.money-desc{font-size:.78em;color:var(--text);line-height:1.4;}
+
+/* STAT CARDS */
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:14px;}
+.stat-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:14px;}
+.stat-card-name{font-size:.85em;font-weight:bold;color:var(--gold);margin-bottom:6px;}
+.stat-card-formula{font-size:.8em;color:var(--green);font-family:monospace;
+  padding:5px 8px;background:rgba(74,154,90,.08);border-radius:4px;
+  border:1px solid rgba(74,154,90,.2);margin-bottom:8px;}
+.stat-card-desc{font-size:.76em;color:var(--text-dim);line-height:1.5;}
+
+/* REST CARDS */
+.rest-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+.rest-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:18px;}
+.rest-title{font-size:.95em;font-weight:bold;color:var(--gold);margin-bottom:10px;}
+.rest-recovery{background:rgba(74,154,90,.08);border:1px solid rgba(74,154,90,.2);
+  border-radius:6px;padding:10px 14px;margin-bottom:12px;}
+.rest-recovery div{font-size:.8em;color:var(--green);line-height:1.8;}
+.rest-list{list-style:none;padding:0;}
+.rest-list li{font-size:.78em;color:var(--text-dim);padding:4px 0;
+  padding-left:12px;position:relative;line-height:1.4;}
+.rest-list li::before{content:'·';position:absolute;left:0;color:var(--gold-dim);}
+
+/* CONDITIONS */
+.conditions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:14px;}
+.cond-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:7px;padding:14px;}
+.cond-name{font-size:.88em;font-weight:bold;color:var(--gold);margin-bottom:6px;}
+.cond-effect{font-size:.78em;color:var(--text);line-height:1.5;margin-bottom:6px;}
+.cond-save{font-size:.72em;color:var(--blue);font-style:italic;}
+
+/* ACTIONS TABLE */
+.action-list{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.action-item{display:grid;grid-template-columns:150px 1fr;gap:16px;
+  background:var(--card-bg);border:1px solid var(--card-border);border-radius:7px;padding:14px;}
+.action-label{font-size:.85em;font-weight:bold;color:var(--gold);}
+.action-badge{display:inline-block;font-size:.65em;padding:2px 7px;border-radius:10px;margin-top:4px;}
+.action-badge.basica{background:rgba(74,154,90,.15);border:1px solid var(--green);color:var(--green);}
+.action-badge.situacional{background:rgba(74,127,196,.15);border:1px solid var(--blue);color:var(--blue);}
+.action-badge.livre{background:rgba(201,162,39,.1);border:1px solid var(--gold-dim);color:var(--gold-dim);}
+.action-desc{font-size:.8em;color:var(--text);line-height:1.55;}
+
+/* ATTACK CARDS */
+.attack-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px;}
+.attack-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:16px;}
+.attack-name{font-size:.95em;font-weight:bold;color:var(--gold);margin-bottom:6px;}
+.attack-formula{font-size:.78em;color:var(--green);margin-bottom:8px;font-style:italic;}
+.attack-desc{font-size:.79em;color:var(--text);line-height:1.55;}
+
+/* CRITICAL BOX */
+.crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+.crit-card{background:var(--card-bg);border-radius:8px;padding:18px;}
+.crit-card.hit{border:1px solid var(--gold);}
+.crit-card.fail{border:1px solid var(--red);}
+.crit-title{font-size:.95em;font-weight:bold;margin-bottom:10px;}
+.crit-card.hit .crit-title{color:var(--gold);}
+.crit-card.fail .crit-title{color:var(--red);}
+.crit-trigger{font-size:.8em;padding:6px 10px;border-radius:5px;margin-bottom:10px;}
+.crit-card.hit .crit-trigger{background:rgba(201,162,39,.1);color:var(--gold-dim);}
+.crit-card.fail .crit-trigger{background:rgba(204,68,68,.1);color:var(--red);}
+.crit-text{font-size:.78em;color:var(--text);line-height:1.55;}
+.crit-list{list-style:none;padding:0;margin-top:8px;}
+.crit-list li{font-size:.76em;color:var(--text-dim);padding:3px 0 3px 12px;position:relative;}
+.crit-list li::before{content:'·';position:absolute;left:0;color:var(--red);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-dim);}
+
+/* MOBILE */
+@media(max-width:700px){
+  nav,chapter-tabs{padding:0 16px;}
+  .content-wrap{padding:30px 16px 60px;}
+  .crit-grid,.rest-cards{grid-template-columns:1fr;}
+  .attr-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-brand">⚔ REINO MÁGICO<span>Sistema de RPG</span></a>
+  <ul class="nav-links">
+    <li><a href="/">Início</a></li>
+    <li><a href="/mecanicas" class="active">Mecânicas</a></li>
+    <li><a href="/historia">História</a></li>
+    <li><a href="/racas">Raças</a></li>
+    <li><a href="/classes">Classes</a></li>
+    <li class="dropdown">
+      <button class="dropdown-btn">Conteúdo</button>
+      <div class="dropdown-menu">
+        <a href="/ficha" target="_blank"><span class="dm-icon">📋</span><span class="dm-info"><span class="dm-title">Ficha de Personagem</span><span class="dm-desc">Criar aventureiro</span></span></a>
+        <a href="/gerador"><span class="dm-icon">🐉</span><span class="dm-info"><span class="dm-title">Gerador de Criaturas</span><span class="dm-desc">Em breve</span></span></a>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<!-- CHAPTER TABS -->
+<div class="chapter-tabs">
+  <button class="tab-btn active" onclick="showChapter('cap1',this)">Conceitos Fundamentais</button>
+  <button class="tab-btn" onclick="showChapter('cap2',this)">Estatísticas</button>
+  <button class="tab-btn" onclick="showChapter('cap3',this)">Ações e Combate</button>
+</div>
+
+<div class="content-wrap">
+
+<!-- ══════════════════════════════════════════════════════
+     CAPÍTULO I — CONCEITOS FUNDAMENTAIS
+══════════════════════════════════════════════════════ -->
+<div id="cap1" class="chapter visible">
+  <div class="chapter-hero">
+    <h1 class="ch-title">Conceitos Fundamentais</h1>
+    <div class="ch-divider"></div>
+    <p class="ch-lead">Antes de rolar qualquer dado, é preciso compreender a linguagem do Reino Mágico.</p>
+  </div>
+
+  <!-- DADOS -->
+  <div class="sec">
+    <h2 class="sec-title">Dados Utilizados</h2>
+    <p class="sec-text">No Reino Mágico, o destino dos personagens é moldado por diferentes tipos de dados, cada um representando níveis distintos de poder, risco e imprevisibilidade. O sistema utiliza uma variedade que vai do <strong>D4 ao D20</strong>, permitindo desde ações simples até feitos extraordinários.</p>
+    <p class="sec-text">O verdadeiro coração do sistema é o <strong>D20</strong> — ele determina o sucesso ou fracasso das ações mais importantes. Sempre que um personagem tenta realizar algo decisivo — atacar, resistir a um efeito ou conjurar uma magia — é o D20 que dita o resultado.</p>
+    <div class="cards-grid" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr));">
+      <div class="card" style="text-align:center"><div class="card-title" style="font-size:1.5em">D4</div><div class="card-body">Efeitos modestos, bônus sutis</div></div>
+      <div class="card" style="text-align:center"><div class="card-title" style="font-size:1.5em">D6</div><div class="card-body">Danos básicos e eventos simples</div></div>
+      <div class="card" style="text-align:center"><div class="card-title" style="font-size:1.5em">D8</div><div class="card-body">Impacto moderado</div></div>
+      <div class="card" style="text-align:center"><div class="card-title" style="font-size:1.5em">D10</div><div class="card-body">Habilidades avançadas</div></div>
+      <div class="card" style="text-align:center"><div class="card-title" style="font-size:1.5em">D12</div><div class="card-body">Combates intensos</div></div>
+      <div class="card" style="text-align:center;border-color:var(--gold)"><div class="card-title" style="font-size:1.5em;color:var(--gold)">D20</div><div class="card-body" style="color:var(--gold-dim)">Dado principal — sucesso e falha</div></div>
+    </div>
+  </div>
+
+  <!-- ATRIBUTOS -->
+  <div class="sec">
+    <h2 class="sec-title">Atributos</h2>
+    <p class="sec-text">Cada personagem possui <strong>cinco atributos base</strong> que definem suas capacidades naturais. Os atributos determinam quantos d20 o jogador lança nas rolagens — o maior resultado é sempre utilizado. Distribuição inicial: <strong>7 pontos</strong>, todos iniciam em 0, máximo 5 por atributo.</p>
+    <div style="margin-top:16px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;overflow:hidden;">
+      <div class="attr-row" style="padding:14px 20px;">
+        <div><div class="attr-name">Força <span class="attr-abbr-badge">FOR</span></div></div>
+        <div class="attr-desc">Poder físico bruto. Determina o dano de ataques corpo a corpo. Armas de duas mãos dobram o bônus de Força no dano.</div>
+      </div>
+      <div class="attr-row" style="padding:14px 20px;">
+        <div><div class="attr-name">Destreza <span class="attr-abbr-badge">DES</span></div></div>
+        <div class="attr-desc">Controle preciso do corpo e agilidade. Rege furtividade, ataques à distância e contribui diretamente para a <strong>Defesa Básica</strong>.</div>
+      </div>
+      <div class="attr-row" style="padding:14px 20px;">
+        <div><div class="attr-name">Vitalidade <span class="attr-abbr-badge">VIT</span></div></div>
+        <div class="attr-desc">Resistência física. Influencia diretamente a <strong>Vida máxima</strong> e a capacidade de suportar dor e condições adversas.</div>
+      </div>
+      <div class="attr-row" style="padding:14px 20px;">
+        <div><div class="attr-name">Intelecto <span class="attr-abbr-badge">INT</span></div></div>
+        <div class="attr-desc">Domínio arcano e conhecimento. Define quantas magias o personagem conhece, aumenta o dano mágico e determina a <strong>CD de Conjuração</strong>: CD = 8 + Intelecto + Foco.</div>
+      </div>
+      <div class="attr-row" style="padding:14px 20px;border-bottom:none;">
+        <div><div class="attr-name">Presença <span class="attr-abbr-badge">PRE</span></div></div>
+        <div class="attr-desc">Força da personalidade. Rege habilidades sociais e determina a reserva de <strong>Mana</strong>: PM = Presença × 2. Quanto maior a Presença, mais energia para sustentar magias.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERÍCIAS -->
+  <div class="sec">
+    <h2 class="sec-title">Perícias</h2>
+    <p class="sec-text">As perícias representam o refinamento das habilidades — somam um bônus fixo ao maior resultado dos dados. Na criação, as perícias iniciais são definidas pela classe. O jogador pode escolher <strong>2 perícias adicionais</strong> no nível Básico.</p>
+    <div class="cards-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px;">
+      <div class="card"><div class="card-title">Básico</div><div class="card-formula">+2</div><div class="card-body">Familiaridade. Evita erros simples.</div></div>
+      <div class="card"><div class="card-title">Intermediário</div><div class="card-formula">+5</div><div class="card-body">Prática consistente. Confiança na ação.</div></div>
+      <div class="card"><div class="card-title">Avançado</div><div class="card-formula">+10</div><div class="card-body">Maestria. Feitos que poucos conseguiriam.</div></div>
+    </div>
+    <table class="skills-table">
+      <thead><tr><th>Perícia</th><th>Atributo</th><th>Descrição</th></tr></thead>
+      <tbody>
+        <tr><td>Atletismo</td><td><span class="skill-attr FOR">FOR</span></td><td>Esforço físico intenso — escalada, saltos, perseguição</td></tr>
+        <tr><td>Luta</td><td><span class="skill-attr FOR">FOR</span></td><td>Domínio do combate corpo a corpo</td></tr>
+        <tr><td>Iniciativa</td><td><span class="skill-attr DES">DES</span></td><td>Rapidez de reação, especialmente em combate</td></tr>
+        <tr><td>Pontaria</td><td><span class="skill-attr DES">DES</span></td><td>Precisão em ataques à distância</td></tr>
+        <tr><td>Prestidigitação</td><td><span class="skill-attr DES">DES</span></td><td>Manipulação delicada — arrombamento, furto, artesanato</td></tr>
+        <tr><td>Reflexo</td><td><span class="skill-attr DES">DES</span></td><td>Reação rápida a ameaças, evitar danos</td></tr>
+        <tr><td>Furtividade</td><td><span class="skill-attr DES">DES</span></td><td>Movimentação sem ser notado</td></tr>
+        <tr><td>Sobrevivência</td><td><span class="skill-attr VIT">VIT</span></td><td>Adaptação a ambientes hostis e natureza</td></tr>
+        <tr><td>Tenacidade</td><td><span class="skill-attr VIT">VIT</span></td><td>Resistência a condições físicas negativas</td></tr>
+        <tr><td>Foco</td><td><span class="skill-attr INT">INT</span></td><td>Controle arcano, canalização de magia</td></tr>
+        <tr><td>História</td><td><span class="skill-attr INT">INT</span></td><td>Conhecimento de eventos, culturas, tradições</td></tr>
+        <tr><td>Investigação</td><td><span class="skill-attr INT">INT</span></td><td>Análise de pistas e situações complexas</td></tr>
+        <tr><td>Persuasão</td><td><span class="skill-attr INT">INT</span></td><td>Convencer através de argumentos e lógica</td></tr>
+        <tr><td>Vontade</td><td><span class="skill-attr INT">INT</span></td><td>Resistência mental e controle emocional</td></tr>
+        <tr><td>Carisma</td><td><span class="skill-attr PRE">PRE</span></td><td>Criar conexões, inspirar confiança por empatia</td></tr>
+        <tr><td>Enganação</td><td><span class="skill-attr PRE">PRE</span></td><td>Distorcer a verdade, manipular percepções</td></tr>
+        <tr><td>Intimidação</td><td><span class="skill-attr PRE">PRE</span></td><td>Impor medo ou pressão emocional</td></tr>
+        <tr><td>Percepção</td><td><span class="skill-attr PRE">PRE</span></td><td>Captar detalhes e intenções por instinto</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SISTEMA MONETÁRIO -->
+  <div class="sec">
+    <h2 class="sec-title">Sistema Monetário</h2>
+    <p class="sec-text">A economia do reino é sustentada por diferentes moedas, utilizadas conforme o valor das transações e a posição social de seus portadores.</p>
+    <div class="money-grid">
+      <div class="money-card"><div class="money-code" style="color:#cd7f32">MB</div><div class="money-name">Moeda de Bronze</div><div class="money-desc">Compras cotidianas, alimentação, hospedagens modestas</div></div>
+      <div class="money-card"><div class="money-code" style="color:#aaa">MP</div><div class="money-name">Moeda de Prata</div><div class="money-desc">Equipamentos, contratos, transações moderadas</div></div>
+      <div class="money-card"><div class="money-code" style="color:var(--gold)">MO</div><div class="money-name">Moeda de Ouro</div><div class="money-desc">Grandes negociações, itens raros, recompensas elevadas</div></div>
+      <div class="money-card" style="border-color:#b0c0d0"><div class="money-code" style="color:#b0c0d0">ML</div><div class="money-name">Moeda de Platina</div><div class="money-desc">Acordos políticos, artefatos lendários, fortunas</div></div>
+      <div class="money-card" style="border-color:#9b59b6"><div class="money-code" style="color:#9b59b6">MG</div><div class="money-name">Platina com Gema</div><div class="money-desc">Tesouros reais, tributos entre reinos — extremamente raras</div></div>
+    </div>
+    <div style="margin-top:14px;padding:12px 16px;background:var(--bg3);border-radius:6px;font-size:.8em;color:var(--text-dim);">
+      100 MB = 1 MP &nbsp;·&nbsp; 100 MP = 1 MO &nbsp;·&nbsp; 1.000 MO = 1 ML &nbsp;·&nbsp; 1.000 ML = 1 MG
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     CAPÍTULO II — ESTATÍSTICAS DO PERSONAGEM
+══════════════════════════════════════════════════════ -->
+<div id="cap2" class="chapter">
+  <div class="chapter-hero">
+    <h1 class="ch-title">Estatísticas do Personagem</h1>
+    <div class="ch-divider"></div>
+    <p class="ch-lead">As estatísticas definem a capacidade de sobrevivência e efetividade do personagem em campo.</p>
+  </div>
+
+  <!-- ESTATÍSTICAS BASE -->
+  <div class="sec">
+    <h2 class="sec-title">Estatísticas Base</h2>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-card-name">❤ Vida</div>
+        <div class="stat-card-formula">10 + Vitalidade + Bônus de Classe</div>
+        <div class="stat-card-desc">Resistência total antes de ser derrotado. Personagens com maior Vida permanecem ativos por mais tempo mesmo sob pressão.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-name">💧 Pontos de Mana</div>
+        <div class="stat-card-formula">Presença × 2 + Bônus de Classe</div>
+        <div class="stat-card-desc">Energia para conjurar magias e usar habilidades especiais. Nunca pode ser negativo — mínimo zero.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-name">🛡 Defesa Básica</div>
+        <div class="stat-card-formula">10 + Destreza + Equipamento</div>
+        <div class="stat-card-desc">Capacidade de evitar ou absorver ataques. Pode ser modificada dinamicamente em combate através de ações específicas.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-name">🎯 CD de Conjuração</div>
+        <div class="stat-card-formula">8 + Atributo Base + Foco</div>
+        <div class="stat-card-desc">Dificuldade para resistir às magias do conjurador. Quanto maior, mais difíceis se tornam os efeitos mágicos.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-name">⚡ Limite de Mana/Turno</div>
+        <div class="stat-card-formula">Proficiência + 2</div>
+        <div class="stat-card-desc">Máximo de mana que pode ser gasto em um único turno. Exige planejamento e controle na utilização de recursos.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-name">⚔ Salvaguarda</div>
+        <div class="stat-card-formula">D20 (Atrib.) + Prof. + Perícia</div>
+        <div class="stat-card-desc">Capacidade de resistir a efeitos adversos físicos, mentais ou mágicos.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFICIÊNCIA -->
+  <div class="sec">
+    <h2 class="sec-title">Proficiência</h2>
+    <p class="sec-text">A Proficiência representa a capacidade de desenvolver especializações. Ela define quantos <strong>talentos e proficiências</strong> o personagem pode possuir. O valor inicial é <strong>2</strong>, podendo ser aumentado até <strong>9</strong> via aprimoramentos.</p>
+    <p class="sec-text">Habilidades concedidas automaticamente por raça ou classe <strong>não consomem</strong> esse limite. Cada talento ou proficiência adquirida voluntariamente consome 1 ponto.</p>
+  </div>
+
+  <!-- VANTAGEM / DESVANTAGEM -->
+  <div class="sec">
+    <h2 class="sec-title">Vantagem e Desvantagem</h2>
+    <div class="crit-grid">
+      <div class="crit-card hit">
+        <div class="crit-title">✦ Vantagem</div>
+        <div class="crit-trigger">Rola +1d20 adicional — usa o <strong>maior</strong> resultado</div>
+        <div class="crit-text">Representa posição favorável, preparo, oportunidade ou superioridade tática. Aumenta significativamente as chances de sucesso.</div>
+      </div>
+      <div class="crit-card fail">
+        <div class="crit-title">✦ Desvantagem</div>
+        <div class="crit-trigger">Rola +1d20 adicional — usa o <strong>menor</strong> resultado</div>
+        <div class="crit-text">Representa pressão, condições negativas ou falta de preparo. Reduz as chances de sucesso refletindo falhas e hesitações.</div>
+      </div>
+    </div>
+    <p style="margin-top:12px;font-size:.8em;color:var(--text-dim);font-style:italic;">
+      Exemplo: Atributo 2 → rola 2d20 normalmente. Com vantagem → 3d20, usa maior. Com desvantagem → 3d20, usa menor.
+    </p>
+  </div>
+
+  <!-- DESCANSOS -->
+  <div class="sec">
+    <h2 class="sec-title">Descansos</h2>
+    <div class="rest-cards">
+      <div class="rest-card">
+        <div class="rest-title">⏱ Descanso Curto</div>
+        <div class="rest-recovery">
+          <div>💧 Mana: 1d4 + Presença</div>
+          <div>❤ Vida: 1d6 + Vitalidade</div>
+        </div>
+        <p style="font-size:.78em;color:var(--text-dim);margin-bottom:10px;">Pausa rápida para recuperar o fôlego e reorganizar energias. Útil em momentos de pressão.</p>
+        <ul class="rest-list">
+          <li>Curativos rápidos</li>
+          <li>Revisar estratégias</li>
+          <li>Reorganizar equipamentos</li>
+          <li>Recuperar habilidades de curto descanso</li>
+        </ul>
+      </div>
+      <div class="rest-card">
+        <div class="rest-title">🌙 Descanso Longo</div>
+        <div class="rest-recovery">
+          <div>💧 Mana: 2d4 + Presença</div>
+          <div>❤ Vida: 2d6 + Vitalidade</div>
+        </div>
+        <p style="font-size:.78em;color:var(--text-dim);margin-bottom:10px;">Período prolongado de recuperação. Exige ambiente relativamente seguro.</p>
+        <ul class="rest-list">
+          <li>Dormir ou meditar profundamente</li>
+          <li>Tratar ferimentos com cuidado</li>
+          <li>Estudar magias</li>
+          <li>Fortalecer vínculos com o grupo</li>
+          <li>Recuperar habilidades de longo descanso</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONDIÇÕES -->
+  <div class="sec">
+    <h2 class="sec-title">Condições de Status</h2>
+    <p class="sec-text">Condições são efeitos negativos aplicados sobre um personagem ou criatura. Cada uma possui uma salvaguarda específica para resistir ou encerrar o efeito.</p>
+    <div class="conditions-grid">
+      <div class="cond-card"><div class="cond-name">Alucinado</div><div class="cond-effect">Perde o turno, incapaz de agir.</div><div class="cond-save">Salv. Foco — encerra ao sucesso</div></div>
+      <div class="cond-card"><div class="cond-name">Amedrontado</div><div class="cond-effect">Desvantagem contra o conjurador e -2 na Defesa Básica.</div><div class="cond-save">Salv. Tenacidade — supera o medo</div></div>
+      <div class="cond-card"><div class="cond-name">Aprisionado</div><div class="cond-effect">Não pode se mover, mas pode atacar ou conjurar ao alcance.</div><div class="cond-save">Salv. Atletismo — se liberta</div></div>
+      <div class="cond-card"><div class="cond-name">Atordoado</div><div class="cond-effect">Não pode agir e perde o turno.</div><div class="cond-save">Salv. Tenacidade — recupera controle</div></div>
+      <div class="cond-card"><div class="cond-name">Cego</div><div class="cond-effect">-20 em ataques físicos, à distância, mágicos e ações manuais.</div><div class="cond-save">—</div></div>
+      <div class="cond-card"><div class="cond-name">Confuso</div><div class="cond-effect">Rola 1d4: 1=age normal; 2-3=ataca aliado; 4=perde turno e encerra.</div><div class="cond-save">—</div></div>
+      <div class="cond-card"><div class="cond-name">Congelando</div><div class="cond-effect">Não pode agir, mover ou usar reações. 1d8 dano contínuo. Se chegar a 0 vida — morte imediata.</div><div class="cond-save">Salv. Atletismo — rompe o efeito</div></div>
+      <div class="cond-card"><div class="cond-name">Desprevenido</div><div class="cond-effect">-2 na Defesa Básica.</div><div class="cond-save">—</div></div>
+      <div class="cond-card"><div class="cond-name">Desorientado</div><div class="cond-effect">Cancela magias ativas. 50% de chance de confundir aliados com inimigos.</div><div class="cond-save">—</div></div>
+      <div class="cond-card"><div class="cond-name">Em Chamas</div><div class="cond-effect">1d8 dano contínuo (Fogo). Acumulativo: cada novo ataque +1d8.</div><div class="cond-save">Salv. Reflexo — se joga no chão, fica Vulnerável</div></div>
+      <div class="cond-card"><div class="cond-name">Enfraquecido</div><div class="cond-effect">Causa metade do dano e deslocamento reduzido à metade.</div><div class="cond-save">—</div></div>
+      <div class="cond-card"><div class="cond-name">Enfurecido</div><div class="cond-effect">Vantagem em ataques corpo a corpo. Não pode usar ataques à distância ou magias.</div><div class="cond-save">—</div></div>
+      <div class="cond-card"><div class="cond-name">Envenenado</div><div class="cond-effect">1d6 dano contínuo (Terra). Não acumulativo.</div><div class="cond-save">Salv. Tenacidade — encerra</div></div>
+      <div class="cond-card"><div class="cond-name">Fadigado</div><div class="cond-effect">Desvantagem em todos os testes e ataques.</div><div class="cond-save">Salv. Vontade — recupera foco</div></div>
+      <div class="cond-card"><div class="cond-name">Lentidão</div><div class="cond-effect">Movimento reduzido à metade.</div><div class="cond-save">Salv. Tenacidade — recupera mobilidade</div></div>
+      <div class="cond-card"><div class="cond-name">Morrendo</div><div class="cond-effect">Vulnerável. A cada turno: salv. ou acumula falha. 3 falhas = morte. Sucesso = retorna com 1 Vida.</div><div class="cond-save">Salv. Tenacidade ou Vontade</div></div>
+      <div class="cond-card"><div class="cond-name">Paralisado</div><div class="cond-effect">Não pode se mover ou atacar, mas ainda pode conjurar magias.</div><div class="cond-save">Salv. Tenacidade — encerra</div></div>
+      <div class="cond-card"><div class="cond-name">Provocado</div><div class="cond-effect">Deve atacar o conjurador em sua próxima ação.</div><div class="cond-save">Salv. Vontade — resiste</div></div>
+      <div class="cond-card"><div class="cond-name">Sangrando</div><div class="cond-effect">1d8 dano contínuo. Agrava: Enfraquecido → Silenciado → Vulnerável.</div><div class="cond-save">Salv. Tenacidade — estanca</div></div>
+      <div class="cond-card"><div class="cond-name">Silenciado</div><div class="cond-effect">Não pode conjurar magias.</div><div class="cond-save">—</div></div>
+      <div class="cond-card"><div class="cond-name">Vulnerável</div><div class="cond-effect">-5 DB e não pode usar Reações. Se estiver Morrendo, qualquer dano causa morte imediata.</div><div class="cond-save">—</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     CAPÍTULO III — AÇÕES E COMBATE
+══════════════════════════════════════════════════════ -->
+<div id="cap3" class="chapter">
+  <div class="chapter-hero">
+    <h1 class="ch-title">Ações e Combate</h1>
+    <div class="ch-divider"></div>
+    <p class="ch-lead">O combate no Reino Mágico é estratégico e dinâmico. Cada decisão importa.</p>
+  </div>
+
+  <!-- RODADA E TURNO -->
+  <div class="sec">
+    <h2 class="sec-title">Rodada e Turno</h2>
+    <div class="cards-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="card">
+        <div class="card-title">Rodada</div>
+        <div class="card-body">Ciclo completo do combate, no qual <strong>todos</strong> os participantes — jogadores e criaturas — têm a oportunidade de agir.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Turno</div>
+        <div class="card-body">Intervalo individual dentro da rodada: o momento específico em que <strong>cada participante</strong> executa suas ações.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPOS DE AÇÃO -->
+  <div class="sec">
+    <h2 class="sec-title">Tipos de Ação</h2>
+    <div class="action-list">
+      <div class="action-item">
+        <div><div class="action-label">Padrão</div><span class="action-badge basica">Básica</span></div>
+        <div class="action-desc">Ação principal do turno. Usada para <strong>atacar, conjurar magias</strong> ou executar habilidades centrais. Só pode ser realizada durante a vez do personagem.</div>
+      </div>
+      <div class="action-item">
+        <div><div class="action-label">Movimento</div><span class="action-badge basica">Básica</span></div>
+        <div class="action-desc">Permite <strong>deslocamento e reposicionamento</strong> no campo de batalha. Só pode ser usada no próprio turno. O personagem pode dividir seu movimento antes e depois de uma ação Padrão.</div>
+      </div>
+      <div class="action-item">
+        <div><div class="action-label">Reação</div><span class="action-badge situacional">Situacional</span></div>
+        <div class="action-desc">Acionada dentro ou fora do turno, em resposta a eventos específicos. Geralmente exige talentos ou condições específicas. <strong>Limitada a uma vez por rodada</strong>.</div>
+      </div>
+      <div class="action-item">
+        <div><div class="action-label">Livre</div><span class="action-badge livre">Livre</span></div>
+        <div class="action-desc">Interações simples como falar ou realizar ações rápidas que não impactam diretamente o combate. Uso limitado pelo bom senso do mestre.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPOS DE ATAQUE -->
+  <div class="sec">
+    <h2 class="sec-title">Tipos de Ataque</h2>
+    <div class="attack-cards">
+      <div class="attack-card">
+        <div class="attack-name">⚔ Corpo a Corpo</div>
+        <div class="attack-formula">Luta (FOR) vs Defesa Básica</div>
+        <div class="attack-desc">Confrontos diretos com armas simples ou marciais — espadas, machados, lanças, martelos. Exige estar próximo ao alvo. O bônus de Força é somado ao dano. Armas de duas mãos dobram esse bônus.</div>
+      </div>
+      <div class="attack-card">
+        <div class="attack-name">🏹 À Distância</div>
+        <div class="attack-formula">Pontaria (DES) vs Defesa Básica</div>
+        <div class="attack-desc">Arcos, bestas e armas de arremesso permitem atingir inimigos sem contato direto. Armas Versáteis também podem ser usadas à distância. Oferecem posicionamento estratégico.</div>
+      </div>
+      <div class="attack-card">
+        <div class="attack-name">✨ Mágico</div>
+        <div class="attack-formula">Foco (INT) vs Defesa Básica</div>
+        <div class="attack-desc">Canaliza energia sobrenatural para causar dano ou afetar criaturas. Tratado como ataque de longa distância. Pode assumir formas variadas: projéteis, explosões, maldições.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRÍTICOS -->
+  <div class="sec">
+    <h2 class="sec-title">Acertos Críticos e Falhas Críticas</h2>
+    <p class="sec-text">O sistema usa múltiplos d20 — o jogador rola uma quantidade igual ao valor do atributo e normalmente escolhe o maior resultado.</p>
+    <div class="crit-grid">
+      <div class="crit-card hit">
+        <div class="crit-title">✦ Acerto Crítico</div>
+        <div class="crit-trigger">Qualquer dado obtiver um <strong>20 natural</strong></div>
+        <div class="crit-text">Representa um sucesso extraordinário. O personagem alcança o melhor resultado possível.</div>
+        <div style="margin-top:10px;padding:8px 12px;background:rgba(201,162,39,.1);border-radius:5px;font-size:.78em;color:var(--gold-dim);">
+          <strong>Efeito:</strong> O dano final é <strong>duplicado</strong> — rola os dados normalmente e dobra o total.<br>
+          Exemplo: 2d8 → rola 10 → dano final = 20.
+        </div>
+      </div>
+      <div class="crit-card fail">
+        <div class="crit-title">✦ Falha Crítica</div>
+        <div class="crit-trigger">Resultado utilizado for um <strong>1 natural</strong></div>
+        <div class="crit-text">Representa um erro grave ou consequência perigosa definida pelo mestre. Desvantagem aumenta drasticamente esta chance.</div>
+        <ul class="crit-list">
+          <li>Perder o equilíbrio</li>
+          <li>Deixar a guarda aberta</li>
+          <li>Errar completamente a magia</li>
+          <li>Atingir objeto ou aliado</li>
+          <li>Sofrer efeitos colaterais mágicos</li>
+          <li>Perder recursos temporariamente</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- content-wrap -->
+
+
+<script>
+function showChapter(id, btn){
+  document.querySelectorAll('.chapter').forEach(c=>c.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+// Activate tab from URL hash
+const hash = window.location.hash.replace('#','');
+if(['cap1','cap2','cap3'].includes(hash)){
+  const btn = document.querySelector(`.tab-btn[onclick*="${hash}"]`);
+  if(btn) showChapter(hash, btn);
+}
+</script>
+</body>
+</html>

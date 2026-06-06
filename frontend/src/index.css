@@ -1,0 +1,36 @@
+:root {
+  --bg: #0f0c0a;
+  --bg2: #1a1510;
+  --bg3: #241d14;
+  --border: #4a3820;
+  --gold: #c9a227;
+  --gold-dim: #8a6d1a;
+  --text: #e8d9b8;
+  --text-dim: #9a8870;
+  --card-bg: #1e1710;
+  --card-border: #3a2e1e;
+  --green: #4a9a5a;
+  --red: #c44;
+  --blue: #4a7fc4;
+  --purple: #8a4ac4;
+  --nav-h: 64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, 'Times New Roman', serif;
+  min-height: 100vh;
+  background-image: radial-gradient(ellipse at center, #1a130a 0%, #080503 100%);
+}
+
+a { color: inherit; text-decoration: none; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }

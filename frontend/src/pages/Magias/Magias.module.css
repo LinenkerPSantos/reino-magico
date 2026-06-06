@@ -1,0 +1,137 @@
+.loading { text-align: center; padding: 80px 20px; color: var(--text-dim); font-style: italic; }
+.page { max-width: 1000px; margin: 0 auto; padding: 50px 40px 80px; }
+
+.hero { text-align: center; margin-bottom: 32px; }
+.eyebrow { font-size: .72em; letter-spacing: 5px; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 10px; }
+.pageTitle { font-size: 2.5em; color: var(--gold); letter-spacing: 4px; text-shadow: 0 0 24px rgba(201,162,39,.25); }
+.divider { width: 80px; height: 1px; background: linear-gradient(90deg,transparent,var(--gold),transparent); margin: 14px auto; }
+.lead { color: var(--text-dim); font-size: .9em; line-height: 1.7; font-style: italic; max-width: 560px; margin: 0 auto; }
+
+.tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 0;
+  overflow-x: auto; scrollbar-width: none; flex-wrap: wrap;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 13px 18px; background: none; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim); font-family: inherit; font-size: .82em;
+  letter-spacing: .5px; cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.tab:hover { color: var(--text); }
+.tabActive { color: var(--gold); border-bottom-color: var(--gold); }
+
+.panel { padding: 36px 0; animation: fadeIn .25s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+.tabContent {}
+.secTitle { font-size: 1.3em; color: var(--gold); letter-spacing: 2px; margin-bottom: 16px; }
+.secTitle::before { content: '◈ '; color: var(--gold-dim); }
+.subTitle { font-size: 1em; color: var(--gold); letter-spacing: 1px; margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.subTitle::before { content: '◈ '; color: var(--gold-dim); }
+.secText { font-size: .88em; color: var(--text); line-height: 1.85; margin-bottom: 14px; }
+
+/* Rules grid */
+.rulesGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+.ruleCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; }
+.ruleLabel { font-size: .72em; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.ruleFormula { font-size: .88em; color: var(--green); font-family: monospace; padding: 5px 8px; background: rgba(74,154,90,.08); border-radius: 4px; border: 1px solid rgba(74,154,90,.2); margin-bottom: 8px; }
+.ruleDesc { font-size: .78em; color: var(--text-dim); line-height: 1.5; }
+
+/* Intro blocks */
+.natIntroBlock { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.natIntroTitle { font-size: 1em; color: var(--gold); letter-spacing: 2px; margin-bottom: 12px; }
+.natIntroTitle::before { content: '◈ '; color: var(--gold-dim); }
+
+/* Natureza grid — compact icon grid */
+.natGrid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin: 16px 0 20px;
+}
+.natCard {
+  background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px;
+  padding: 14px 10px 10px; display: flex; flex-direction: column; align-items: center; text-align: center;
+  cursor: pointer; transition: all .2s; font-family: inherit;
+}
+.natCard:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
+.natCardActive { background: #221c12; box-shadow: 0 0 16px rgba(201,162,39,.15); }
+.natImg { width: 64px; height: 64px; object-fit: contain; margin-bottom: 8px; }
+.natName { font-size: .82em; font-weight: bold; }
+
+/* Negativo card */
+.natNegativo { border-color: #2a2a2a !important; background: #0d0b08; cursor: default; }
+.natNegativo:hover { transform: none; border-color: #2a2a2a !important; }
+.natUnknownSymbol {
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 2px dashed #333; display: flex; align-items: center; justify-content: center;
+  font-size: 1.8em; color: #444; margin-bottom: 8px;
+  background: radial-gradient(circle, #1a1a1a, #0d0b08);
+}
+
+.natHint { font-size: .8em; color: var(--text-dim); font-style: italic; text-align: center; padding: 8px 0 20px; }
+
+/* Element detail panel */
+.elemDetail {
+  background: var(--card-bg); border: 1px solid; border-radius: 12px;
+  padding: 24px 28px; margin-bottom: 20px; animation: fadeIn .2s;
+}
+.elemDetailNeg { border-color: #2a2a2a; }
+.elemDetailHeader { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
+.elemDetailImg { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+.elemDetailName { font-size: 1.5em; letter-spacing: 2px; margin-bottom: 6px; }
+.elemLinguas { font-size: .78em; color: var(--text-dim); }
+.elemLinguasLabel { margin-right: 6px; }
+
+.simboloBox { border: 1px solid; border-radius: 8px; padding: 14px 16px; margin-top: 14px; background: rgba(0,0,0,.15); }
+.simboloLabel { font-size: .75em; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.simboloText { font-size: .82em; color: var(--text); line-height: 1.6; }
+
+/* Attr grid */
+.attrGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 20px 0; }
+.attrCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; }
+.attrName { font-size: .95em; font-weight: bold; color: var(--gold); margin-bottom: 4px; }
+.attrPapel { font-size: .72em; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.attrDesc { font-size: .82em; color: var(--text); line-height: 1.6; }
+
+/* Formula table */
+.formulaTable { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; overflow: hidden; margin-top: 14px; }
+.formulaRow { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 11px 18px; border-bottom: 1px solid var(--bg3); align-items: center; }
+.formulaRow:last-child { border-bottom: none; }
+.formulaLabel { font-size: .82em; color: var(--text-dim); }
+.formulaVal { font-size: .85em; color: var(--green); font-family: monospace; }
+
+/* Levels */
+.levelList { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.levelCard { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 3px solid; border-radius: 8px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+.levelBadge { font-size: .72em; padding: 4px 10px; border-radius: 10px; border: 1px solid; white-space: nowrap; font-weight: bold; }
+.levelName { font-size: 1em; font-weight: bold; flex: 1; }
+.levelCost { font-size: .82em; color: var(--text-dim); }
+
+/* Spells */
+.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.searchInput {
+  flex: 1; min-width: 180px; padding: 8px 12px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+  color: var(--text); font-family: inherit; font-size: .82em;
+}
+.searchInput:focus { outline: none; border-color: var(--gold-dim); }
+.select {
+  padding: 8px 12px; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text); font-family: inherit; font-size: .82em; cursor: pointer;
+}
+.select:focus { outline: none; border-color: var(--gold-dim); }
+.spellCount { font-size: .78em; color: var(--text-dim); margin-bottom: 14px; }
+
+.spellGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.spellCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; }
+.spellName { font-size: .92em; font-weight: bold; color: var(--gold); margin-bottom: 7px; }
+.spellTags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 7px; }
+.tag { font-size: .7em; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); color: var(--text-dim); }
+.spellPrereq { font-size: .72em; color: var(--gold-dim); margin-bottom: 6px; font-style: italic; }
+.spellDesc { font-size: .78em; color: var(--text); line-height: 1.55; }
+.empty { color: var(--text-dim); font-style: italic; padding: 20px 0; font-size: .88em; }
+
+@media (max-width: 700px) {
+  .page { padding: 30px 16px 60px; }
+  .formulaRow { grid-template-columns: 1fr; gap: 4px; }
+  .levelCard { flex-direction: column; align-items: flex-start; gap: 8px; }
+}

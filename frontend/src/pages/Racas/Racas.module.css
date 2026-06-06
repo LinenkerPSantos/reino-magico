@@ -1,0 +1,91 @@
+.page { max-width: 1100px; margin: 0 auto; padding: 50px 40px 80px; }
+
+.hero { text-align: center; margin-bottom: 40px; }
+.eyebrow { font-size: .72em; letter-spacing: 5px; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 10px; }
+.pageTitle { font-size: 2.5em; color: var(--gold); letter-spacing: 4px; text-shadow: 0 0 24px rgba(201,162,39,.25); margin-bottom: 10px; }
+.divider { width: 80px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 14px auto; }
+.lead { color: var(--text-dim); font-size: .9em; line-height: 1.7; font-style: italic; max-width: 560px; margin: 0 auto; }
+
+.loading { text-align: center; padding: 80px 20px; color: var(--text-dim); font-style: italic; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 32px; }
+
+.thumb {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 10px; padding: 14px 10px 10px;
+  cursor: pointer; transition: all .22s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-family: inherit;
+}
+.thumb:hover { border-color: var(--gold-dim); background: #221c12; transform: translateY(-2px); }
+.thumbActive { border-color: var(--gold); background: #2a2008; box-shadow: 0 0 16px rgba(201,162,39,.2); }
+
+.thumbImg {
+  width: 72px; height: 72px; object-fit: cover; border-radius: 50%;
+  border: 2px solid var(--card-border); transition: border-color .22s;
+}
+.thumb:hover .thumbImg { border-color: var(--gold-dim); }
+.thumbActive .thumbImg { border-color: var(--gold); }
+.thumbIcon { font-size: 2em; }
+.thumbName { font-size: .82em; color: var(--gold); font-weight: bold; }
+.thumbMove { font-size: .68em; color: var(--text-dim); }
+
+/* Detail */
+.detail { animation: fadeIn .25s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+
+.detailHeader {
+  display: flex; align-items: flex-start; gap: 24px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; margin-bottom: 20px;
+}
+.detailIcon { font-size: 3.5em; flex-shrink: 0; }
+.detailInfo { flex: 1; }
+.detailName { font-size: 1.8em; color: var(--gold); letter-spacing: 3px; margin-bottom: 8px; }
+.metaChips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.chip { font-size: .75em; padding: 4px 10px; border-radius: 10px; background: var(--bg3); border: 1px solid var(--border); color: var(--text-dim); }
+.chip.gold { border-color: var(--gold); color: var(--gold); }
+.langs { font-size: .82em; color: var(--text-dim); }
+
+/* Lore */
+.loreTabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin: 20px 0 16px; flex-wrap: wrap; }
+.loreTab {
+  padding: 9px 16px; background: none; border: none;
+  border-bottom: 2px solid transparent; color: var(--text-dim);
+  font-family: inherit; font-size: .8em; letter-spacing: .5px;
+  cursor: pointer; transition: all .2s; text-transform: uppercase;
+}
+.loreTab:hover { color: var(--text); }
+.loreTabActive { color: var(--gold); border-bottom-color: var(--gold); }
+.lorePanel { animation: fadeIn .2s; }
+.loreText { font-size: .88em; color: var(--text); line-height: 1.8; }
+
+/* Race banner image */
+.raceBanner {
+  margin: 18px 0 4px;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.raceBannerImg {
+  width: 100%; height: auto;
+  display: block;
+}
+
+/* Data grid */
+.dataGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+.dataItem { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; }
+.dataLabel { font-size: .65em; color: var(--text-dim); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 3px; }
+.dataValue { font-size: .82em; color: var(--text); }
+
+/* Traits */
+.traitsTitle { font-size: 1em; color: var(--gold); letter-spacing: 1px; margin: 24px 0 14px; }
+.traitsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.traitCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; }
+.traitName { font-size: .9em; font-weight: bold; color: var(--gold); margin-bottom: 6px; }
+.traitBonus { display: inline-block; font-size: .68em; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--green); color: var(--green); margin-left: 6px; vertical-align: middle; }
+.traitDesc { font-size: .78em; color: var(--text); line-height: 1.55; }
+
+@media (max-width: 700px) {
+  .page { padding: 30px 16px 60px; }
+  .detailHeader { flex-direction: column; gap: 14px; }
+}

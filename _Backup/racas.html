@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raças — Reino Mágico</title>
+<style>
+:root{
+  --bg:#0f0c0a;--bg2:#1a1510;--bg3:#241d14;
+  --border:#4a3820;--gold:#c9a227;--gold-dim:#8a6d1a;
+  --text:#e8d9b8;--text-dim:#9a8870;
+  --card-bg:#1e1710;--card-border:#3a2e1e;
+  --green:#4a9a5a;--red:#c44;--blue:#4a7fc4;--purple:#8a4ac4;
+  --nav-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;
+  background-image:radial-gradient(ellipse at center,#1a130a 0%,#080503 100%);}
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(15,12,10,.96);
+  border-bottom:1px solid var(--border);backdrop-filter:blur(8px);z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;}
+.nav-brand{font-size:1.2em;color:var(--gold);letter-spacing:3px;text-decoration:none;
+  text-shadow:0 0 18px rgba(201,162,39,.35);}
+.nav-brand span{font-size:.6em;color:var(--text-dim);display:block;letter-spacing:1px;}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none;}
+.nav-links a{display:block;padding:8px 14px;color:var(--text-dim);text-decoration:none;
+  border-radius:5px;font-size:.85em;letter-spacing:.5px;transition:all .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--gold);}
+.dropdown{position:relative;}
+.dropdown-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;color:var(--text-dim);
+  border:none;background:none;font-family:inherit;font-size:.85em;letter-spacing:.5px;
+  border-radius:5px;cursor:pointer;transition:all .2s;}
+.dropdown-btn:hover{color:var(--gold);}
+.dropdown-btn::after{content:'▾';font-size:.7em;color:var(--gold-dim);transition:transform .2s;}
+.dropdown:hover .dropdown-btn::after{transform:rotate(-180deg);}
+.dropdown-menu{position:absolute;top:calc(100%+4px);right:0;background:var(--bg2);
+  border:1px solid var(--border);border-radius:8px;min-width:200px;overflow:hidden;
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .2s,transform .2s,visibility .2s;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0);}
+.dropdown-menu a{display:flex;align-items:center;gap:10px;padding:12px 18px;color:var(--text-dim);
+  text-decoration:none;font-size:.85em;border-bottom:1px solid var(--bg3);transition:all .15s;}
+.dropdown-menu a:last-child{border-bottom:none;}
+.dropdown-menu a:hover{background:var(--bg3);color:var(--gold);}
+.dm-icon{font-size:1.1em;}.dm-info{display:flex;flex-direction:column;gap:2px;}
+.dm-title{color:var(--text);font-size:.9em;}.dm-desc{font-size:.75em;color:var(--text-dim);}
+.page-wrap{max-width:1100px;margin:0 auto;padding:calc(var(--nav-h)+50px) 40px 80px;}
+.page-hero{text-align:center;margin-bottom:50px;}
+.page-eyebrow{font-size:.72em;letter-spacing:5px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:10px;}
+.page-title{font-size:2.5em;color:var(--gold);letter-spacing:4px;
+  text-shadow:0 0 24px rgba(201,162,39,.25);margin-bottom:10px;}
+.page-divider{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px auto;}
+.page-lead{color:var(--text-dim);font-size:.9em;line-height:1.7;font-style:italic;max-width:560px;margin:0 auto;}
+.race-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:40px;}
+.race-thumb{background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;
+  padding:14px 14px 12px;cursor:pointer;transition:all .22s;text-align:center;}
+.race-thumb:hover{border-color:var(--gold-dim);background:#221c12;transform:translateY(-2px);}
+.race-thumb.active{border-color:var(--gold);background:#2a2008;box-shadow:0 0 16px rgba(201,162,39,.2);}
+.race-thumb-icon{font-size:2em;margin-bottom:8px;}
+.race-thumb-img{width:80px;height:80px;object-fit:cover;border-radius:50%;margin-bottom:8px;
+  border:2px solid var(--card-border);transition:border-color .22s;}
+.race-thumb:hover .race-thumb-img{border-color:var(--gold-dim);}
+.race-thumb.active .race-thumb-img{border-color:var(--gold);}
+.race-thumb-name{font-size:.88em;color:var(--gold);font-weight:bold;letter-spacing:.5px;}
+.race-thumb-move{font-size:.7em;color:var(--text-dim);margin-top:4px;}
+.detail-race-img{width:120px;height:120px;object-fit:cover;border-radius:12px;
+  border:2px solid var(--border);flex-shrink:0;}
+#race-detail{display:none;animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.detail-header{display:flex;align-items:flex-start;gap:28px;
+  background:var(--card-bg);border:1px solid var(--border);border-radius:12px;
+  padding:28px;margin-bottom:24px;}
+.detail-icon{font-size:3.5em;flex-shrink:0;}
+.detail-info{flex:1;}
+.detail-name{font-size:1.8em;color:var(--gold);letter-spacing:3px;margin-bottom:6px;}
+.detail-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.meta-chip{font-size:.75em;padding:4px 10px;border-radius:10px;
+  background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);}
+.meta-chip.gold{border-color:var(--gold);color:var(--gold);}
+.meta-chip.green{border-color:var(--green);color:var(--green);}
+.detail-langs{font-size:.82em;color:var(--text-dim);line-height:1.5;}
+.racial-data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:24px;}
+.rd-item{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px 14px;}
+.rd-label{font-size:.65em;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.rd-value{font-size:.82em;color:var(--text);}
+.bonus-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+.bonus-chip{padding:6px 14px;border-radius:8px;font-size:.78em;font-weight:bold;
+  background:rgba(74,154,90,.12);border:1px solid var(--green);color:var(--green);}
+.traits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.trait-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:16px;}
+.trait-name{font-size:.9em;font-weight:bold;color:var(--gold);margin-bottom:6px;}
+.trait-bonus-tag{display:inline-block;font-size:.68em;padding:2px 7px;border-radius:6px;
+  border:1px solid var(--green);color:var(--green);margin-left:6px;vertical-align:middle;}
+.trait-desc{font-size:.78em;color:var(--text);line-height:1.55;}
+.lore-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin:28px 0 20px;}
+.lore-tab{padding:9px 18px;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:inherit;font-size:.8em;letter-spacing:.5px;
+  cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.lore-tab:hover{color:var(--text);}
+.lore-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.lore-panel{display:none;animation:fadeIn .2s;}
+.lore-panel.visible{display:block;}
+.lore-text{font-size:.88em;color:var(--text);line-height:1.8;}
+.lore-label{font-size:.7em;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.lore-block{background:var(--bg3);border-left:2px solid var(--gold-dim);padding:14px 18px;
+  border-radius:0 6px 6px 0;}
+.names-text{font-size:.82em;color:var(--text-dim);line-height:2;}
+#loading{text-align:center;padding:60px 20px;color:var(--text-dim);}
+#loading code{background:var(--bg3);padding:3px 8px;border-radius:4px;color:var(--gold);}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-dim);}
+@media(max-width:700px){
+  nav{padding:0 16px;}.page-wrap{padding:calc(var(--nav-h)+30px) 16px 60px;}
+  .detail-header{flex-direction:column;gap:14px;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-brand">⚔ REINO MÁGICO<span>Sistema de RPG</span></a>
+  <ul class="nav-links">
+    <li><a href="/">Início</a></li>
+    <li><a href="/mecanicas">Mecânicas</a></li>
+    <li><a href="/historia">História</a></li>
+    <li><a href="/racas" class="active">Raças</a></li>
+    <li><a href="/classes">Classes</a></li>
+    <li class="dropdown">
+      <button class="dropdown-btn">Conteúdo</button>
+      <div class="dropdown-menu">
+        <a href="/ficha" target="_blank"><span class="dm-icon">📋</span><span class="dm-info"><span class="dm-title">Ficha de Personagem</span><span class="dm-desc">Criar aventureiro ↗</span></span></a>
+        <a href="/gerador"><span class="dm-icon">🐉</span><span class="dm-info"><span class="dm-title">Gerador de Criaturas</span><span class="dm-desc">Em breve</span></span></a>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-hero">
+    <p class="page-eyebrow">Os Povos</p>
+    <h1 class="page-title">Raças</h1>
+    <div class="page-divider"></div>
+    <p class="page-lead">O mundo do Reino Mágico é habitado por diversas raças, cada uma com sua herança, cultura e traços únicos.</p>
+  </div>
+  <div id="loading">Carregando raças...</div>
+  <div id="race-grid" class="race-grid" style="display:none"></div>
+  <div id="race-detail"></div>
+</div>
+
+<script>
+const RACE_LORE = {"Anão":{"intro":"Os Anões são humanoides robustos, de baixa estatura e resistência excepcional. Forjados — literal e metaforicamente — em ambientes subterrâneos e montanhosos, desenvolveram uma cultura centrada na tradição, no ofício e na honra coletiva. São mestres artesãos, guerreiros disciplinados e guardiões de segredos que duram gerações. Teimosos por natureza e leais por escolha, os Anões raramente abandonam uma causa abraçada.","cultura":"A sociedade anã é organizada em clãs, cada um com sua especialidade — forjadores, guerreiros, mineradores, comerciantes. A honra do clã é levada a sério, e insultar a linhagem de um Anão é o caminho mais rápido para um conflito. Suas fortalezas montanhosas são obras de engenharia sem paralelo, esculpidas em pedra por gerações de mãos habilidosas.","historia":"Os Anões foram os primeiros a organizar algo merecedor do nome de reino. Descobriram cedo que a maioria das guerras começa não por maldade, mas por ambiguidade. O conflito com os Draconatos durou gerações — a paz só foi possível graças a Durn Maçaneta-de-Ferro e Vorax das Escamas Negras, que lançaram as bases do Grande Conselho.","figuras":"Durn Maçaneta-de-Ferro — Um dos Dez Heróis. Ferreiro que perdeu o filho na guerra anã-dracônica, colocou o martelo no chão e foi encontrar um Draconato para conversar. O que construiu com Vorax das Escamas Negras foi o primeiro tijolo do Grande Conselho.","nomes":"Masculinos: Durn, Borin, Tharim, Brokk, Kharok | Femininos: Helga, Thora, Brynja, Kara, Dagna | Famílias: Maçaneta-de-Ferro, Rochafundida, Martelo-Grisalho, Barba-de-Bronze"},"Celestial":{"intro":"Os Celestiais são seres com uma fagulha divina inscrita em sua essência — uma conexão direta com os Cinco Pilares que sustentam o cosmos. Semelhantes aos Humanos em forma, distinguem-se pela luminosidade suave que emana de sua pele em momentos de emoção intensa e pela capacidade de manifestar asas de luz pura. São ligados à ordem, à proteção e ao julgamento.","cultura":"Os Celestiais não possuem uma cultura própria unificada. A Ordem dos Cinco é a estrutura que os une: um corpo de conhecimento sobre os Cinco Pilares, o Tudo e o Nada, e o selo que contém o Negativo. Não é uma religião — é um compromisso de vigília.","historia":"Os Celestiais foram o último povo a se instalar entre as raças do Continente Ancestral. Vieram com um propósito: avisar que o fragmento do Negativo liberado em Ignareth não foi um acidente isolado, mas um sintoma.","figuras":"Saereneth a Portadora — A primeira Celestial a descer entre os mortais, carregando os textos fundamentais da Ordem dos Cinco. Não veio com proclamações — veio com documentos e paciência para responder perguntas.","nomes":"Masculinos: Saeren, Aelarion, Valeth, Kaelion, Orion | Femininos: Saereneth, Elyra, Serapha, Lysandra, Auriel | Títulos: A Portadora, Guardião do Limiar, Vigia da Aurora"},"Draconato":{"intro":"Os Draconatos são humanoides imponentes cobertos de escamas, com traços inconfundíveis de dragão — caudas, mandíbulas alongadas, olhos rasgados. Cada Draconato carrega a herança de um tipo específico de dragão. Poderosos e orgulhosos, por trás da armadura de escamas há seres profundamente ligados à honra e à lealdade.","cultura":"Os Draconatos vivem em pequenos grupos familiares chamados de Lares. A cultura dracônica valoriza força, disciplina e respeito pela linhagem. Trair um companheiro de Lar é considerado a pior das desonras.","historia":"Os Draconatos desceram dos picos das montanhas enquanto os Anões subiam de baixo. A guerra entre as profundezas e os picos durou décadas, extinguindo-se apenas quando Vorax das Escamas Negras se sentou com Durn Maçaneta-de-Ferro.","figuras":"Vorax das Escamas Negras — Um dos Dez Heróis. Perdeu toda a sua ninhada numa câmara de mineração. Dois homens cansados demais para saber para quê estavam brigando. O que construíram é o modelo que o Grande Conselho usa para descrever reconciliação real.","nomes":"Masculinos: Vorax, Rhogar, Kharvax, Draegon, Tyrakar | Femininos: Veyra, Syrakha, Nyxara, Zarith, Kaelyra | Linhagens: Escamas Negras, Chama Rubra, Presa de Bronze, Tempestade Azul"},"Elfo":{"intro":"Os Elfos são seres de beleza singular e longevidade extraordinária, moldados por séculos de observação e refinamento. Sua ligação com a magia arcana vai além do treinamento — é algo inscrito em cada fibra de seu ser. Racionais, estratégicos e às vezes percebidos como distantes, os Elfos enxergam o tempo de forma diferente.","cultura":"A cultura élfica é construída sobre tradição, arte e conhecimento. Suas cidades são obras de harmonia entre arquitetura e natureza. Os Elfos valorizam a memória histórica acima de quase tudo, mantendo arquivos de eventos que outras raças já esqueceram.","historia":"Os Elfos foram os primeiros a habitar as florestas antigas com respeito ao ritmo do lugar. A manipulação de Veryn Esmeraldanobre explorou tensões acumuladas com os Faunos. O colapso da aliança florestal foi o evento mais traumático da história élfica.","figuras":"Aeva das Raízes Profundas — Uma dos Dez Heróis. Passou décadas rastreando a origem do conflito das florestas. A descoberta da manipulação de Veryn gerou o processo de exposição mais paciente da história.","nomes":"Masculinos: Aelar, Thalion, Eryndor, Faelar, Lorien | Femininos: Aeva, Ildara, Sylwen, Elyndra, Vaelira | Famílias: Das Raízes Profundas, Candela-Viva, Folha Prateada, Canto das Estrelas"},"Fauno":{"intro":"Os Faunos são seres com traços animais pronunciados — pelos, garras, presas, cauda — herdados de uma linhagem que se misturou com espíritos da natureza há tempos imemoriais. Cada família carrega a essência de uma criatura diferente. Ágeis, perceptivos e intensamente ligados ao ambiente, os Faunos são rastreadores naturais e guerreiros instintivos.","cultura":"A maioria dos Faunos vive em clãs nômades, seguindo rotas de caça e migração. Hierarquia é determinada por força, sabedoria e respeito — não por nascimento.","historia":"Os Faunos chegaram às florestas antigas vindos das estepes, seguindo rotas de migração dos animais. Encontraram os Elfos lá. A divisão que funcionou — Elfos nas copas, Faunos nas bordas — era prática, não afeto.","figuras":"Tavan Passo-Branco — Um dos Dez Heróis. Ancião que havia perdido quase todo o clã no conflito com os Elfos. Escolheu não usar o direito ao ódio. Foi o primeiro a se sentar com líderes Élficos após a exposição de Veryn.","nomes":"Masculinos: Tavan, Kaoru, Fenrir, Aruk, Bran | Femininos: Lyra, Naya, Selene, Aria, Vesha | Famílias: Passo-Branco, Presa Cinzenta, Olhos da Lua, Garra de Carvalho"},"Feérico":{"intro":"Os Feéricos são humanoides pequenos e ágeis, nascidos da fronteira entre o mundo material e o reino das fadas. De aparência delicada, mas mente afiada, são naturalmente inclinados para ilusões e truques. Sua estatura baixa é perpetuamente subestimada — e eles preferem assim.","cultura":"A cultura Feérica valoriza a criatividade, a adaptabilidade e o humor — não como entretenimento, mas como filosofia. Enganar um inimigo é considerado mais honrado do que derrotá-lo pela força. Acordos entre Feéricos nunca são simples — cada palavra importa.","historia":"Os Feéricos chegaram às florestas antigas simplesmente aparecendo onde a Mana era mais densa. Veryn Esmeraldanobre era a expressão mais elaborada da nobreza Feérica — e seu colapso deixou uma fratura cultural que os Feéricos ainda carregam.","figuras":"Serafael o Arrependido — Um dos Dez Heróis. Da nobreza de Veryn, havia participado das primeiras fases acreditando servir a um projeto legítimo. Quando percebeu o que havia servido, foi até Aeva e contou tudo.","nomes":"Masculinos: Serafael, Lyrian, Thistle, Vaelor, Nym | Femininos: Eyra, Sylvara, Nixie, Lirael, Faelyn | Famílias: Esmeraldanobre, Sussurro-nas-Folhas, Dança-da-Lua, Brilho-do-Orvalho"},"Humano":{"intro":"Os Humanos são o povo mais numeroso, disperso e imprevisível do Reino Mágico. Não são os mais altos, nem os mais fortes, nem os mais antigos — mas são, sem dúvida, os mais adaptáveis. Onde outras raças desenvolveram especializações ao longo de séculos, os Humanos escolheram a versatilidade.","cultura":"A sociedade humana é marcada pela diversidade. Não existe uma única cultura humana — existem centenas delas. Os Humanos constroem cidades, formam guildas, escrevem tratados e os ignoram quando conveniente.","historia":"Na Era das Sementes, os Humanos chegaram por último — e em todos os lugares ao mesmo tempo. Seus reinos nasceram não de filosofia, mas de necessidade brutal. Nas Guerras Vermelhas, foram os que mais sofreram — mas também os que lideraram as negociações de paz.","figuras":"Mira Filha-de-Ninguém — Uma dos Dez Heróis. Convenceu os líderes humanos de que a estabilidade exigia vizinhos — não inimigos, não súditos. | Kael das Planícies Abertas — Guerreiro que chegou à conclusão de que havia menos inimigos no mundo do que lhe disseram.","nomes":"Masculinos: Kael, Aldric, Rafael, Victor, Arthur, Gabriel | Femininos: Mira, Helena, Beatriz, Sofia, Valéria, Camila | Famílias: Filha-de-Ninguém, Das Planícies Abertas, Monteclaro, Valeforte"},"Híbrido":{"intro":"Os Híbridos são filhos de dois mundos — pessoas nascidas da união entre raças diferentes, portando em si duas heranças. Cada Híbrido é único — o que significa que cada um passou algum tempo da vida descobrindo quem é numa cultura que tem expectativas bem-definidas para cada raça separada.","cultura":"Os Híbridos não têm uma cultura própria centralizada — são a prova de que culturas se encontram. São frequentemente os melhores diplomatas e os comerciantes mais eficazes em regiões de fronteira.","historia":"Os primeiros Híbridos são anteriores ao Grande Conselho — sempre houve encontros entre raças. Aren Duplo-Sangue, o primeiro representante Híbrido no Conselho, disse que raça é o ponto de partida de uma pessoa, não o limite.","figuras":"Aren Duplo-Sangue — Primeiro representante Híbrido no Grande Conselho. Excepcionalmente bom em fazer pessoas que discordavam fundamentalmente ficarem na mesma sala tempo suficiente para começar a escutar umas às outras.","nomes":"Masculinos: Aren, Kaelen, Thoren, Vaelor, Darius | Femininos: Lyra, Elara, Mira, Sylva, Kaelya | Famílias: Duplo-Sangue, Das Duas Luas, Filho das Encruzilhadas, Ponte de Ferro"},"Infernal":{"intro":"Os Infernais são os descendentes dos sobreviventes de Ignareth — o continente destruído quando seus próprios estudiosos tentaram canalizar o Negativo. Reconhecíveis pelo tom de pele do cobre queimado ao vermelho de brasa, carregam no sangue a herança de um povo que foi o mais poderoso do mundo e, por sua própria mão, perdeu tudo.","cultura":"A cultura Infernal pré-desastre era centrada em hierarquia e devoção ao fogo. Pós-desastre, o que sobrou foi a lealdade familiar — extrema, quase incondicional. O fogo ainda é sagrado, mas com a honestidade de quem sabe o que pode destruir.","historia":"Os Infernais dominaram Ignareth por séculos. As Guerras Vermelhas foram o ponto em que o orgulho coletivo encontrou a manipulação de Veryn e produziu uma invasão que quase destruiu o Continente Ancestral.","figuras":"Duquesa Cariza das Piras Eternas — A maior general de Ignareth. Sobreviveu e tentou manter o povo unido depois do desastre. | Lysa das Cinzas Brancas — A estudiosa que descobriu os fragmentos do Negativo, documentou o perigo e não foi ouvida.","nomes":"Masculinos: Valdrak, Kaelor, Darius, Malvek, Rhaegor | Femininos: Cariza, Lysa, Valeria, Seraphine, Nyra | Famílias: Chama-Imortal, Das Piras Eternas, Das Cinzas Brancas, Brasa Rubra"},"Maculado":{"intro":"Os Maculados são seres que existem entre estados — nem completamente vivos pela definição comum, nem mortos pelo que isso significa. De pele marcada por padrões brancos, os Maculados são o único povo cuja origem não é racial, mas histórica: foram feitos, não nasceram.","cultura":"Não existe uma sociedade Maculada unificada. Alguns vivem isolados, acumulando conhecimento. Outros se integram em sociedades mortais, conscientes de que vão sobreviver às amizades que fazem.","historia":"Os Maculados não existiam como povo antes de Porto Vermelho. Quando os acadêmicos de Ignareth tentaram canalizar o Negativo, a expansão de vazio tocou pessoas sem destruí-las completamente. Rhem das Marcas Brancas foi o primeiro registrado.","figuras":"Rhem das Marcas Brancas — O primeiro Maculado registrado. Estivador de Porto Vermelho que chegou com as marcas cobrindo metade do braço esquerdo. | Sark o Marcado — Um dos Dez Heróis. Errante que havia estado em lugares onde batalhas aconteceram antes que os generais chegassem.","nomes":"Masculinos: Rhem, Sark, Dorian, Kael, Varek | Femininos: Lyra, Serah, Nyssa, Eveline, Aria | Famílias: Das Marcas Brancas, Véu-Partido, Cinza-Pálida, Sem-Crepúsculo, Eco-Vazio"}};
+
+const RACE_ICONS = {
+  'Anão':'⛏','Celestial':'✦','Draconato':'🐉','Elfo':'🌿',
+  'Fauno':'🐾','Feérico':'🧚','Humano':'👤','Híbrido':'⚡',
+  'Infernal':'🔥','Maculado':'🌑'
+};
+
+const RACE_IMAGES = {
+  'Anão':      '/img/Ra%C3%A7as/An%C3%B5es.png',
+  'Celestial': '/img/Ra%C3%A7as/Celestiais.png',
+  'Draconato': '/img/Ra%C3%A7as/Draconianos.png',
+  'Elfo':      '/img/Ra%C3%A7as/Elfos.png',
+  'Fauno':     '/img/Ra%C3%A7as/Faunos.png',
+  'Feérico':   '/img/Ra%C3%A7as/Feerico.png',
+  'Humano':    '/img/Ra%C3%A7as/HUmanos.png',
+  'Híbrido':   '/img/Ra%C3%A7as/Hibrido.png',
+  'Infernal':  '/img/Ra%C3%A7as/Infernais.png',
+  'Maculado':  '/img/Ra%C3%A7as/Maculados.png'
+};
+
+let RACES_DATA  = {};
+let RACIAL_DATA = {};
+
+async function loadData(){
+  const loadEl = document.getElementById('loading');
+  const timer  = setTimeout(()=>{
+    loadEl.innerHTML='<b style="color:var(--gold)">⚠ Servidor offline</b><br><span style="font-size:.85em">Execute <code>python server.py</code> e recarregue a página.</span>';
+  }, 4000);
+  try{
+    const r = await fetch('/api/all');
+    const d = await r.json();
+    clearTimeout(timer);
+    RACES_DATA  = d.races       || {};
+    RACIAL_DATA = d.racial_data || {};
+    buildGrid();
+    loadEl.style.display='none';
+  }catch(e){
+    clearTimeout(timer);
+    loadEl.innerHTML='<b style="color:var(--gold)">⚠ Servidor offline</b><br><span style="font-size:.85em">Execute <code>python server.py</code> e recarregue a página.</span>';
+  }
+}
+
+function buildGrid(){
+  const grid  = document.getElementById('race-grid');
+  const names = Object.keys(RACES_DATA).sort();
+  grid.style.display='grid';
+  grid.innerHTML = names.map(name=>{
+    const rd=RACIAL_DATA[name];
+    const imgHtml=RACE_IMAGES[name]
+      ?`<img class="race-thumb-img" src="${RACE_IMAGES[name]}" alt="${name}">`
+      :`<div class="race-thumb-icon">${RACE_ICONS[name]||'◈'}</div>`;
+    return `<div class="race-thumb" id="thumb-${name}" onclick="showRace('${name}')">
+      ${imgHtml}
+      <div class="race-thumb-name">${name}</div>
+      <div class="race-thumb-move">${rd?rd.movimento:(RACES_DATA[name].move||9)+'m'}</div>
+    </div>`;
+  }).join('');
+  if(names.length) showRace(names[0]);
+}
+
+function showRace(name){
+  document.querySelectorAll('.race-thumb').forEach(t=>t.classList.remove('active'));
+  const th=document.getElementById('thumb-'+name);
+  if(th){th.classList.add('active');th.scrollIntoView({behavior:'smooth',block:'nearest'});}
+
+  const r  = RACES_DATA[name];
+  const rd = RACIAL_DATA[name];
+  const rl = RACE_LORE[name] || {};
+  if(!r) return;
+
+  const bonuses=[];
+  if(r.bMana>0)        bonuses.push(`+${r.bMana} Mana`);
+  if(r.bAttrExtra>0)   bonuses.push(`+${r.bAttrExtra} Atributo`);
+  if(r.extraTal>0)     bonuses.push(`+${r.extraTal} Talento`);
+  if(r.extraPer>0)     bonuses.push(`+${r.extraPer} Perícia`);
+  if(r.extraSpell)     bonuses.push(`Magia: ${r.extraSpell}`);
+  if(r.extraSpellType) bonuses.push(`+${r.extraSpellTypeCount||1}× ${r.extraSpellType}`);
+  const bonusHtml=bonuses.length
+    ?`<div class="bonus-row">${bonuses.map(b=>`<span class="bonus-chip">✦ ${b}</span>`).join('')}</div>`:'';
+
+  const rdHtml=rd?`
+    <div class="racial-data-grid">
+      <div class="rd-item"><div class="rd-label">Altura</div><div class="rd-value">${rd.altura}</div></div>
+      <div class="rd-item"><div class="rd-label">Peso Médio</div><div class="rd-value">${rd.peso_medio}</div></div>
+      <div class="rd-item"><div class="rd-label">Expectativa de Vida</div><div class="rd-value">${rd.expectativa_vida}</div></div>
+      <div class="rd-item"><div class="rd-label">Deslocamento</div><div class="rd-value">${rd.movimento}</div></div>
+      <div class="rd-item" style="grid-column:1/-1"><div class="rd-label">Idiomas Nativos</div><div class="rd-value">${rd.idiomas_nativos}</div></div>
+    </div>`:'';
+
+  const traitsHtml=(r.traits||[]).map(t=>`
+    <div class="trait-card">
+      <div class="trait-name">${t.n}${t.bonus?`<span class="trait-bonus-tag">${t.bonus}</span>`:''}</div>
+      <div class="trait-desc">${t.d}</div>
+    </div>`).join('');
+
+  const sn=name.replace(/[^a-zA-Z0-9]/g,'_');
+  const loreHtml=rl.intro?`
+    <div style="margin-top:16px">
+      <div class="lore-tabs">
+        <button class="lore-tab active" onclick="showLoreTab(this,'lv_${sn}')">Visão Geral</button>
+        <button class="lore-tab" onclick="showLoreTab(this,'lc_${sn}')">Cultura</button>
+        <button class="lore-tab" onclick="showLoreTab(this,'lh_${sn}')">História</button>
+        <button class="lore-tab" onclick="showLoreTab(this,'lf_${sn}')">Figuras</button>
+        <button class="lore-tab" onclick="showLoreTab(this,'ln_${sn}')">Nomes</button>
+      </div>
+      <div id="lv_${sn}" class="lore-panel visible"><p class="lore-text">${rl.intro}</p></div>
+      <div id="lc_${sn}" class="lore-panel"><div class="lore-label">Cultura e Povos</div><div class="lore-block"><p class="lore-text">${rl.cultura||''}</p></div></div>
+      <div id="lh_${sn}" class="lore-panel"><div class="lore-label">Na História do Mundo</div><div class="lore-block"><p class="lore-text">${rl.historia||''}</p></div></div>
+      <div id="lf_${sn}" class="lore-panel"><div class="lore-label">Figuras Importantes</div><div class="lore-block"><p class="lore-text">${rl.figuras||''}</p></div></div>
+      <div id="ln_${sn}" class="lore-panel"><div class="lore-label">Nomes e Linhagem</div><p class="names-text">${rl.nomes||''}</p></div>
+    </div>`:'';
+
+  const detail=document.getElementById('race-detail');
+  detail.style.display='block';
+  const detailImgHtml=RACE_IMAGES[name]
+    ?`<img class="detail-race-img" src="${RACE_IMAGES[name]}" alt="${name}">`
+    :`<div class="detail-icon">${RACE_ICONS[name]||'◈'}</div>`;
+  detail.innerHTML=`
+    <div class="detail-header">
+      ${detailImgHtml}
+      <div class="detail-info">
+        <div class="detail-name">${name}</div>
+        <div class="detail-meta">
+          <span class="meta-chip">Deslocamento: ${rd?rd.movimento:(r.move||9)+'m'}</span>
+          ${r.bMana>0?`<span class="meta-chip gold">Mana +${r.bMana}</span>`:''}
+          ${r.bAttrExtra>0?`<span class="meta-chip gold">+${r.bAttrExtra} Atributo</span>`:''}
+          ${r.extraPer>0?`<span class="meta-chip green">+${r.extraPer} Perícia</span>`:''}
+          ${r.extraTal>0?`<span class="meta-chip green">+${r.extraTal} Talento</span>`:''}
+        </div>
+        <div class="detail-langs">${rd?rd.idiomas_nativos:(r.idiomas||'')}</div>
+      </div>
+    </div>
+    ${loreHtml}
+    ${rdHtml}
+    ${bonusHtml}
+    <h3 style="font-size:1em;color:var(--gold);letter-spacing:1px;margin-bottom:14px;margin-top:28px;">◈ Traços Raciais</h3>
+    <div class="traits-grid">${traitsHtml}</div>`;
+
+  detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showLoreTab(btn,id){
+  const wrap=btn.parentElement.parentElement;
+  wrap.querySelectorAll('.lore-tab').forEach(b=>b.classList.remove('active'));
+  wrap.querySelectorAll('.lore-panel').forEach(p=>p.classList.remove('visible'));
+  btn.classList.add('active');
+  const p=document.getElementById(id);
+  if(p) p.classList.add('visible');
+}
+
+loadData();
+</script>
+</body>
+</html>

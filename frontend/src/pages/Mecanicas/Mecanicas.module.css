@@ -1,0 +1,121 @@
+.tabs {
+  position: sticky; top: var(--nav-h); z-index: 900;
+  background: rgba(15,12,10,.96); border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  display: flex; gap: 0; padding: 0 40px; overflow-x: auto; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tabBtn {
+  padding: 14px 22px; background: none; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim); font-family: inherit; font-size: .85em;
+  letter-spacing: .8px; cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.tabBtn:hover { color: var(--text); }
+.tabActive { color: var(--gold); border-bottom-color: var(--gold); }
+
+.wrap { max-width: 1000px; margin: 0 auto; padding: 40px 40px 80px; }
+
+.chHero { text-align: center; padding: 50px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+.chTitle { font-size: 2.2em; color: var(--gold); letter-spacing: 3px; text-shadow: 0 0 20px rgba(201,162,39,.25); margin-bottom: 12px; }
+.chDivider { width: 80px; height: 1px; background: linear-gradient(90deg,transparent,var(--gold),transparent); margin: 0 auto 16px; }
+.chLead { color: var(--text-dim); font-size: .92em; font-style: italic; line-height: 1.7; max-width: 600px; margin: 0 auto; }
+
+.sec { margin-bottom: 44px; }
+.secTitle { font-size: 1.1em; color: var(--gold); letter-spacing: 2px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; }
+.secTitle::before { content: '◈ '; color: var(--gold-dim); }
+.secText { color: var(--text); line-height: 1.8; font-size: .9em; margin-bottom: 14px; }
+
+/* Dice */
+.diceGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 16px; }
+.diceCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; text-align: center; }
+.diceD20 { border-color: var(--gold); }
+.diceName { font-size: 1.4em; font-weight: bold; color: var(--gold); margin-bottom: 4px; }
+.diceDesc { font-size: .72em; color: var(--gold-dim); }
+
+/* Attributes */
+.attrList { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; overflow: hidden; margin-top: 14px; }
+.attrRow { display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: start; padding: 14px 20px; border-bottom: 1px solid var(--bg3); }
+.attrRow:last-child { border-bottom: none; }
+.attrName { font-size: .88em; font-weight: bold; }
+.attrBadge { display: inline-block; font-size: .65em; padding: 2px 6px; border-radius: 4px; background: var(--bg3); border: 1px solid var(--border); color: var(--gold-dim); margin-left: 4px; }
+.attrDesc { font-size: .8em; color: var(--text); line-height: 1.55; }
+
+/* Skill levels */
+.levelCards { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+.levelCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; font-size: .8em; color: var(--text-dim); display: flex; flex-direction: column; gap: 4px; }
+.levelBonus { font-size: 1.1em; color: var(--green); font-style: italic; }
+
+/* Skills table */
+.skillTable { width: 100%; border-collapse: collapse; font-size: .82em; }
+.skillTable th { text-align: left; padding: 8px 12px; background: var(--bg3); color: var(--gold-dim); border-bottom: 1px solid var(--border); }
+.skillTable td { padding: 8px 12px; border-bottom: 1px solid var(--bg3); color: var(--text); }
+.skillTable tr:hover td { background: rgba(201,162,39,.04); }
+.skillAttr { display: inline-block; font-size: .75em; padding: 2px 7px; border-radius: 10px; border: 1px solid; }
+
+/* Money */
+.moneyGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 10px; margin-top: 14px; }
+.moneyCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; text-align: center; }
+.moneyCode { font-size: 1.3em; font-weight: bold; margin-bottom: 4px; }
+.moneyName { font-size: .75em; color: var(--text-dim); margin-bottom: 6px; }
+.moneyDesc { font-size: .78em; color: var(--text); line-height: 1.4; }
+.moneyRate { margin-top: 12px; padding: 10px 14px; background: var(--bg3); border-radius: 6px; font-size: .8em; color: var(--text-dim); }
+
+/* Stats */
+.statCards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; }
+.statCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; }
+.statName { font-size: .85em; font-weight: bold; color: var(--gold); margin-bottom: 6px; }
+.statFormula { font-size: .8em; color: var(--green); font-family: monospace; padding: 5px 8px; background: rgba(74,154,90,.08); border-radius: 4px; border: 1px solid rgba(74,154,90,.2); margin-bottom: 8px; }
+.statDesc { font-size: .76em; color: var(--text-dim); line-height: 1.5; }
+
+/* Crit / Advantage */
+.critGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.critCard { background: var(--card-bg); border-radius: 8px; padding: 18px; }
+.critHit  { border: 1px solid var(--gold); }
+.critFail { border: 1px solid var(--red); }
+.critTitle { font-size: .95em; font-weight: bold; margin-bottom: 10px; }
+.critHit .critTitle { color: var(--gold); }
+.critFail .critTitle { color: var(--red); }
+.critTrigger { font-size: .8em; padding: 6px 10px; border-radius: 5px; margin-bottom: 10px; }
+.critHit  .critTrigger { background: rgba(201,162,39,.1); color: var(--gold-dim); }
+.critFail .critTrigger { background: rgba(204,68,68,.1); color: var(--red); }
+.critText { font-size: .78em; color: var(--text); line-height: 1.55; }
+
+/* Rest */
+.restGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.restCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 18px; }
+.restTitle { font-size: .95em; font-weight: bold; color: var(--gold); margin-bottom: 10px; }
+.restRecovery { background: rgba(74,154,90,.08); border: 1px solid rgba(74,154,90,.2); border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; font-size: .8em; color: var(--green); line-height: 1.8; }
+.restDesc { font-size: .78em; color: var(--text-dim); }
+
+/* Conditions */
+.condGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 10px; }
+.condCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 7px; padding: 14px; }
+.condName { font-size: .88em; font-weight: bold; color: var(--gold); margin-bottom: 6px; }
+.condEffect { font-size: .78em; color: var(--text); line-height: 1.5; margin-bottom: 4px; }
+.condSave { font-size: .72em; color: var(--blue); font-style: italic; }
+
+/* Actions */
+.actionList { display: flex; flex-direction: column; gap: 8px; }
+.actionItem { display: grid; grid-template-columns: 150px 1fr; gap: 14px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 7px; padding: 14px; }
+.actionLabel { font-size: .85em; font-weight: bold; color: var(--gold); margin-bottom: 4px; }
+.actionBadge { display: inline-block; font-size: .65em; padding: 2px 7px; border-radius: 10px; }
+.badge_green  { background: rgba(74,154,90,.15); border: 1px solid var(--green); color: var(--green); }
+.badge_blue   { background: rgba(74,127,196,.15); border: 1px solid var(--blue); color: var(--blue); }
+.badge_gold   { background: rgba(201,162,39,.1); border: 1px solid var(--gold-dim); color: var(--gold-dim); }
+.actionDesc { font-size: .8em; color: var(--text); line-height: 1.55; }
+
+/* Attacks */
+.attackCards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 12px; }
+.attackCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; }
+.attackName { font-size: .95em; font-weight: bold; color: var(--gold); margin-bottom: 6px; }
+.attackFormula { font-size: .78em; color: var(--green); margin-bottom: 8px; font-style: italic; }
+.attackDesc { font-size: .79em; color: var(--text); line-height: 1.55; }
+
+@media (max-width: 700px) {
+  .tabs { padding: 0 16px; }
+  .wrap { padding: 30px 16px 60px; }
+  .critGrid, .restGrid { grid-template-columns: 1fr; }
+  .actionItem { grid-template-columns: 1fr; }
+  .attrRow { grid-template-columns: 1fr; }
+}

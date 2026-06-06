@@ -1,0 +1,80 @@
+.nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(15, 12, 10, .96);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+}
+
+.brand {
+  font-size: 1.25em;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-shadow: 0 0 18px rgba(201,162,39,.35);
+  white-space: nowrap;
+}
+.brand span {
+  font-size: .65em; color: var(--text-dim);
+  display: block; letter-spacing: 1px;
+}
+
+.links {
+  display: flex; align-items: center; gap: 4px; list-style: none;
+}
+.links li { position: relative; }
+
+.links a, .dropBtn {
+  display: block;
+  padding: 8px 14px;
+  color: var(--text-dim);
+  border: none; background: none;
+  font-family: inherit; font-size: .88em;
+  letter-spacing: .5px; border-radius: 5px;
+  cursor: pointer; transition: color .2s, background .2s;
+}
+.links a:hover, .dropBtn:hover { color: var(--gold); background: rgba(201,162,39,.08); }
+.links a.active { color: var(--gold); }
+
+/* Dropdown */
+.dropdown { position: relative; }
+.dropBtn { display: flex; align-items: center; gap: 5px; }
+.dropBtn::after {
+  content: '▾'; font-size: .7em; color: var(--gold-dim); transition: transform .2s;
+}
+.dropdown:hover .dropBtn::after { transform: rotate(-180deg); }
+
+.dropMenu {
+  position: absolute; top: calc(100% + 4px); right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border); border-radius: 8px;
+  min-width: 200px; overflow: hidden;
+  opacity: 0; visibility: hidden; transform: translateY(-8px);
+  transition: opacity .2s, transform .2s, visibility .2s;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+.dropdown:hover .dropMenu { opacity: 1; visibility: visible; transform: translateY(0); }
+
+.dropMenu a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px;
+  color: var(--text-dim); font-size: .85em;
+  border-bottom: 1px solid var(--bg3);
+  transition: background .15s, color .15s;
+}
+.dropMenu a:last-child { border-bottom: none; }
+.dropMenu a:hover { background: var(--bg3); color: var(--gold); }
+.dropMenu a.disabled { opacity: .5; pointer-events: none; }
+
+.dmIcon { font-size: 1.1em; }
+.dmInfo { display: flex; flex-direction: column; gap: 2px; }
+.dmTitle { color: var(--text); font-size: .9em; }
+.dmDesc { font-size: .75em; color: var(--text-dim); }
+
+@media (max-width: 700px) {
+  .nav { padding: 0 16px; }
+  .brand span { display: none; }
+  .links a, .dropBtn { padding: 8px 10px; font-size: .8em; }
+}

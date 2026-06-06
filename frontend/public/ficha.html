@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚔ Reino Mágico — Criador de Personagem</title>
+<style>
+:root{--bg:#0f0c0a;--bg2:#1a1510;--bg3:#241d14;--border:#4a3820;--gold:#c9a227;--gold-dim:#8a6d1a;--text:#e8d9b8;--text-dim:#9a8870;--card-bg:#1e1710;--card-border:#3a2e1e;--sel:#2a2008;--green:#4a9a5a;--red:#c44;--blue:#4a7fc4;--purple:#8a4ac4;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;min-height:100vh;background-image:radial-gradient(ellipse at center,#1a130a 0%,#080503 100%);}
+#app{max-width:1100px;margin:0 auto;padding:16px;}
+header{text-align:center;padding:16px 0 8px;font-size:1.6em;letter-spacing:3px;color:var(--gold);text-shadow:0 0 20px rgba(201,162,39,.4);border-bottom:2px solid var(--border);margin-bottom:16px;}
+.steps-bar{display:flex;justify-content:center;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.sp{padding:5px 12px;border-radius:16px;border:1px solid var(--border);font-size:.75em;color:var(--text-dim);background:var(--bg2);}
+.sp.active{border-color:var(--gold);color:var(--gold);background:var(--sel);}
+.sp.done{border-color:var(--green);color:var(--green);}
+h2{font-size:1.2em;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:14px;letter-spacing:1px;}
+h3{font-size:.95em;color:var(--gold);margin-bottom:6px;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px;}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:12px;cursor:pointer;transition:all .2s;}
+.card:hover{border-color:var(--gold-dim);background:#221c12;}
+.card.selected{border-color:var(--gold);background:var(--sel);box-shadow:0 0 12px rgba(201,162,39,.2);}
+.card-title{font-size:.95em;font-weight:bold;color:var(--gold);margin-bottom:4px;}
+.card-sub{font-size:.75em;color:var(--text-dim);margin-bottom:6px;}
+.card-body{font-size:.78em;color:var(--text);line-height:1.4;}
+.card-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
+.tag{font-size:.68em;padding:2px 6px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:20px;padding-top:14px;border-top:1px solid var(--border);}
+.btn{padding:9px 20px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-family:inherit;font-size:.88em;transition:all .2s;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn.primary{background:var(--gold-dim);border-color:var(--gold);color:#1a1000;font-weight:bold;}
+.btn.primary:hover{background:var(--gold);}
+.btn:disabled{opacity:.4;cursor:default;}
+.attrs-wrap{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;justify-content:center;}
+.attr-box{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:12px 16px;text-align:center;min-width:100px;}
+.attr-box.key-attr{border-color:var(--gold);}
+.attr-name{font-size:.78em;color:var(--text-dim);margin-bottom:2px;}
+.attr-abbr{font-size:.68em;color:var(--gold-dim);}
+.attr-ctrl{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;}
+.attr-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-size:1em;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.attr-btn:hover{border-color:var(--gold);color:var(--gold);}
+.attr-val{font-size:1.5em;color:var(--gold);min-width:28px;}
+.pts-box{text-align:center;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:14px;font-size:.88em;}
+.pts-box b{color:var(--gold);font-size:1.2em;}
+.stats-mini{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.stat-chip{padding:5px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:.8em;}
+.stat-chip span{color:var(--gold);font-weight:bold;}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;align-items:center;}
+.fl{font-size:.75em;color:var(--text-dim);white-space:nowrap;}
+.fbtn{padding:3px 9px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text-dim);cursor:pointer;font-size:.72em;transition:all .2s;}
+.fbtn:hover{border-color:var(--gold-dim);}
+.fbtn.on{border-color:var(--gold);color:var(--gold);background:var(--sel);}
+.search{padding:5px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:inherit;font-size:.82em;width:180px;}
+.search:focus{outline:none;border-color:var(--gold);}
+.counter{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.cnt-badge{padding:4px 10px;border-radius:10px;border:1px solid var(--border);font-size:.8em;color:var(--text-dim);}
+.cnt-badge.full{border-color:var(--gold);color:var(--gold);}
+.cnt-badge.extra{border-color:var(--purple);color:var(--purple);}
+.spells-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;max-height:480px;overflow-y:auto;padding:4px;}
+.sc{background:var(--card-bg);border:1px solid var(--card-border);border-radius:7px;padding:10px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;height:210px;}
+.sc:hover{border-color:var(--gold-dim);background:#221c12;}
+.sc.selected{border-color:var(--gold);background:var(--sel);}
+.sc.extra-selected{border-color:var(--purple);background:#1a1025;}
+.sc-name{font-weight:bold;color:var(--gold);font-size:.9em;margin-bottom:4px;flex-shrink:0;}
+.sc-meta{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;flex-shrink:0;}
+.sc-desc{font-size:.72em;color:var(--text);line-height:1.4;flex:1;overflow-y:auto;padding-right:4px;}
+.sc-desc::-webkit-scrollbar{width:4px;}
+.sc-desc::-webkit-scrollbar-track{background:transparent;}
+.sc-desc::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.sc-desc::-webkit-scrollbar-thumb:hover{background:var(--gold-dim);}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:14px;}
+.skill-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;background:var(--card-bg);border:1px solid var(--card-border);font-size:.82em;}
+.skill-name{flex:1;}
+.skill-lv{display:flex;gap:3px;}
+.lbtn{padding:2px 5px;border-radius:3px;border:1px solid var(--border);background:var(--bg3);color:var(--text-dim);cursor:pointer;font-size:.68em;transition:all .2s;}
+.lbtn:hover{border-color:var(--gold-dim);}
+.lbtn.on{border-color:var(--gold);color:var(--gold);background:var(--sel);}
+.lbtn.cls{border-color:var(--green);color:var(--green);}
+.skill-sv{width:28px;text-align:right;font-size:.82em;color:var(--gold);}
+.fg{margin-bottom:12px;}
+.fl2{display:block;font-size:.82em;color:var(--text-dim);margin-bottom:4px;}
+.finput{width:100%;padding:7px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:inherit;font-size:.88em;}
+.finput:focus{outline:none;border-color:var(--gold);}
+textarea.finput{min-height:70px;resize:vertical;}
+select.finput option{background:var(--bg2);}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;max-height:480px;overflow-y:auto;padding:4px;}
+.tc{background:var(--card-bg);border:1px solid var(--card-border);border-radius:7px;padding:10px;cursor:pointer;transition:all .2s;}
+.tc:hover{border-color:var(--gold-dim);background:#221c12;}
+.tc.selected{border-color:var(--gold);background:var(--sel);}
+.tc-name{font-weight:bold;color:var(--gold);font-size:.88em;margin-bottom:4px;}
+.tc-desc{font-size:.75em;color:var(--text);line-height:1.35;}
+.tc-bonus{font-size:.72em;color:#7ad07a;margin-top:3px;font-style:italic;}
+.sheet{background:var(--bg2);border:2px solid var(--border);border-radius:10px;padding:20px;}
+.sheet-head{text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid var(--border);}
+.sh-name{font-size:1.6em;color:var(--gold);}
+.sh-sub{color:var(--text-dim);font-size:.9em;margin-top:3px;}
+.sh-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.sh-sec{margin-bottom:12px;border:1px solid var(--border);border-radius:5px;overflow:hidden;}
+.sh-stitle{background:var(--bg3);padding:5px 10px;font-size:.8em;color:var(--gold);border-bottom:1px solid var(--border);letter-spacing:1px;}
+.sh-sbody{padding:8px 10px;}
+.ab{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--bg3);}
+.ab:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.ab-name{font-size:.88em;color:var(--gold);font-weight:bold;}
+.ab-desc{font-size:.76em;color:var(--text);line-height:1.4;margin-top:2px;}
+.sh-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid var(--bg3);font-size:.82em;}
+.sh-row:last-child{border-bottom:none;}
+.sh-lbl{color:var(--text-dim);}
+.sh-val{color:var(--gold);font-weight:bold;}
+.sh-bonus{font-size:.72em;color:#7ad07a;margin-left:4px;}
+.spell-pill{display:inline-block;margin:2px;padding:3px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:.75em;color:var(--text);}
+.print-btn{position:fixed;bottom:16px;right:16px;padding:10px 20px;background:var(--gold-dim);border:1px solid var(--gold);border-radius:7px;color:#1a1000;cursor:pointer;font-weight:bold;font-size:.88em;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.6);}
+.print-btn:hover{background:var(--gold);}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-dim);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.info-box{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:12px;margin-bottom:12px;font-size:.82em;line-height:1.6;}
+.info-box b{color:var(--gold);}
+.err{color:var(--red);font-size:.82em;margin-top:6px;}
+/* Racial trait picker */
+.trait-picker{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:10px;}
+.trait-picker h3{margin-bottom:8px;}
+.race-group{margin-bottom:10px;}
+.race-group-title{font-size:.82em;color:var(--gold-dim);margin-bottom:4px;padding:4px 8px;background:var(--bg2);border-radius:4px;}
+.trait-opt{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:5px;border:1px solid var(--card-border);background:var(--card-bg);margin-bottom:4px;cursor:pointer;transition:all .2s;font-size:.8em;}
+.trait-opt:hover{border-color:var(--gold-dim);}
+.trait-opt.selected{border-color:var(--gold);background:var(--sel);}
+.trait-opt.disabled{opacity:.4;cursor:default;}
+.trait-opt-name{font-weight:bold;color:var(--gold);white-space:nowrap;}
+.trait-opt-desc{color:var(--text);line-height:1.3;font-size:.95em;}
+.bonus-tag{font-size:.7em;padding:1px 5px;border-radius:6px;border:1px solid var(--green);color:var(--green);white-space:nowrap;}
+@media print{body{background:white!important;color:black!important;}.nav-buttons,.steps-bar,.print-btn{display:none!important;}}
+.race-card-img{width:100%;height:90px;object-fit:cover;border-radius:5px;margin-bottom:6px;display:block;}
+
+/* Dados Raciais */
+.dados-raciais{background:var(--bg3);border:2px solid var(--gold-dim);border-radius:10px;padding:14px;margin:14px 0;}
+.dados-raciais-titulo{font-size:.85em;color:var(--gold);font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.dados-raciais-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.dr-item{background:var(--card-bg);border:1px solid var(--card-border);border-radius:6px;padding:7px 10px;}
+.dr-item.full{grid-column:1/-1;}
+.dr-label{font-size:.65em;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px;}
+.dr-valor{font-size:.82em;color:var(--text);line-height:1.3;}
+.dr-valor b{color:var(--gold);}
+
+/* Tela Inicial */
+.tipo-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:28px;}
+.tipo-titulo{font-size:1.8em;color:var(--gold);letter-spacing:3px;text-align:center;}
+.tipo-subtitulo{color:var(--text-dim);font-size:.9em;text-align:center;}
+.tipo-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px;width:100%;}
+.tipo-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:12px;padding:24px;cursor:pointer;transition:all .25s;text-align:center;}
+.tipo-card:hover{border-color:var(--gold-dim);background:#221c12;transform:translateY(-2px);}
+.tipo-card.ini:hover{border-color:#4a9a5a;}
+.tipo-card .tc-nome{font-size:1.2em;font-weight:bold;color:var(--gold);margin-bottom:8px;}
+.tipo-card.ini .tc-nome{color:#4a9a5a;}
+.tipo-card .tc-icone{font-size:2.5em;margin-bottom:10px;}
+.tipo-card .tc-items{list-style:none;padding:0;margin:10px 0 0;text-align:left;}
+.tipo-card .tc-items li{font-size:.78em;color:var(--text-dim);padding:3px 0;padding-left:14px;position:relative;}
+.tipo-card .tc-items li::before{content:'▸';position:absolute;left:0;color:var(--gold-dim);}
+/* Aprimoramentos */
+.apr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.apr-item{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;}
+.apr-item.locked{opacity:.4;}
+.apr-item.comprado{border-color:var(--gold);}
+.apr-nome{font-size:.85em;font-weight:bold;color:var(--gold);}
+.apr-desc{font-size:.73em;color:var(--text-dim);line-height:1.3;}
+.apr-custo{font-size:.75em;color:var(--gold-dim);}
+.apr-ctrl{display:flex;align-items:center;gap:8px;}
+.apr-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-size:1em;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.apr-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.apr-btn:disabled{opacity:.3;cursor:default;}
+.apr-val{font-size:1.1em;color:var(--gold);min-width:22px;text-align:center;}
+.xp-bar-wrap{background:var(--bg3);border-radius:6px;height:10px;overflow:hidden;margin:6px 0;}
+.xp-bar{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:6px;transition:width .3s;}
+.nivel-lock-badge{font-size:.65em;padding:2px 7px;border-radius:8px;border:1px solid var(--border);color:var(--text-dim);display:inline-block;}
+</style>
+</head>
+<body>
+<div id="db-loading" style="position:fixed;inset:0;background:#0f0c0a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px">
+  <div style="font-size:2em;color:#c9a227;letter-spacing:3px">⚔ REINO MÁGICO ⚔</div>
+  <div style="color:#9a8870;font-size:.9em">Conectando ao banco de dados...</div>
+  <div style="width:40px;height:40px;border:3px solid #4a3820;border-top-color:#c9a227;border-radius:50%;animation:spin .8s linear infinite"></div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+</div>
+<div id="db-error" style="display:none;position:fixed;inset:0;background:#0f0c0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9998;gap:12px;padding:20px;text-align:center">
+  <div style="font-size:1.4em;color:#c9a227">⚔ REINO MÁGICO ⚔</div>
+  <div id="db-error-msg" style="color:#e8d9b8;line-height:1.6;max-width:500px"></div>
+</div>
+<div id="app">
+  <header>⚔ REINO MÁGICO — Criador de Personagem ⚔</header>
+  <div class="steps-bar" id="stepsBar"></div>
+  <div id="content"></div>
+  <div class="nav-buttons">
+    <button class="btn" id="btnPrev" onclick="go(-1)">← Anterior</button>
+    <button class="btn primary" id="btnNext" onclick="go(1)">Próximo →</button>
+  </div>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════
+//  GAME DATA
+// ═══════════════════════════════════════════════════════
+
+let MAGIC_LEVELS = []; // níveis de magia carregados do banco
+
+// ═══════════════════════════════════════════════════════
+//  CONEXÃO COM BANCO DE DADOS
+// ═══════════════════════════════════════════════════════
+async function loadFromDB() {
+  const loadEl = document.getElementById('db-loading');
+  const errEl  = document.getElementById('db-error');
+  try {
+    const resp = await fetch('/api/all');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    SPELLS              = data.spells;
+    TALENTS             = data.talents;
+    CLASSES             = data.classes;
+    RACES               = data.races;
+    KITS                = data.kits;
+    KIT_EQUIP_BONUSES   = data.kit_equip_bonuses;
+    SKILLS              = data.skills;
+    RACE_LANGS          = data.race_langs;
+    FAUNO_ASPECTOS      = data.fauno_aspectos;
+    TRAIT_BONUSES       = data.trait_bonuses;
+    TALENT_STAT_BONUSES = data.talent_stat_bonuses;
+    TALENT_VANTAGENS    = data.talent_vantagens;
+    RACIAL_VANTAGENS    = data.racial_vantagens;
+    TALENT_PREREQS      = data.talent_prereqs;
+    MAGIC_LEVELS        = data.magic_levels;
+    RACIAL_DATA         = data.racial_data || {};
+    ENTITIES            = data.entities    || [];
+
+    if (loadEl) loadEl.style.display = 'none';
+    return true;
+  } catch(e) {
+    if (loadEl) loadEl.style.display = 'none';
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.innerHTML = `<b>⚠ Servidor não encontrado.</b><br>
+        Execute <code>python server.py</code> na pasta "Ficha de Personagem" e<br>
+        acesse <a href="http://localhost:5000" style="color:var(--gold)">http://localhost:5000</a><br>
+        <small style="color:var(--text-dim)">${e.message}</small>`;
+    }
+    return false;
+  }
+}
+let SPELLS   = []; // carregado do banco de dados
+let TALENTS  = []; // carregado do banco de dados
+
+let CLASSES  = {}; // carregado do banco de dados
+
+let RACES    = {}; // carregado do banco de dados
+
+let KITS     = {}; // carregado do banco de dados
+
+let SKILLS   = []; // carregado do banco de dados
+
+// Traços raciais que concedem bônus de atributos derivados
+let TRAIT_BONUSES = {}; // carregado do banco de dados
+
+// Talentos que concedem Vantagem em perícias específicas
+let TALENT_VANTAGENS  = {}; // carregado do banco de dados
+
+// Traços raciais que concedem Vantagem em perícias específicas
+let RACIAL_VANTAGENS  = {}; // carregado do banco de dados
+
+// Bônus numéricos e vantagens concedidos pelos equipamentos do kit
+// Armas Simples (sem proficiência): Adaga, Espada Curta, Martelo de Mão, Bordão, etc.
+// Armas Táticas / Mágicas / Disparo requerem proficiência específica
+let KIT_EQUIP_BONUSES = {}; // carregado do banco de dados
+
+// Pré-requisitos explícitos de talentos
+let TALENT_PREREQS    = {}; // carregado do banco de dados
+
+// Calcula todas as perícias que têm Vantagem (de talentos + traços raciais)
+function getSkillVantagens(){
+  const set=new Set();
+  // De talentos selecionados
+  for(const t of char.talentos){
+    const v=TALENT_VANTAGENS[t];
+    if(v) v.forEach(s=>set.add(s));
+  }
+  // De traços raciais (base + herdados)
+  const r=getRaceData();
+  if(r){
+    r.traits.forEach(t=>{const v=RACIAL_VANTAGENS[t.n];if(v)v.forEach(s=>set.add(s));});
+  }
+  getInheritedTraits().forEach(t=>{const v=RACIAL_VANTAGENS[t.n];if(v)v.forEach(s=>set.add(s));});
+  // Fauno aspecto
+  if(char.raca==='Fauno'&&char.faunoAspecto==='Raposa') set.add('Enganação');
+  // Equipamentos do kit
+  const eq=getEquipBonuses();
+  eq.vantagens.forEach(s=>set.add(s));
+  return set;
+}
+
+function getEquipBonuses(){
+  if(!char.kit||!KIT_EQUIP_BONUSES[char.kit]) return {db:0,skills:{},vantagens:[],items:[]};
+  return KIT_EQUIP_BONUSES[char.kit];
+}
+
+function getCharProficiencies(){
+  const cl=getClassData();
+  const profs=new Set();
+  if(!cl) return profs;
+  const armas=cl.armas;
+  if(armas.includes('Táticas'))  profs.add('Armas Táticas');
+  if(armas.includes('Mágicas'))  profs.add('Armas Mágicas');
+  if(armas.includes('Disparo'))  profs.add('Armas de Disparo');
+  if(armas.includes('Leve'))     profs.add('Armadura Leve');
+  if(armas.includes('Pesada'))   profs.add('Armadura Pesada');
+  if(armas.includes('Escudo'))   profs.add('Escudo');
+  // Traços raciais que concedem proficiência
+  const allTraits=[...(getRaceData()?getRaceData().traits:[]),...getInheritedTraits()];
+  allTraits.forEach(t=>{
+    if(t.n==='Proficiência Inata'){profs.add('Armadura Leve');profs.add('Armadura Pesada');}
+    if(t.n==='Herança Vermelha') {profs.add('Armas Táticas');profs.add('Armadura Leve');}
+  });
+  // Talentos de proficiência
+  if(char.talentos.includes('Proficiência Armadura Leve'))     profs.add('Armadura Leve');
+  if(char.talentos.includes('Proficiência Armadura Pesado'))   profs.add('Armadura Pesada');
+  if(char.talentos.includes('Proficiência Armas de Disparo'))  profs.add('Armas de Disparo');
+  if(char.talentos.includes('Proficiência Armas Mágicas'))     profs.add('Armas Mágicas');
+  if(char.talentos.includes('Proficiência Armas Táticas'))     profs.add('Armas Táticas');
+  if(char.talentos.includes('Proficiência Escudo'))            profs.add('Escudo');
+  return profs;
+}
+
+// Retorna lista de proficiências com sua origem para exibição
+function getProficienciesDisplay(){
+  const cl=getClassData();
+  const r=getRaceData();
+  const list=[];
+  // Armas Simples — todos podem usar
+  list.push({label:'Armas Simples', origem:'universal'});
+  // De classe
+  if(cl&&cl.armas!=='Nenhuma'){
+    cl.armas.split(',').map(s=>s.trim()).forEach(p=>{
+      if(p) list.push({label:p, origem:`Classe: ${char.classe}`});
+    });
+  }
+  // De raça / traços herdados
+  const allTraits=[...(r?r.traits:[]),...getInheritedTraits()];
+  allTraits.forEach(t=>{
+    if(t.n==='Proficiência Inata') {list.push({label:'Armadura Leve',origem:`Traço: ${t.n}`});list.push({label:'Armadura Pesada',origem:`Traço: ${t.n}`});}
+    if(t.n==='Herança Vermelha')  {list.push({label:'Armas Táticas',origem:`Traço: ${t.n}`});list.push({label:'Armadura Leve',origem:`Traço: ${t.n}`});}
+  });
+  // De talentos
+  const talProfMap={'Proficiência Armadura Leve':'Armadura Leve','Proficiência Armadura Pesado':'Armadura Pesada','Proficiência Armas de Disparo':'Armas de Disparo','Proficiência Armas Mágicas':'Armas Mágicas','Proficiência Armas Táticas':'Armas Táticas','Proficiência Escudo':'Escudo'};
+  for(const [tal,prof] of Object.entries(talProfMap)){
+    if(char.talentos.includes(tal)) list.push({label:prof, origem:`Talento: ${tal}`});
+  }
+  // Dedup
+  const seen=new Set();
+  return list.filter(p=>{const k=p.label;if(seen.has(k))return false;seen.add(k);return true;});
+}
+
+function checkTalentPrereq(name){
+  const pre=TALENT_PREREQS[name];
+  if(!pre) return null;
+  if(pre.attr&&getAttr(pre.attr)<pre.min) return `Requer ${pre.label}`;
+  if(pre.pacto){
+    const pactos=['Pacto Ancestral','Pacto Elemental','Pacto Santificado'];
+    if(pactos.filter(p=>p!==name&&char.talentos.includes(p)).length>0) return 'Já possui um pacto ativo';
+  }
+  return null;
+}
+
+function getSpellRequiredLangs(spell){
+  if(!spell||!spell.prereq) return [];
+  const match=spell.prereq.match(/Idioma\s+([A-Za-zÀ-ú]+(?:\s+e\s+[A-Za-zÀ-ú]+)*)/i);
+  if(!match) return [];
+  return match[1].split(/\s+e\s+/i);
+}
+
+function canLearnSpell(spell){
+  const reqLangs=getSpellRequiredLangs(spell);
+  if(!reqLangs.length) return {ok:true,missing:[]};
+  const known=getKnownLangs();
+  const missing=reqLangs.filter(l=>!known.includes(l));
+  return {ok:missing.length===0, missing};
+}
+
+// Bônus de talentos nos atributos derivados
+let TALENT_STAT_BONUSES = {}; // carregado do banco de dados
+
+
+// ═══════════════════════════════════════════════════════
+//  UPGRADES — Capítulo X (Aprimoramentos)
+// ═══════════════════════════════════════════════════════
+const UPGRADES = [
+  {id:'vidaExtra',      nome:'Vida Extra',                      desc:'Acrescenta +10 pontos de vida máxima.',         custo:200, max:null,   tipo:'stat'},
+  {id:'atributos',      nome:'Atributo Extra',                  desc:'Aumenta atributos disponíveis para distribuir. Limite 5 por atributo.', custo:500, max:null, tipo:'stat'},
+  {id:'novasPericias',  nome:'Nova Perícia Básica',             desc:'Concede uma nova perícia no nível básico (+2).', custo:200, max:null,   tipo:'stat'},
+  {id:'periciaInt',     nome:'Aprimoramento Intermediário',     desc:'Eleva uma perícia básica para intermediária (+5).', custo:300, max:null, tipo:'stat'},
+  {id:'periciaAvancado',nome:'Aprimoramento Avançado',          desc:'Eleva uma perícia intermediária para avançada (+10).', custo:500, max:null, tipo:'stat'},
+  {id:'proficiencia',   nome:'Ponto de Proficiência',           desc:'Aumenta a proficiência máxima. Limite: 9 pontos.', custo:400, max:7,   tipo:'stat'},
+  {id:'mlElite',        nome:'Progressão Mágica: Elite',        desc:'Desbloqueia magias nível Elite (4). Requer Menor primeiro.', custo:300, max:1, tipo:'magic', nivel:4},
+  {id:'mlMaior',        nome:'Progressão Mágica: Maior',        desc:'Desbloqueia magias nível Maior (5). Requer Elite primeiro.', custo:500, max:1, tipo:'magic', nivel:5},
+  {id:'mlAvancado',     nome:'Progressão Mágica: Avançado',     desc:'Desbloqueia magias nível Avançado (6). Requer Maior primeiro.', custo:800, max:1, tipo:'magic', nivel:6},
+];
+
+function getMaxMagicLevel(){
+  if(!char.tipo || char.tipo==='inicial') return 3;
+  const apr = char.aprimoramentos;
+  if(apr.magicLevel>=3) return 6;
+  if(apr.magicLevel>=2) return 5;
+  if(apr.magicLevel>=1) return 4;
+  return 3;
+}
+
+function getXPGasto(){
+  if(!char.aprimoramentos) return 0;
+  const apr = char.aprimoramentos;
+  let total = 0;
+  total += apr.vidaExtra       * 200;
+  total += apr.atributos       * 500;
+  total += apr.novasPericias   * 200;
+  total += apr.periciaInt      * 300;
+  total += apr.periciaAvancado * 500;
+  total += apr.proficiencia    * 400;
+  const ml = apr.magicLevel||0;
+  if(ml>=1) total+=300;
+  if(ml>=2) total+=500;
+  if(ml>=3) total+=800;
+  return total;
+}
+
+function getXPRestante(){ return (char.xp||0) - getXPGasto(); }
+
+function getStepNames(){
+  const base=['Informações','Classe','Raça','Kit Inicial','Atributos','Perícias','Talentos'];
+  if(needsEntidadeStep()) base.push('Entidade');
+  base.push('Idiomas','Magias','Ficha Final');
+  if(char.tipo==='avancado') base.unshift('Aprimoramentos');
+  return base;
+}
+
+const STEP_NAMES = ['Informações','Classe','Raça','Kit Inicial','Atributos','Perícias','Idiomas','Magias','Talentos','Ficha Final'];
+const ATTR_NAMES = {FOR:'Força',DES:'Destreza',VIT:'Vitalidade',INT:'Intelecto',PRE:'Presença'};
+const ELEM_COLORS = {Fogo:'#c44',Água:'#4a7fc4',Terra:'#8a6d1a',Vento:'#4a9a5a',Trovão:'#8a4ac4',Arcano:'#7a7aca',Caótico:'#c44',Sagrado:'#c9a227',Sagrada:'#c9a227',Negativo:'#888'};
+const ENTITY_ICONS = {Elemental:'🌿',Caótica:'🌀',Sagrada:'✨'};
+const RACE_IMAGES = {
+  'Anão':      '/img/Ra%C3%A7as/An%C3%B5es.png',
+  'Celestial': '/img/Ra%C3%A7as/Celestiais.png',
+  'Draconato': '/img/Ra%C3%A7as/Draconianos.png',
+  'Elfo':      '/img/Ra%C3%A7as/Elfos.png',
+  'Fauno':     '/img/Ra%C3%A7as/Faunos.png',
+  'Feérico':   '/img/Ra%C3%A7as/Feerico.png',
+  'Humano':    '/img/Ra%C3%A7as/HUmanos.png',
+  'Híbrido':   '/img/Ra%C3%A7as/Hibrido.png',
+  'Infernal':  '/img/Ra%C3%A7as/Infernais.png',
+  'Maculado':  '/img/Ra%C3%A7as/Maculados.png'
+};
+
+function needsEntidadeStep(){
+  const cl=char.classe;
+  if(cl==='Espiritualista') return true;
+  if(cl==='Bruxo') return true;
+  if(char.talentos.includes('Pacto Ancestral')) return true;
+  if(char.talentos.includes('Pacto Elemental')) return true;
+  if(char.talentos.includes('Pacto Santificado')) return true;
+  return false;
+}
+
+function getEntidadesDisponiveis(){
+  if(!ENTITIES||ENTITIES.length===0) return [];
+  const cl=char.classe;
+  let tipos=[];
+  if(cl==='Espiritualista'){
+    if(char.espiritualistaChoice==='Antigas') tipos=['Elemental'];
+    else if(char.espiritualistaChoice==='Sagradas') tipos=['Sagrada'];
+    else return [];
+  } else if(cl==='Bruxo'){
+    if(char.talentos.includes('Pacto Elemental'))   tipos=['Elemental'];
+    else if(char.talentos.includes('Pacto Santificado')) tipos=['Sagrada'];
+    else tipos=['Caótica'];
+  } else {
+    if(char.talentos.includes('Pacto Ancestral'))    tipos.push('Caótica');
+    if(char.talentos.includes('Pacto Elemental'))    tipos.push('Elemental');
+    if(char.talentos.includes('Pacto Santificado'))  tipos.push('Sagrada');
+  }
+  return ENTITIES.filter(e=>tipos.includes(e.tipo));
+}
+const CAT_COLORS  = {Ofensiva:'#c44',Defensiva:'#4a7fc4',Controle:'#8a4ac4',Invocação:'#4a9a5a',Encantamento:'#c9a227',Utilidade:'#7a7aca'};
+
+// Todos os idiomas disponíveis no sistema
+const ALL_LANGS = ['Abissal','Anão','Arcano','Celestial','Dracônico','Élfico','Feérico','Gigante','Infernal','Naga','Orc','Primordial','Selvagem','Silvestre'];
+// Idiomas fixos e extras por raça (Comum é sempre conhecido)
+let RACE_LANGS        = {}; // carregado do banco de dados
+
+// Aspectos Bestiais do Fauno — nome completo, bônus ativo e descrição de ativação
+let FAUNO_ASPECTOS    = {}; // carregado do banco de dados
+let RACIAL_DATA       = {}; // dados raciais do livro
+let ENTITIES          = []; // entidades e divindades (carregado do banco)
+
+// ═══════════════════════════════════════════════════════
+
+function getMagicLevelName(nivel) {
+  const ml = MAGIC_LEVELS.find(l => l.nivel === nivel);
+  return ml ? ml.nome : `Nv${nivel}`;
+}
+function getMagicLevelColor(nivel) {
+  const ml = MAGIC_LEVELS.find(l => l.nivel === nivel);
+  return ml ? ml.cor : 'var(--border)';
+}
+function getMagicLevelNome(nivel) { return getMagicLevelName(nivel); }
+
+//  STATE
+// ═══════════════════════════════════════════════════════
+let step = 0;
+let char = {
+  name:'', backstory:'', aparencia:'', sexo:'',
+  classe:null, raca:null, kit:null,
+  attrs:{FOR:0,DES:0,VIT:0,INT:0,PRE:0},
+  pericias:{},
+  magias:[],        // base + truque spells
+  magiasExtra:[],   // grimório / racial extra spells
+  talentos:[],
+  idiomas:[],       // idiomas extras escolhidos pelo jogador
+  espiritualistaChoice:null,
+  entidade:null,    // nome da entidade aliada (1 por ficha)
+  tipo:null,
+  xp:0,
+  aprimoramentos:{
+    vidaExtra:0, atributos:0, novasPericias:0,
+    periciaInt:0, periciaAvancado:0, proficiencia:0,
+    magicLevel:0  // 0=Menor(3), 1=Elite(4), 2=Maior(5), 3=Avancado(6)
+  },
+  faunoAspecto:'', draconatoElem:'',
+  hibridoTraits:[],         // [{raceName, traitIdx}] — max 2, raças diferentes, no Maculado/Celestial
+  hibridoFaunoAspecto:'',   // aspecto bestial se Fauno for uma das origens do Híbrido
+  maculadoTrait:null,       // {raceName, traitIdx} — 1 only, no Híbrido/Celestial
+  maculadoFaunoAspecto:'',  // aspecto bestial se Maculado herdou traço do Fauno
+};
+
+// ═══════════════════════════════════════════════════════
+//  CALCULATIONS
+// ═══════════════════════════════════════════════════════
+const PROF_BASE = 2;
+function getPROF(){ return PROF_BASE + ((char.aprimoramentos&&char.aprimoramentos.proficiencia)||0); }
+const PROF = 2;
+
+function getAttr(a){return char.attrs[a]||0;}
+function getClassData(){return char.classe?CLASSES[char.classe]:null;}
+function getRaceData(){return char.raca?RACES[char.raca]:null;}
+
+// Returns inherited traits for Híbrido / Maculado
+function getInheritedTraits(){
+  let out=[];
+  if(char.raca==='Híbrido'){
+    for(const {raceName,traitIdx} of char.hibridoTraits){
+      const r=RACES[raceName];
+      if(r&&r.traits[traitIdx]) out.push(r.traits[traitIdx]);
+    }
+  }
+  if(char.raca==='Maculado'&&char.maculadoTrait){
+    const {raceName,traitIdx}=char.maculadoTrait;
+    const r=RACES[raceName];
+    if(r&&r.traits[traitIdx]) out.push(r.traits[traitIdx]);
+  }
+  return out;
+}
+
+function getTalentBonuses(){
+  const b={vida:0,mana:0,db:0,cd:0,lmt:0,spells:0};
+  for(const t of char.talentos){
+    const bns=TALENT_STAT_BONUSES[t];
+    if(bns){
+      if(bns.vida) b.vida+=bns.vida;
+      if(bns.mana) b.mana+=bns.mana;
+      if(bns.db)   b.db  +=bns.db;
+      if(bns.cd)   b.cd  +=bns.cd;
+      if(bns.lmt)  b.lmt +=bns.lmt;
+    }
+    if(t==='Lista de Magias Expandida') b.spells+=3;
+    if(t==='Reserva Arcana') b.mana+=getAttr('PRE'); // +PRE extra mana pool
+  }
+  return b;
+}
+
+function getRacialBonuses(){
+  const b={vida:0,mana:0,db:0,cd:0,lmt:0};
+  if(!char.raca) return b;
+  const r=getRaceData();
+  if(!r) return b;
+
+  // Fixed racial bonuses already NOT in bMana (they're calculated separately):
+  // Draconato → Escamas Naturais +1 DB
+  if(char.raca==='Draconato') b.db+=1;
+  // Maculado → Fluxo Arcano +2 LMT
+  if(char.raca==='Maculado') b.lmt+=2;
+
+  // Inherited traits (Híbrido / Maculado selections)
+  for(const t of getInheritedTraits()){
+    const bns=TRAIT_BONUSES[t.n];
+    if(bns){
+      if(bns.vida) b.vida+=bns.vida;
+      if(bns.mana) b.mana+=bns.mana;
+      if(bns.db)   b.db  +=bns.db;
+      if(bns.cd)   b.cd  +=bns.cd;
+      if(bns.lmt)  b.lmt +=bns.lmt;
+    }
+  }
+  return b;
+}
+
+function calcVida(){
+  const cl=getClassData(); if(!cl)return 10;
+  const tb=getTalentBonuses();
+  const rb=getRacialBonuses();
+  const aprVida=(char.aprimoramentos&&char.aprimoramentos.vidaExtra||0)*10;
+  return 10+getAttr('VIT')+cl.vida+tb.vida+rb.vida+aprVida;
+}
+function calcMana(){
+  const cl=getClassData(); if(!cl)return 0;
+  const r=getRaceData();
+  const tb=getTalentBonuses();
+  const rb=getRacialBonuses();
+  return getAttr('PRE')*2+cl.mana+(r?r.bMana:0)+tb.mana+rb.mana;
+}
+function calcDB(){
+  const rb=getRacialBonuses();
+  const eq=getEquipBonuses();
+  return 10+getAttr('DES')+rb.db+getTalentBonuses().db+eq.db;
+}
+function calcCD(){
+  const cl=getClassData(); if(!cl)return 8;
+  const foco=char.pericias['Foco']||0;
+  return 8+getAttr(cl.atrib)+foco+getTalentBonuses().cd+getRacialBonuses().cd;
+}
+function calcLMT(){
+  const rb=getRacialBonuses();
+  const tb=getTalentBonuses();
+  return PROF+2+rb.lmt+tb.lmt; // Prof + base + bonuses
+}
+
+function totalAttrPoints(){
+  const r=getRaceData();
+  const aprAttr=(char.aprimoramentos&&char.aprimoramentos.atributos)||0;
+  return 7+(r?r.bAttrExtra:0)+aprAttr;
+}
+function usedAttrPoints(){return Object.values(char.attrs).reduce((a,b)=>a+b,0);}
+function remainingPoints(){return totalAttrPoints()-usedAttrPoints();}
+
+function getSpellAccess(){
+  const cl=getClassData(); if(!cl)return ['Truque','Magias Iniciais'];
+  let access=[...cl.spellAccess];
+  const r=getRaceData();
+  if(cl.espiritualista&&char.espiritualistaChoice==='Antigas') access.push('Magias Antigas');
+  if(cl.espiritualista&&char.espiritualistaChoice==='Sagradas') access.push('Magias Sagradas');
+  if(r&&r.extraSpellType&&!access.includes(r.extraSpellType)) access.push(r.extraSpellType);
+  if(char.raca==='Celestial'&&!access.includes('Magias Sagradas')) access.push('Magias Sagradas');
+  if(char.talentos.includes('Pacto Ancestral')&&!access.includes('Magias de Pacto')) access.push('Magias de Pacto');
+  if(char.talentos.includes('Pacto Elemental')&&!access.includes('Magias Antigas')) access.push('Magias Antigas');
+  if(char.talentos.includes('Pacto Santificado')&&!access.includes('Magias Sagradas')) access.push('Magias Sagradas');
+  return access;
+}
+
+// Base spells = 2 + INT; truques = 2; extra slots are additional (Grimório, racial)
+function getSpellSlots(){
+  const cl=getClassData();
+  const tb=getTalentBonuses();
+  const r=getRaceData();
+  const intVal=getAttr('INT');
+  return {
+    base: 2+intVal,          // Magias Iniciais/Pacto/Antigas/Sagradas
+    truques: 2,               // Truques separados
+    extra: cl?cl.extraSlots:0, // Mago +3 Grimório (adicional)
+    extraType: cl?cl.extraSlotType:null,
+    extraSpells: tb.spells,   // de talentos (Lista de Magias Expandida)
+    racialExtra: r&&r.extraSpellType?{type:r.extraSpellType,count:r.extraSpellTypeCount||1}:null,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function go(dir){
+  const err=validateStep();
+  if(dir>0&&err){showErr(err);return;}
+  if(dir<0&&step===0){char.tipo=null;render();return;}
+  step=Math.max(0,Math.min(getStepNames().length-1,step+dir));
+  render();
+}
+function showErr(msg){
+  let e=document.getElementById('stepErr');
+  if(!e){e=document.createElement('div');e.id='stepErr';e.className='err';document.getElementById('content').appendChild(e);}
+  e.textContent='⚠ '+msg;
+  setTimeout(()=>{if(e)e.textContent='';},3500);
+}
+function validateStep(){
+  const sn=getStepNames();
+  const s={
+    apr:      sn.indexOf('Aprimoramentos'),
+    info:     sn.indexOf('Informações'),
+    cls:      sn.indexOf('Classe'),
+    raca:     sn.indexOf('Raça'),
+    kit:      sn.indexOf('Kit Inicial'),
+    attr:     sn.indexOf('Atributos'),
+    entidade: sn.indexOf('Entidade'),
+  };
+  if(step===s.apr&&char.tipo==='avancado'&&getXPRestante()<0)
+    return 'XP gasto excede o disponível. Ajuste os aprimoramentos.';
+  if(step===s.cls&&!char.classe)return 'Escolha uma classe para continuar.';
+  if(step===s.raca&&!char.raca) return 'Escolha uma raça para continuar.';
+  if(step===s.raca&&char.raca==='Híbrido'&&char.hibridoTraits.length<2) return 'Escolha 2 traços da Herança Dupla.';
+  if(step===s.kit&&!char.kit)  return 'Escolha um kit inicial para continuar.';
+  if(step===s.attr&&remainingPoints()>0)return `Distribua os ${remainingPoints()} pontos restantes.`;
+  if(step===s.entidade&&s.entidade>=0){
+    const disponiveis=getEntidadesDisponiveis();
+    if(disponiveis.length===0&&char.classe==='Espiritualista'&&!char.espiritualistaChoice)
+      return 'Escolha o tipo de vínculo espiritual na etapa de Classe antes de escolher a entidade.';
+    if(disponiveis.length>0&&!char.entidade)
+      return 'Escolha uma entidade aliada para continuar.';
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER MAIN
+// ═══════════════════════════════════════════════════════
+function render(){
+  if(!char.tipo){renderTipoPersonagem();return;}
+  const STEP_NAMES_CUR=getStepNames();
+  document.getElementById('stepsBar').innerHTML=
+    STEP_NAMES_CUR.map((n,i)=>`<div class="sp${i===step?' active':i<step?' done':''}">${n}</div>`).join('');
+  const fns=[renderInfo,renderClasse,renderRaca,renderKit,renderAtributos,renderPericias,renderTalentos];
+  if(needsEntidadeStep()) fns.push(renderEntidade);
+  fns.push(renderIdiomas,renderMagias,renderFicha);
+  if(char.tipo==='avancado') fns.unshift(renderAprimoramentos);
+  document.getElementById('content').innerHTML='';
+  fns[step]();
+  document.getElementById('btnPrev').disabled=step===0;
+  const last=step===getStepNames().length-1;
+  const nb=document.getElementById('btnNext');
+  nb.style.display=last?'none':'';
+  nb.textContent=step===getStepNames().length-2?'Ver Ficha →':'Próximo →';
+  let pb=document.getElementById('printBtn');
+  if(last){if(!pb){pb=document.createElement('button');pb.id='printBtn';pb.className='print-btn';pb.textContent='💾 Salvar como PDF';pb.title='Abre diálogo de impressão — escolha "Salvar como PDF" no navegador';pb.onclick=()=>window.print();document.body.appendChild(pb);}}
+  else if(pb)pb.remove();
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  TELA INICIAL — Escolha do Tipo de Personagem
+// ═══════════════════════════════════════════════════════
+function renderTipoPersonagem(){
+  document.getElementById('stepsBar').innerHTML='';
+  document.getElementById('btnPrev').disabled=true;
+  document.getElementById('btnNext').style.display='none';
+  let pb=document.getElementById('printBtn'); if(pb)pb.remove();
+  set(`<div class="tipo-screen">
+    <div>
+      <div class="tipo-titulo">⚔ REINO MÁGICO ⚔</div>
+      <div class="tipo-subtitulo" style="margin-top:6px">Criador de Personagem — Como deseja iniciar?</div>
+    </div>
+    <div class="tipo-cards">
+      <div class="tipo-card ini" onclick="escolherTipo('inicial')">
+        <div class="tc-icone">🌱</div>
+        <div class="tc-nome">Personagem Inicial</div>
+        <div style="font-size:.8em;color:var(--text-dim);margin-bottom:8px">Criação padrão — sem experiência acumulada</div>
+        <ul class="tc-items">
+          <li>Acesso a magias até Nível Menor (3)</li>
+          <li>Atributos base da criação</li>
+          <li>Recomendado para novos aventureiros</li>
+        </ul>
+      </div>
+      <div class="tipo-card" onclick="escolherTipo('avancado')">
+        <div class="tc-icone">⚡</div>
+        <div class="tc-nome">Personagem Avançado</div>
+        <div style="font-size:.8em;color:var(--text-dim);margin-bottom:8px">Personagem com pontos de aprimoramento acumulados</div>
+        <ul class="tc-items">
+          <li>Insira sua quantidade de XP</li>
+          <li>Desbloqueie magias acima de Menor</li>
+          <li>Melhore atributos, perícias e proficiência</li>
+          <li>Regras do Capítulo X — Evolução</li>
+        </ul>
+      </div>
+    </div>
+  </div>`);
+}
+
+function escolherTipo(tipo){
+  char.tipo=tipo;
+  step=0;
+  render();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 0: INFORMAÇÕES
+// ═══════════════════════════════════════════════════════
+function renderInfo(){
+  const sexoOpts=['Homem','Mulher','Não-binário','Andrógino','Indefinido','Outro'];
+  set(`<h2>◈ Informações do Personagem</h2>
+  <div class="two-col">
+    <div class="fg"><label class="fl2">Nome do Personagem</label><input class="finput" placeholder="Nome..." value="${esc(char.name)}" oninput="char.name=this.value"></div>
+    <div class="fg"><label class="fl2">Sexo / Identidade</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">
+        ${sexoOpts.map(s=>`<div class="lbtn${char.sexo===s?' on':''}" style="padding:5px 12px;cursor:pointer;border-radius:6px" onclick="char.sexo='${s}';renderInfo()">${s}</div>`).join('')}
+        <input class="finput" style="width:120px;padding:5px 8px" placeholder="Outro..." value="${!sexoOpts.includes(char.sexo)?esc(char.sexo):''}" oninput="char.sexo=this.value">
+      </div>
+    </div>
+  </div>
+  <div class="fg"><label class="fl2">Aparência</label><textarea class="finput" placeholder="Descreva a aparência..." oninput="char.aparencia=this.value">${esc(char.aparencia)}</textarea></div>
+  <div class="fg"><label class="fl2">Backstory / História</label><textarea class="finput" style="min-height:100px" placeholder="De onde vem, o que o motiva..." oninput="char.backstory=this.value">${esc(char.backstory)}</textarea></div>
+  <div class="info-box"><b>Dica:</b> As informações são opcionais e podem ser preenchidas depois.</div>`);
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 1: CLASSE
+// ═══════════════════════════════════════════════════════
+function renderClasse(){
+  let html=`<h2>◈ Escolha sua Classe</h2><div class="cards-grid">`;
+  for(const [name,cl] of Object.entries(CLASSES)){
+    const sel=char.classe===name;
+    html+=`<div class="card${sel?' selected':''}" onclick="selectClasse('${name}')">
+      <div class="card-title">${name}</div>
+      <div class="card-sub">${ATTR_NAMES[cl.atrib]} | Vida +${cl.vida} | Mana +${cl.mana}</div>
+      <div class="card-body"><b>${cl.hab1}:</b> ${cl.h1.substring(0,90)}...</div>
+      <div class="card-tags">${cl.armas!=='Nenhuma'?`<span class="tag">${cl.armas}</span>`:''} ${cl.pericias.map(p=>`<span class="tag">${p}</span>`).join('')}</div>
+    </div>`;
+  }
+  html+=`</div>`;
+  if(char.classe){
+    const cl=CLASSES[char.classe];
+    html+=`<div class="info-box"><b>${char.classe}</b><br>
+      <b>⚔ ${cl.hab1}:</b> ${cl.h1}<br><br>
+      <b>⚔ ${cl.hab2}:</b> ${cl.h2}<br><br>
+      <b>Proficiências:</b> ${cl.armas||'Nenhuma'}<br>
+      <b>Perícias Iniciais:</b> ${cl.pericias.join(', ')}<br>
+      <b>Magias:</b> 2 + INT (base) + 2 Truques${cl.extraSlots>0?` + ${cl.extraSlots} ${cl.extraSlotType} (adicional)`:''}
+    </div>`;
+    if(cl.espiritualista){
+      html+=`<div class="info-box"><b>Vínculo Espiritual:</b> Escolha o tipo de entidade:
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <div class="card${char.espiritualistaChoice==='Antigas'?' selected':''}" style="flex:1;cursor:pointer" onclick="char.espiritualistaChoice='Antigas';renderClasse()">
+            <div class="card-title">Entidade Elemental</div>
+            <div class="card-body">Acesso às <b>Magias Antigas</b></div>
+          </div>
+          <div class="card${char.espiritualistaChoice==='Sagradas'?' selected':''}" style="flex:1;cursor:pointer" onclick="char.espiritualistaChoice='Sagradas';renderClasse()">
+            <div class="card-title">Entidade Sagrada</div>
+            <div class="card-body">Acesso às <b>Magias Sagradas</b></div>
+          </div>
+        </div>
+      </div>`;
+    }
+  }
+  set(html);
+}
+function selectClasse(name){
+  char.classe=name;
+  char.pericias={};  // limpa ao trocar classe para não contaminar contagem de extras
+  renderClasse();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 2: RAÇA
+// ═══════════════════════════════════════════════════════
+
+function renderDadosRaciais(raceName) {
+  const rd = RACIAL_DATA[raceName];
+  if (!rd) return '';
+  const r  = RACES[raceName];
+  // Bônus mecânicos da raça
+  const bonuses = [];
+  if (r) {
+    if (r.bMana > 0)      bonuses.push(`<b>+${r.bMana}</b> Mana`);
+    if (r.bAttrExtra > 0) bonuses.push(`<b>+${r.bAttrExtra}</b> ponto de atributo`);
+    if (r.extraTal > 0)   bonuses.push(`<b>+${r.extraTal}</b> talento`);
+    if (r.extraPer > 0)   bonuses.push(`<b>+${r.extraPer}</b> perícia`);
+    if (r.extraSpell)     bonuses.push(`Magia: <b>${r.extraSpell}</b>`);
+    if (r.extraSpellType) bonuses.push(`+${r.extraSpellTypeCount||1} magia(s) <b>${r.extraSpellType}</b>`);
+  }
+  // Bônus de traços (DB, LMT, etc.)
+  const traitBns = [];
+  if (r && r.traits) {
+    r.traits.forEach(t => {
+      const tb = TRAIT_BONUSES[t.n];
+      if (tb) traitBns.push(tb.label);
+    });
+  }
+  const allBonuses = [...bonuses, ...traitBns];
+  return `<div class="dados-raciais">
+    <div class="dados-raciais-titulo">◈ Dados Raciais</div>
+    <div class="dados-raciais-grid">
+      <div class="dr-item">
+        <div class="dr-label">Altura</div>
+        <div class="dr-valor">${rd.altura}</div>
+      </div>
+      <div class="dr-item">
+        <div class="dr-label">Peso Médio</div>
+        <div class="dr-valor">${rd.peso_medio}</div>
+      </div>
+      <div class="dr-item">
+        <div class="dr-label">Expectativa de Vida</div>
+        <div class="dr-valor">${rd.expectativa_vida}</div>
+      </div>
+      <div class="dr-item">
+        <div class="dr-label">Deslocamento Base</div>
+        <div class="dr-valor">${rd.movimento}</div>
+      </div>
+      <div class="dr-item full">
+        <div class="dr-label">Idiomas Nativos</div>
+        <div class="dr-valor">${rd.idiomas_nativos}</div>
+      </div>
+      ${allBonuses.length ? `<div class="dr-item full">
+        <div class="dr-label">Bônus Mecânicos</div>
+        <div class="dr-valor">${allBonuses.join(' &nbsp;|&nbsp; ')}</div>
+      </div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderRaca(){
+  let html=`<h2>◈ Escolha sua Raça</h2><div class="cards-grid">`;
+  for(const [name,r] of Object.entries(RACES)){
+    const sel=char.raca===name;
+    const bonusTags=r.traits.filter(t=>t.bonus).map(t=>`<span class="tag" style="border-color:var(--green);color:var(--green)">${t.bonus}</span>`).join('');
+    const raceImg=RACE_IMAGES[name]?`<img src="${RACE_IMAGES[name]}" alt="${name}" class="race-card-img">`:'';
+    html+=`<div class="card${sel?' selected':''}" onclick="selectRaca('${name}')">
+      ${raceImg}
+      <div class="card-title">${name}</div>
+      <div class="card-tags">${bonusTags}</div>
+      <div class="card-body" style="margin-top:4px">${r.traits[0].n}: ${r.traits[0].d.substring(0,80)}...</div>
+    </div>`;
+  }
+  html+=`</div>`;
+
+  if(char.raca){
+    const r=RACES[char.raca];
+    html+=renderDadosRaciais(char.raca);
+    html+=`<div class="info-box"><b>${char.raca}</b><br>`;
+    r.traits.forEach(t=>{
+      html+=`<b>${t.n}${t.bonus?` <span class="bonus-tag">${t.bonus}</span>`:''}</b>: ${t.d}<br>`;
+    });
+    html+=`<br><b>Idiomas:</b> ${r.idiomas}<br><b>Deslocamento:</b> ${r.move}m</div>`;
+
+    // Aspecto Fauno
+    if(char.raca==='Fauno'){
+      html+=`<div class="fg"><label class="fl2">◈ Traços Bestiais — Escolha um Aspecto</label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px;margin-top:4px">
+          ${Object.entries(FAUNO_ASPECTOS).map(([key,asp])=>`
+            <div class="trait-opt${char.faunoAspecto===key?' selected':''}" onclick="char.faunoAspecto='${key}';renderRaca()">
+              <div>
+                <div class="trait-opt-name">${asp.label} <span class="bonus-tag">Quando ativado</span></div>
+                <div class="trait-opt-desc">${asp.desc}</div>
+                <div style="font-size:.7em;color:var(--gold);margin-top:3px">⚡ Ativo: ${asp.ativo}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    }
+    // Elemento Draconato
+    if(char.raca==='Draconato'){
+      html+=`<div class="fg"><label class="fl2">Elemento da Linhagem</label>
+        <select class="finput" onchange="char.draconatoElem=this.value">
+          <option value="">Escolha...</option>
+          ${['Fogo','Água','Terra','Vento','Trovão'].map(a=>`<option value="${a}"${char.draconatoElem===a?' selected':''}>${a}</option>`).join('')}
+        </select></div>`;
+    }
+    // Herança Dupla — Híbrido
+    if(char.raca==='Híbrido'){
+      html+=renderHibridoPicker();
+    }
+    // Herança Ancestral — Maculado
+    if(char.raca==='Maculado'){
+      html+=renderMaculadoPicker();
+    }
+  }
+  set(html);
+}
+
+function selectRaca(name){
+  char.raca=name;
+  char.hibridoTraits=[];
+  char.maculadoTrait=null;
+  char.idiomas=[];
+  // Mantém perícias de classe; remove extras manuais ao trocar raça
+  const cl=getClassData();
+  const classPer=cl?cl.pericias:[];
+  for(const k of Object.keys(char.pericias)){
+    if(!classPer.includes(k)) delete char.pericias[k];
+  }
+  const r=RACES[name];
+  // Auto-add fixed racial spell
+  if(r&&r.extraSpell){
+    if(!char.magias.includes(r.extraSpell)) char.magias.push(r.extraSpell);
+  }
+  renderRaca();
+}
+
+// Racial trait pickers
+const HIBRIDO_EXCLUDED = ['Maculado','Celestial','Híbrido'];
+const MACULADO_EXCLUDED = ['Híbrido','Celestial','Maculado'];
+
+function renderHibridoPicker(){
+  const selected=char.hibridoTraits;
+  const selectedRaces=selected.map(x=>x.raceName);
+  let html=`<div class="trait-picker">
+    <h3>Herança Dupla — Escolha 2 traços raciais <span class="cnt-badge${selected.length>=2?' full':''}">${selected.length}/2</span></h3>
+    <div style="font-size:.78em;color:var(--text-dim);margin-bottom:8px">
+      Escolha <b>1 traço de cada raça diferente</b> (exceto Maculado e Celestial).
+      ${selectedRaces.length>0?`Raças escolhidas: <b>${selectedRaces.join(' e ')}</b>.`:''}
+    </div>`;
+  for(const [raceName,r] of Object.entries(RACES)){
+    if(HIBRIDO_EXCLUDED.includes(raceName)) continue;
+    const raceSelected=selectedRaces.includes(raceName);
+    html+=`<div class="race-group">
+      <div class="race-group-title">${raceName}${raceSelected?` <span class="bonus-tag" style="border-color:var(--gold);color:var(--gold)">✓ selecionado</span>`:''}</div>`;
+    r.traits.forEach((t,ti)=>{
+      const isSel=selected.some(x=>x.raceName===raceName&&x.traitIdx===ti);
+      const raceBlocked=raceSelected&&!isSel;
+      const limitReached=!isSel&&selected.length>=2;
+      const isDisabled=raceBlocked||limitReached;
+      const errMsg=raceBlocked
+        ?`Os 2 traços devem ser de raças diferentes. Já escolheu um traço de ${raceName}.`
+        :`Limite de 2 traços atingido.`;
+      html+=`<div class="trait-opt${isSel?' selected':''} ${isDisabled?' disabled':''}"
+        onclick="${isDisabled?`showErr('${errMsg}')`:
+          `toggleHibridoTrait('${raceName}',${ti})`}">
+        <span class="trait-opt-name">${t.n}${t.bonus?` <span class="bonus-tag">${t.bonus}</span>`:''}</span>
+        <span class="trait-opt-desc">${t.d}</span>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  // Nota do Aspecto Bestial do Fauno
+  const faunoEntry=selected.find(x=>x.raceName==='Fauno');
+  if(faunoEntry){
+    const ft=RACES['Fauno']&&RACES['Fauno'].traits[faunoEntry.traitIdx];
+    if(ft&&ft.n==='Traços Bestiais'){
+      html+=`<div class="info-box" style="border-color:var(--gold-dim);margin-top:10px">
+        <b>Traços Bestiais (Fauno)</b> — Escolha o Aspecto Bestial que será ativado uma vez por Descanso Curto:<br>
+        <select class="finput" style="margin-top:8px" onchange="char.hibridoFaunoAspecto=this.value;renderRaca()">
+          <option value="">Escolha o aspecto...</option>
+          ${Object.entries(FAUNO_ASPECTOS).map(([k,a])=>
+            `<option value="${k}"${char.hibridoFaunoAspecto===k?' selected':''}>${a.label} — ${a.ativo}</option>`
+          ).join('')}
+        </select>
+        ${char.hibridoFaunoAspecto?`<div style="font-size:.75em;color:var(--gold);margin-top:5px">Aspecto escolhido: <b>${FAUNO_ASPECTOS[char.hibridoFaunoAspecto]?.desc||''}</b></div>`:''}
+      </div>`;
+    }
+  }
+  html+=`</div>`;
+  return html;
+}
+
+function toggleHibridoTrait(raceName,traitIdx){
+  const idx=char.hibridoTraits.findIndex(x=>x.raceName===raceName&&x.traitIdx===traitIdx);
+  if(idx>=0){
+    char.hibridoTraits.splice(idx,1);
+    if(raceName==='Fauno') char.hibridoFaunoAspecto='';
+  } else {
+    if(char.hibridoTraits.some(x=>x.raceName===raceName)){
+      showErr(`Os 2 traços devem ser de raças diferentes. Já escolheu um traço de ${raceName}.`);
+      return;
+    }
+    if(char.hibridoTraits.length>=2){showErr('Limite de 2 traços atingido.');return;}
+    char.hibridoTraits.push({raceName,traitIdx});
+  }
+  renderRaca();
+}
+
+function renderMaculadoPicker(){
+  const sel=char.maculadoTrait;
+  let html=`<div class="trait-picker">
+    <h3>Herança Ancestral — Escolha 1 traço racial <span class="cnt-badge${sel?' full':''}">${sel?1:0}/1</span></h3>
+    <div style="font-size:.78em;color:var(--text-dim);margin-bottom:8px">Raças disponíveis: todas exceto Híbrido e Celestial.</div>`;
+  for(const [raceName,r] of Object.entries(RACES)){
+    if(MACULADO_EXCLUDED.includes(raceName)) continue;
+    html+=`<div class="race-group"><div class="race-group-title">${raceName}</div>`;
+    r.traits.forEach((t,ti)=>{
+      const isSel=sel&&sel.raceName===raceName&&sel.traitIdx===ti;
+      const isDisabled=!isSel&&sel!=null;
+      html+=`<div class="trait-opt${isSel?' selected':''} ${isDisabled?' disabled':''}" onclick="${isDisabled?'showErr(\'Limite de 1 traço atingido.\')':'selectMaculadoTrait(\''+raceName+'\','+ti+')'}">
+        <span class="trait-opt-name">${t.n}${t.bonus?` <span class="bonus-tag">${t.bonus}</span>`:''}</span>
+        <span class="trait-opt-desc">${t.d}</span>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  // Nota do Aspecto Bestial do Fauno
+  if(sel){
+    const mt=RACES[sel.raceName]&&RACES[sel.raceName].traits[sel.traitIdx];
+    if(mt&&mt.n==='Traços Bestiais'){
+      html+=`<div class="info-box" style="border-color:var(--gold-dim);margin-top:10px">
+        <b>Traços Bestiais (Fauno)</b> — Escolha o Aspecto Bestial que será ativado uma vez por Descanso Curto:<br>
+        <select class="finput" style="margin-top:8px" onchange="char.maculadoFaunoAspecto=this.value;renderRaca()">
+          <option value="">Escolha o aspecto...</option>
+          ${Object.entries(FAUNO_ASPECTOS).map(([k,a])=>`<option value="${k}"${char.maculadoFaunoAspecto===k?' selected':''}>` + a.label + ' — ' + a.ativo + `</option>`).join('')}
+        </select>
+        ${char.maculadoFaunoAspecto?`<div style="font-size:.75em;color:var(--gold);margin-top:5px">Aspecto escolhido: <b>${FAUNO_ASPECTOS[char.maculadoFaunoAspecto]?.desc||''}</b></div>`:''}
+      </div>`;
+    }
+  }
+  html+=`</div>`;
+  return html;
+}
+
+function selectMaculadoTrait(raceName,traitIdx){
+  if(char.maculadoTrait&&char.maculadoTrait.raceName===raceName&&char.maculadoTrait.traitIdx===traitIdx){
+    char.maculadoTrait=null;
+    char.maculadoFaunoAspecto='';
+  } else {
+    char.maculadoTrait={raceName,traitIdx};
+    if(raceName!=='Fauno') char.maculadoFaunoAspecto='';
+  }
+  renderRaca();
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  STEP: APRIMORAMENTOS (Personagem Avançado)
+// ═══════════════════════════════════════════════════════
+function renderAprimoramentos(){
+  const apr = char.aprimoramentos;
+  const xpTotal = char.xp||0;
+  const xpGasto = getXPGasto();
+  const xpRest  = xpTotal - xpGasto;
+  const pct     = xpTotal>0 ? Math.min(100,Math.round(xpGasto/xpTotal*100)) : 0;
+
+  let html=`<h2>◈ Aprimoramentos</h2>
+  <div class="info-box">
+    Gaste seus pontos de experiência para melhorar o personagem.<br>
+    <b>Regras:</b> Cap. X — Evolução do Personagem • Máximo: 5.000 pts acumulados
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:.85em;color:var(--text-dim)">Pontos de Aprimoramento</span>
+      <span style="font-size:.88em">Gasto: <b style="color:var(--gold)">${xpGasto}</b> / Restante: <b style="color:${xpRest<0?'var(--red)':'#4a9a5a'}">${xpRest}</b></span>
+    </div>
+    <div class="xp-bar-wrap"><div class="xp-bar" style="width:${pct}%"></div></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <label style="font-size:.82em;color:var(--text-dim)">XP disponível:</label>
+      <input type="number" class="finput" style="width:120px;padding:5px 8px" min="0" max="5000"
+        value="${xpTotal}" oninput="char.xp=Math.max(0,Math.min(5000,parseInt(this.value)||0));renderAprimoramentos()">
+    </div>
+    ${xpRest<0?`<div style="color:var(--red);font-size:.78em;margin-top:6px">⚠ XP gasto excede o disponível — remova aprimoramentos.</div>`:''}
+  </div>`;
+
+  html+=`<h3 style="margin-bottom:8px;color:var(--gold)">Progressão Mágica</h3>
+  <div class="info-box" style="margin-bottom:10px;font-size:.78em">
+    Todos os personagens começam com acesso até Nível Menor (3).
+    Desbloqueie níveis superiores em ordem. Lendário e Secreto requerem artefatos (campanha).
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px">`;
+
+  const mlDefs=[
+    {id:'mlElite', nome:'Elite', nivel:4, custo:300, req:0, cor:'#c9c227'},
+    {id:'mlMaior', nome:'Maior', nivel:5, custo:500, req:1, cor:'#c9a227'},
+    {id:'mlAvancado',nome:'Avançado',nivel:6,custo:800,req:2,cor:'#e08820'},
+  ];
+  mlDefs.forEach(ml=>{
+    const unlocked = apr.magicLevel >= (ml.req+1);
+    const available = apr.magicLevel === ml.req;
+    const canBuy = available && xpRest >= ml.custo;
+    const color = ml.cor;
+    html+=`<div class="apr-item${unlocked?' comprado':''}" style="${unlocked?'border-color:'+color:''}">
+      <div class="apr-nome" style="color:${color}">Nível ${ml.nome}</div>
+      <div class="apr-desc">Desbloqueia magias de nível ${ml.nivel}.</div>
+      <div class="apr-custo">${ml.custo} pts</div>
+      ${unlocked
+        ? `<div style="font-size:.72em;color:${color}">✓ Desbloqueado</div>`
+        : `<button class="btn${canBuy?' primary':''}" style="margin-top:4px;font-size:.75em;padding:5px 10px"
+             onclick="comprarMagicLevel(${ml.req+1},${ml.custo})"
+             ${!canBuy?'disabled':''}>
+             ${available?(canBuy?'Desbloquear':'XP insuficiente'):'Requer anterior'}
+           </button>`
+      }
+    </div>`;
+  });
+  html+=`</div>`;
+
+  html+=`<h3 style="margin-bottom:8px;color:var(--gold)">Estatísticas & Perícias</h3>
+  <div class="apr-grid">`;
+
+  const statDefs=[
+    {id:'vidaExtra',      nome:'Vida Extra',          desc:'+10 HP máximos por compra.', custo:200,max:null},
+    {id:'atributos',      nome:'Atributos (+1 ponto)', desc:'Ponto extra para distribuir. Limite 5 por atributo.', custo:500,max:null},
+    {id:'novasPericias',  nome:'Nova Perícia Básica',  desc:'Perícia +2 à escolha.', custo:200,max:null},
+    {id:'periciaInt',     nome:'Perícia Intermediária',desc:'Eleva +2 → +5 em uma perícia.', custo:300,max:null},
+    {id:'periciaAvancado',nome:'Perícia Avançada',     desc:'Eleva +5 → +10 em uma perícia.', custo:500,max:null},
+    {id:'proficiencia',   nome:'Ponto de Proficiência',desc:'Max 9 total. Melhora salvaguardas, talentos e LMT.', custo:400,max:7},
+  ];
+
+  statDefs.forEach(sd=>{
+    const val  = apr[sd.id]||0;
+    const atMax= sd.max !== null && val >= sd.max;
+    const canAdd = !atMax && xpRest >= sd.custo;
+    const canRem = val > 0;
+    html+=`<div class="apr-item${val>0?' comprado':''}">
+      <div class="apr-nome">${sd.nome}</div>
+      <div class="apr-desc">${sd.desc}</div>
+      <div class="apr-custo">${sd.custo} pts cada${sd.max?` (max ${sd.max})+base`:''}</div>
+      <div class="apr-ctrl">
+        <button class="apr-btn" onclick="alterarApr('${sd.id}',-1,${sd.custo})" ${!canRem?'disabled':''}>−</button>
+        <div class="apr-val">${val}</div>
+        <button class="apr-btn" onclick="alterarApr('${sd.id}',1,${sd.custo})" ${!canAdd?'disabled':''}>+</button>
+        ${val>0?`<span style="font-size:.72em;color:var(--gold-dim)">−${val*sd.custo} pts</span>`:''}
+      </div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // Resumo de bônus
+  if(xpGasto > 0){
+    html+=`<div class="info-box" style="margin-top:10px;font-size:.8em">
+      <b>Bônus acumulados:</b><br>`;
+    if(apr.vidaExtra>0)       html+=`• +${apr.vidaExtra*10} Vida máxima<br>`;
+    if(apr.atributos>0)       html+=`• +${apr.atributos} ponto(s) de atributo extra<br>`;
+    if(apr.novasPericias>0)   html+=`• +${apr.novasPericias} perícia(s) básica(s)<br>`;
+    if(apr.periciaInt>0)      html+=`• ${apr.periciaInt} aprimoramento(s) intermediário(s)<br>`;
+    if(apr.periciaAvancado>0) html+=`• ${apr.periciaAvancado} aprimoramento(s) avançado(s)<br>`;
+    if(apr.proficiencia>0)    html+=`• +${apr.proficiencia} proficiência<br>`;
+    if(apr.magicLevel>=1)     html+=`• Magias Elite desbloqueadas<br>`;
+    if(apr.magicLevel>=2)     html+=`• Magias Maior desbloqueadas<br>`;
+    if(apr.magicLevel>=3)     html+=`• Magias Avançado desbloqueadas<br>`;
+    html+=`</div>`;
+  }
+
+  set(html);
+}
+
+function comprarMagicLevel(novoNivel, custo){
+  if(getXPRestante() < custo){showErr('XP insuficiente.');return;}
+  char.aprimoramentos.magicLevel = novoNivel;
+  renderAprimoramentos();
+}
+
+function alterarApr(id, delta, custo){
+  const apr = char.aprimoramentos;
+  const val = apr[id]||0;
+  if(delta>0 && getXPRestante() < custo){showErr('XP insuficiente.');return;}
+  if(delta<0 && val<=0) return;
+  apr[id] = val + delta;
+  renderAprimoramentos();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 3: KIT INICIAL
+// ═══════════════════════════════════════════════════════
+function renderKit(){
+  let html=`<h2>◈ Escolha seu Kit Inicial</h2>
+  <div class="info-box">O kit define seu equipamento de partida. Pode ser escolhido independentemente da classe.</div>
+  <div class="cards-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">`;
+  const profs=getCharProficiencies();
+  for(const [name,k] of Object.entries(KITS)){
+    const sel=char.kit===name;
+    const eb=KIT_EQUIP_BONUSES[name];
+    let profWarnings=[];
+    if(eb) eb.items.forEach(i=>{if(i.prof&&!profs.has(i.prof)) profWarnings.push(`${i.n} (requer ${i.prof})`);});
+    html+=`<div class="card${sel?' selected':''}" onclick="char.kit='${name}';renderKit()">
+      <div class="card-title">Kit ${name}</div>
+      ${k.items.map(i=>{
+        const eb2=eb?eb.items.find(x=>x.n===i.n):null;
+        const needProf=eb2&&eb2.prof&&!profs.has(eb2.prof);
+        return `<div style="font-size:.78em;margin:2px 0${needProf?';color:var(--red)':''}"><b>${i.n}</b>${needProf?` ⚠️`:''}  — ${i.d}</div>`;
+      }).join('')}
+      ${profWarnings.length>0?`<div style="font-size:.7em;color:var(--red);margin-top:4px">⚠ Sem prof.: ${profWarnings.map(w=>w.split(' (')[0]).join(', ')}</div>`:''}
+      <div class="card-tags" style="margin-top:8px">${k.extras.map(e=>`<span class="tag">${e}</span>`).join('')}</div>
+    </div>`;
+  }
+  html+=`</div>`;
+  set(html);
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 4: ATRIBUTOS
+// ═══════════════════════════════════════════════════════
+function renderAtributos(){
+  const cl=getClassData();
+  const r=getRaceData();
+  const rem=remainingPoints();
+  let html=`<h2>◈ Distribuição de Atributos</h2>
+  <div class="pts-box">Pontos Restantes: <b id="ptsLeft">${rem}</b> / ${totalAttrPoints()}</div>`;
+  if(cl) html+=`<div class="info-box">Atributo Principal de <b>${char.classe}</b>: <b>${ATTR_NAMES[cl.atrib]}</b> (usado na CD de Conjuração)</div>`;
+  html+=`<div class="attrs-wrap">`;
+  for(const [abbr,nome] of Object.entries(ATTR_NAMES)){
+    const v=char.attrs[abbr]||0;
+    const isKey=cl&&cl.atrib===abbr;
+    html+=`<div class="attr-box${isKey?' key-attr':''}">
+      <div class="attr-name">${nome}</div><div class="attr-abbr">(${abbr})${isKey?' ⭐':''}</div>
+      <div class="attr-ctrl">
+        <button class="attr-btn" onclick="changeAttr('${abbr}',-1)"${v<=0?' disabled':''}>−</button>
+        <div class="attr-val">${v}</div>
+        <button class="attr-btn" onclick="changeAttr('${abbr}',1)"${(rem<=0||v>=5)?' disabled':''}>+</button>
+      </div>
+    </div>`;
+  }
+  html+=`</div><h3>Estatísticas Calculadas</h3><div class="stats-mini">`;
+  html+=statsHtml();
+  html+=`</div>`;
+  if(r&&r.bMana>0) html+=`<div class="info-box" style="font-size:.8em">🔷 Bônus racial (${char.raca}): <b>+${r.bMana} Mana</b></div>`;
+  if(r&&r.bAttrExtra>0) html+=`<div class="info-box" style="font-size:.8em">🔷 Bônus racial (${char.raca}): <b>+${r.bAttrExtra} ponto de atributo</b></div>`;
+  set(html);
+}
+
+function statsHtml(){
+  const rb=getRacialBonuses();
+  const tb=getTalentBonuses();
+  function bonus(v,r,t){
+    const total=r+t;
+    return total>0?` <span style="color:var(--green);font-size:.8em">(+${total})</span>`:'';
+  }
+  return `<div class="stat-chip">❤ Vida: <span>${calcVida()}</span>${bonus(0,rb.vida,tb.vida)}</div>
+    <div class="stat-chip">💧 Mana: <span>${calcMana()}</span>${bonus(0,rb.mana,tb.mana)}</div>
+    <div class="stat-chip">🛡 DB: <span>${calcDB()}</span>${bonus(0,rb.db,tb.db)}</div>
+    <div class="stat-chip">🎯 CD: <span>${calcCD()}</span>${bonus(0,rb.cd,tb.cd)}</div>
+    <div class="stat-chip">⚡ LMT: <span>${calcLMT()}</span>${bonus(0,rb.lmt,tb.lmt)}</div>`;
+}
+
+function changeAttr(abbr,delta){
+  const v=char.attrs[abbr]||0;
+  const nv=v+delta;
+  if(nv<0||nv>5)return;
+  if(delta>0&&remainingPoints()<=0)return;
+  char.attrs[abbr]=nv;
+  renderAtributos();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 5: PERÍCIAS
+// ═══════════════════════════════════════════════════════
+
+// Traços raciais que concedem perícias extras (usados em herança Híbrido/Maculado)
+const TRAIT_EXTRA_PERICIAS = {
+  'Mestre em Perícia':  2,
+  'Identidade Forjada': 1,
+};
+
+function getExtraPerSources(){
+  const r = getRaceData();
+  const sources = [];
+
+  // 1. Bônus base da raça
+  if(r && r.extraPer > 0){
+    const traitName = char.raca==='Híbrido' ? 'Identidade Forjada' :
+                      char.raca==='Humano'  ? 'Mestre em Perícia'  : char.raca;
+    sources.push({label: char.raca, desc: traitName, val: r.extraPer, tipo:'raca'});
+  }
+
+  // 2. Traços herdados pelo Híbrido
+  if(char.raca==='Híbrido'){
+    for(const {raceName,traitIdx} of char.hibridoTraits){
+      const r2=RACES[raceName];
+      if(!r2||!r2.traits[traitIdx]) continue;
+      const t=r2.traits[traitIdx];
+      const bonus=TRAIT_EXTRA_PERICIAS[t.n]||0;
+      if(bonus>0) sources.push({label:`Herança ${raceName}`, desc:t.n, val:bonus, tipo:'heranca'});
+    }
+  }
+
+  // 3. Traço herdado pelo Maculado
+  if(char.raca==='Maculado' && char.maculadoTrait){
+    const {raceName,traitIdx}=char.maculadoTrait;
+    const r2=RACES[raceName];
+    if(r2&&r2.traits[traitIdx]){
+      const t=r2.traits[traitIdx];
+      const bonus=TRAIT_EXTRA_PERICIAS[t.n]||0;
+      if(bonus>0) sources.push({label:`Herança ${raceName}`, desc:t.n, val:bonus, tipo:'heranca'});
+    }
+  }
+
+  // 4. Aprimoramentos (Personagem Avançado)
+  const aprN=(char.aprimoramentos&&char.aprimoramentos.novasPericias)||0;
+  if(aprN>0) sources.push({label:'Aprimoramento', desc:'Nova Perícia Básica', val:aprN, tipo:'apr'});
+
+  return sources;
+}
+
+function renderPericias(){
+  const cl=getClassData();
+  const r=getRaceData();
+  const classPer=cl?cl.pericias:[];
+  const isInicial=!char.tipo||char.tipo==='inicial';
+
+  // Auto-set class skills to Básico (antes de renderizar)
+  for(const p of classPer){if(!(char.pericias[p]>=2))char.pericias[p]=2;}
+  // No Inicial, trava tudo em no máximo Básico
+  if(isInicial){
+    for(const k of Object.keys(char.pericias)){if(char.pericias[k]>2)char.pericias[k]=2;}
+  }
+
+  const perSources = getExtraPerSources();
+  const manualMax  = perSources.reduce((s,x)=>s+x.val, 0);
+  const manualUsed = Object.entries(char.pericias).filter(([k,v])=>v>0&&!classPer.includes(k)).length;
+  const prof=getPROF();
+
+  // ── Info box ─────────────────────────────────────────────────────────
+  let html=`<h2>◈ Perícias</h2>
+  <div class="info-box">
+    <b>Perícias de Classe</b> (automáticas em Básico): ${classPer.join(', ')}<br>`;
+
+  if(manualMax>0){
+    const corTotal = manualUsed>=manualMax ? 'var(--gold)' : 'var(--green)';
+    html+=`<div style="margin-top:8px;margin-bottom:4px;font-size:.82em;color:var(--text-dim)">
+      Perícias extras — <b style="color:${corTotal}">${manualUsed}/${manualMax}</b> selecionadas
+    </div>`;
+
+    if(perSources.length>1){
+      // Mostra cards de origem apenas quando há múltiplas fontes
+      html+=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0">`;
+      perSources.forEach(s=>{
+        const cor = s.tipo==='raca'?'var(--gold-dim)': s.tipo==='heranca'?'#7ab54a':'var(--blue)';
+        html+=`<div style="background:var(--bg3);border:1px solid ${cor};border-radius:6px;padding:5px 10px;font-size:.75em;">
+          <div style="color:${cor};font-weight:bold">${s.label}</div>
+          <div style="color:var(--text-dim)">${s.desc}</div>
+          <div style="color:var(--gold);font-weight:bold">+${s.val} perícia${s.val>1?'s':''}</div>
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+  }
+
+  html+=isInicial
+    ?`<span style="color:var(--text-dim);font-size:.85em">Nível disponível: <b>Básico +2</b> — Intermediário e Avançado desbloqueados no Personagem Avançado</span>`
+    :`<b>Níveis:</b> Básico +2 | Intermediário +5 | Avançado +10 | Salvaguarda = Prof(${prof}) + Nível`;
+  html+=`</div><div class="skills-grid">`;
+
+  // ── Linhas de perícia ─────────────────────────────────────────────────
+  const vantagens=getSkillVantagens();
+  const eqBonuses=getEquipBonuses().skills;
+  for(const sk of SKILLS){
+    const isClass=classPer.includes(sk.n);
+    const lv=char.pericias[sk.n]||0;
+    const eqB=eqBonuses[sk.n]||0;
+    const sv=prof+(lv||0)+eqB;
+    const hasVant=vantagens.has(sk.n);
+    html+=`<div class="skill-row" style="${hasVant?'border-color:var(--green);':''}">
+      <span class="skill-name">${sk.n} <span style="color:var(--text-dim);font-size:.8em">(${sk.a})</span>${hasVant?` <span style="font-size:.65em;padding:1px 4px;border:1px solid var(--green);color:var(--green);border-radius:4px">Vant.</span>`:''}${eqB>0?` <span style="font-size:.65em;padding:1px 4px;border:1px solid var(--gold);color:var(--gold);border-radius:4px">+${eqB} equip</span>`:''}</span>`;
+
+    if(isInicial){
+      if(isClass){
+        html+=`<div class="skill-lv">
+          <span class="lbtn cls" title="Perícia de Classe">Cls</span>
+          <span class="lbtn on" style="cursor:default" title="Básico fixo no Personagem Inicial">Bás</span>
+        </div>`;
+      } else {
+        html+=`<div class="skill-lv">
+          <button class="lbtn${lv===2?' on':''}" onclick="setPer('${sk.n}',${lv===2?0:2},'extra',${manualMax},${manualUsed})">Bás</button>
+        </div>`;
+      }
+    } else {
+      html+=`<div class="skill-lv">
+        ${isClass?`<span class="lbtn cls" title="Perícia de Classe">Cls</span>`:''}
+        <button class="lbtn${lv===2?' on':''}" onclick="setPer('${sk.n}',${lv===2?0:2},'${isClass?'class':'extra'}',${manualMax},${manualUsed})">Bás</button>
+        <button class="lbtn${lv===5?' on':''}" onclick="setPer('${sk.n}',${lv===5?0:5},'${isClass?'class':'extra'}',${manualMax},${manualUsed})">Int</button>
+        <button class="lbtn${lv===10?' on':''}" onclick="setPer('${sk.n}',${lv===10?0:10},'${isClass?'class':'extra'}',${manualMax},${manualUsed})">Avç</button>
+      </div>`;
+    }
+
+    html+=`<span class="skill-sv">${sv}</span>
+    </div>`;
+  }
+  html+=`</div>`;
+  set(html);
+}
+
+function setPer(skill,lv,type,maxManual,usedManual){
+  const isInicial=!char.tipo||char.tipo==='inicial';
+  if(isInicial&&lv>2){showErr('Intermediário e Avançado disponíveis apenas no Personagem Avançado.');return;}
+  if(type==='extra'){
+    const isAlreadyTrained=char.pericias[skill]>0;
+    if(lv>0&&!isAlreadyTrained&&usedManual>=maxManual){showErr(`Limite de ${maxManual} perícias extras atingido.`);return;}
+  }
+  char.pericias[skill]=lv;
+  renderPericias();
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  STEP 6: IDIOMAS
+// ═══════════════════════════════════════════════════════
+function getKnownLangs(){
+  const r=getRaceData();
+  const rl=char.raca?RACE_LANGS[char.raca]:null;
+  const fixos=rl?rl.fixos:[];
+  return ['Comum',...fixos,...char.idiomas.filter(l=>!fixos.includes(l)&&l!=='Comum')];
+}
+
+function renderIdiomas(){
+  const cl=getClassData();
+  const r=getRaceData();
+  const rl=char.raca?RACE_LANGS[char.raca]:{fixos:[],extras:0};
+  const fixos=['Comum',...rl.fixos];
+  const maxExtras=rl.extras||0;
+  const chosen=char.idiomas.filter(l=>!fixos.includes(l));
+  const remaining=maxExtras-chosen.length;
+
+  let html=`<h2>◈ Idiomas</h2>
+  <div class="info-box">
+    <b>Idiomas Base:</b> ${fixos.map(l=>`<span class="spell-pill">${l}</span>`).join(' ')}<br>
+    <b>Extras disponíveis:</b> ${maxExtras} (${remaining} restante${remaining!==1?'s':''})<br>
+    ${cl&&cl.classe==='Mago'||char.classe==='Mago'?'<span style="color:var(--gold)">⚠ <b>Mago:</b> Para usar magias do Grimório é necessário saber <b>Arcano</b>. Elfos já conhecem Arcano automaticamente.</span>':''}
+    ${char.classe==='Mago'&&!fixos.includes('Arcano')&&!chosen.includes('Arcano')?'<br><span style="color:var(--red)">⚠ Recomendado: escolha <b>Arcano</b> para acessar seu Grimório.</span>':''}
+  </div>`;
+
+  // Já conhecidos (fixos)
+  html+=`<div class="sh-sec"><div class="sh-stitle">Idiomas Conhecidos</div><div class="sh-sbody" style="display:flex;flex-wrap:wrap;gap:6px;padding:10px">`;
+  fixos.forEach(l=>{
+    html+=`<div style="padding:6px 12px;background:var(--bg3);border:1px solid var(--green);border-radius:20px;font-size:.85em;color:var(--green)">${l} <span style="font-size:.75em;opacity:.7">(base)</span></div>`;
+  });
+  chosen.forEach(l=>{
+    html+=`<div style="padding:6px 12px;background:var(--sel);border:1px solid var(--gold);border-radius:20px;font-size:.85em;color:var(--gold);cursor:pointer" onclick="toggleLang('${l}')">${l} ✕</div>`;
+  });
+  html+=`</div></div>`;
+
+  if(maxExtras>0){
+    html+=`<h3 style="margin-top:12px;margin-bottom:8px">Escolha ${maxExtras} idioma${maxExtras>1?'s':''} adicional${maxExtras>1?'is':''}</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px">`;
+    ALL_LANGS.forEach(lang=>{
+      const isFixed=fixos.includes(lang);
+      const isSel=chosen.includes(lang);
+      const isDisabled=!isSel&&remaining<=0;
+      html+=`<div class="trait-opt${isSel?' selected':''} ${isFixed?'disabled':''} ${isDisabled&&!isSel?'disabled':''}"
+        onclick="${isFixed?'':isDisabled&&!isSel?`showErr('Limite de ${maxExtras} idiomas extras atingido.')`:`toggleLang('${lang}')`}"
+        style="${isFixed?'opacity:.4;cursor:default;':''}"
+      >
+        <div>
+          <div class="trait-opt-name">${lang}${isFixed?' <span style="font-size:.7em;color:var(--green)">(racial)</span>':''}</div>
+          <div class="trait-opt-desc" style="font-size:.72em">${getLangDesc(lang)}</div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  set(html);
+}
+
+function toggleLang(lang){
+  const rl=char.raca?RACE_LANGS[char.raca]:{fixos:[],extras:0};
+  const fixos=['Comum',...rl.fixos];
+  if(fixos.includes(lang))return;
+  const idx=char.idiomas.indexOf(lang);
+  if(idx>=0){char.idiomas.splice(idx,1);}
+  else{
+    const chosen=char.idiomas.filter(l=>!fixos.includes(l));
+    if(chosen.length>=rl.extras){showErr(`Limite de ${rl.extras} idiomas extras atingido.`);return;}
+    char.idiomas.push(lang);
+  }
+  renderIdiomas();
+}
+
+function getLangDesc(lang){
+  const descs={
+    'Élfico':'Língua refinada da magia e natureza, usada em textos arcânicos.',
+    'Anão':'Idioma robusto e percussivo dos subterrâneos e forjadores.',
+    'Dracônico':'Língua dos dragões e da magia primordial. Base de muitas fórmulas.',
+    'Infernal':'Linguagem de demônios e pactos. Cada palavra carrega peso contratual.',
+    'Celestial':'Idioma sagrado de anjos e ordens divinas.',
+    'Selvagem':'Língua tribal direta de povos bestiais e nômades.',
+    'Silvestre':'Linguagem espiritual de fadas e criaturas da floresta.',
+    'Abissal':'Idioma caótico associado ao vazio e à corrupção.',
+    'Gigante':'Língua antiga de gigantes e titãs. Raramente sussurrada.',
+    'Orc':'Linguagem agressiva de tribos guerreiras. Funcional e direta.',
+    'Feérico':'Idioma místico do Reino das Fadas, sotaque único.',
+    'Arcano':'Usado em grimórios, runas e fórmulas mágicas. Invocado, não falado.',
+    'Naga':'Língua serpentina de criaturas reptilianas e povos aquáticos.',
+    'Primordial':'Idioma ancestral dos elementais e forças da natureza.',
+  };
+  return descs[lang]||'';
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 7: MAGIAS
+// ═══════════════════════════════════════════════════════
+let spellFilters={tipo:'',natureza:'',categoria:'',search:'',nivel_magia:''};
+
+function renderMagias(){
+  const access=getSpellAccess();
+  const slots=getSpellSlots();
+  const r=getRaceData();
+
+  const selTruque=char.magias.filter(m=>SPELLS.find(s=>s.nome===m&&s.tipo==='Truque'));
+  const selBase=char.magias.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return s&&s.tipo!=='Truque';});
+  const selExtra=char.magiasExtra;
+
+  // Racial extra spell type count
+  const racialCount=slots.racialExtra?char.magiasExtra.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return s&&s.tipo===slots.racialExtra.type;}).length:0;
+  const extraGrimCount=char.magiasExtra.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return s&&s.tipo===slots.extraType;}).length;
+
+  let html=`<h2>◈ Magias & Truques</h2>`;
+
+  // Slot info
+  html+=`<div class="info-box" style="font-size:.8em">
+    <b>Magias base:</b> 2 + Intelecto (${getAttr('INT')}) = <b>${slots.base}</b> magias conhecidas (escolha do pool acessível)<br>
+    <b>Truques:</b> <b>2</b> truques (0 PM, à vontade)<br>
+    ${slots.extra>0?`<b>${slots.extraType} (adicional):</b> <b>${slots.extra}</b> magias extras (não contam no limite base)<br>`:''}
+    ${slots.extraSpells>0?`<b>Magias Adicionais (talento):</b> +${slots.extraSpells}<br>`:''}
+    ${slots.racialExtra?`<b>Magia Racial (${slots.racialExtra.type}):</b> +${slots.racialExtra.count} (adicional)<br>`:''}
+    ${r&&r.extraSpell?`<b>Magia Racial Fixa:</b> ${r.extraSpell} (adicionada automaticamente)`:''}
+  </div>`;
+
+  // Counters
+  html+=`<div class="counter">
+    <span class="cnt-badge${selTruque.length>=slots.truques?' full':''}">Truques: ${selTruque.length}/${slots.truques}</span>
+    <span class="cnt-badge${selBase.length>=slots.base?' full':''}">Magias: ${selBase.length}/${slots.base}</span>
+    ${slots.extra>0?`<span class="cnt-badge extra${extraGrimCount>=slots.extra?' full':''}">${slots.extraType?.replace('Magias ','')}: ${extraGrimCount}/${slots.extra} (adicional)</span>`:''}
+    ${slots.racialExtra?`<span class="cnt-badge extra${racialCount>=slots.racialExtra.count?' full':''}">${slots.racialExtra.type?.replace('Magias ','')}: ${racialCount}/${slots.racialExtra.count} (racial)</span>`:''}
+    ${slots.extraSpells>0?`<span class="cnt-badge extra">Lista Expandida: +${slots.extraSpells} slots</span>`:''}
+  </div>`;
+
+  // Filters
+  const tipos=access;
+  const naturezas=[...new Set(SPELLS.filter(s=>access.includes(s.tipo)).map(s=>s.natureza).filter(Boolean))].sort();
+  const cats=[...new Set(SPELLS.filter(s=>access.includes(s.tipo)&&s.categoria).map(s=>s.categoria))].sort();
+
+    // Botões de filtro por nível
+  const maxMLfilt=getMaxMagicLevel();
+  const levelsVisiveis=MAGIC_LEVELS.filter(ml=>ml.nivel<=maxMLfilt);
+  if (levelsVisiveis.length) {
+    html += `<div class="filters">
+      <span class="fl">Nível máximo:</span>
+      <button class="fbtn${!spellFilters.nivel_magia?' on':''}" onclick="setSF('nivel_magia','')">Todos</button>
+      ${levelsVisiveis.map(ml=>`<button class="fbtn${spellFilters.nivel_magia==ml.nivel?' on':''}"
+        style="border-color:${spellFilters.nivel_magia==ml.nivel?ml.cor:'var(--border)'};color:${spellFilters.nivel_magia==ml.nivel?ml.cor:'var(--text-dim)'}"
+        onclick="setSF('nivel_magia',${ml.nivel})">${ml.nome}</button>`).join('')}
+    </div>`;
+  }
+
+  html+=`<div class="filters">
+    <span class="fl">Tipo:</span>
+    <button class="fbtn${!spellFilters.tipo?' on':''}" onclick="setSF('tipo','')">Todos</button>
+    ${tipos.map(t=>`<button class="fbtn${spellFilters.tipo===t?' on':''}" onclick="setSF('tipo','${t}')">${t.replace('Magias ','')}</button>`).join('')}
+    <span class="fl" style="margin-left:6px">Elem:</span>
+    <button class="fbtn${!spellFilters.natureza?' on':''}" onclick="setSF('natureza','')">Todos</button>
+    ${naturezas.map(n=>`<button class="fbtn${spellFilters.natureza===n?' on':''}" style="border-color:${spellFilters.natureza===n?ELEM_COLORS[n]||'var(--gold)':'var(--border)'};color:${spellFilters.natureza===n?ELEM_COLORS[n]||'var(--gold)':'var(--text-dim)'}" onclick="setSF('natureza','${n}')">${n}</button>`).join('')}
+  </div>
+  <div class="filters">
+    <span class="fl">Categ:</span>
+    <button class="fbtn${!spellFilters.categoria?' on':''}" onclick="setSF('categoria','')">Todos</button>
+    ${cats.map(cat=>`<button class="fbtn${spellFilters.categoria===cat?' on':''}" onclick="setSF('categoria','${cat}')">${cat}</button>`).join('')}
+    <span class="fl" style="margin-left:6px">Busca:</span>
+    <input class="search" value="${esc(spellFilters.search)}" placeholder="Buscar magia..." oninput="setSF('search',this.value)">
+  </div>`;
+
+  // Filtered spells
+  const maxML=getMaxMagicLevel();
+  let filtered=SPELLS.filter(s=>access.includes(s.tipo)&&s.nivel_magia<=maxML);
+  // Filtro por nível de magia
+  if (spellFilters.nivel_magia) {
+    filtered = filtered.filter(s => s.nivel_magia <= parseInt(spellFilters.nivel_magia));
+  }
+  if(spellFilters.tipo) filtered=filtered.filter(s=>s.tipo===spellFilters.tipo);
+  if(spellFilters.natureza) filtered=filtered.filter(s=>s.natureza===spellFilters.natureza);
+  if(spellFilters.categoria) filtered=filtered.filter(s=>s.categoria===spellFilters.categoria);
+  if(spellFilters.search){const q=spellFilters.search.toLowerCase();filtered=filtered.filter(s=>s.nome.toLowerCase().includes(q)||s.descricao.toLowerCase().includes(q));}
+
+  html+=`<div class="spells-grid">`;
+  for(const s of filtered){
+    const inBase=char.magias.includes(s.nome);
+    const inExtra=char.magiasExtra.includes(s.nome);
+    const sel=inBase||inExtra;
+    const isExtra=s.tipo===slots.extraType||(slots.racialExtra&&s.tipo===slots.racialExtra.type);
+    const nc=ELEM_COLORS[s.natureza]||'var(--border)';
+    const cc=CAT_COLORS[s.categoria]||'var(--border)';
+    const langChk=canLearnSpell(s);
+    const locked=!langChk.ok&&!sel;
+    html+=`<div class="sc${inBase?' selected':inExtra?' extra-selected':''}${locked?' disabled':''}"
+      style="${locked?'opacity:.45;cursor:not-allowed;border-color:var(--red)!important;':''}"
+      onclick="toggleSpell('${s.nome.replace(/'/g,"\\'")}')">
+      <div class="sc-name">${s.nome}${inBase?' ✓':inExtra?' ⭐':locked?' 🔒':''}</div>
+      <div class="sc-meta">
+        <span class="tag" style="border-color:${nc};color:${sel?nc:'var(--text-dim)'}">${s.natureza||'—'}</span>
+        ${s.categoria?`<span class="tag" style="border-color:${cc};color:${sel?cc:'var(--text-dim)'}">${s.categoria}</span>`:''}
+        <span class="tag">${s.tipo.replace('Magias de ','').replace('Magias ','')}</span>
+        <span class="tag">${s.custo} PM</span>${MAGIC_LEVELS.length?`<span class="tag" style="border-color:${getMagicLevelColor(s.nivel_magia)};color:${getMagicLevelColor(s.nivel_magia)}">${getMagicLevelName(s.nivel_magia)}</span>`:""}
+        ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
+        ${isExtra?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
+      </div>
+      ${locked?`<div style="font-size:.7em;color:var(--red);margin-bottom:3px">🔒 Requer Idioma: ${langChk.missing.join(', ')}</div>`
+              :s.prereq?`<div style="font-size:.7em;color:var(--gold);margin-bottom:3px">Pré-req: ${s.prereq}</div>`:''}
+      <div class="sc-desc">${s.descricao}</div>
+    </div>`;
+  }
+  if(!filtered.length) html+=`<div style="color:var(--text-dim);padding:20px;grid-column:1/-1">Nenhuma magia encontrada.</div>`;
+  html+=`</div>`;
+  set(html);
+}
+
+function setSF(k,v){spellFilters[k]=v;renderMagias();}
+
+function toggleSpell(name){
+  const s=SPELLS.find(x=>x.nome===name); if(!s)return;
+  const slots=getSpellSlots();
+  const inBase=char.magias.includes(name);
+  const inExtra=char.magiasExtra.includes(name);
+
+  if(inBase){char.magias=char.magias.filter(m=>m!==name);renderMagias();return;}
+  if(inExtra){char.magiasExtra=char.magiasExtra.filter(m=>m!==name);renderMagias();return;}
+
+  // Verificar pré-requisito de idioma
+  const langCheck=canLearnSpell(s);
+  if(!langCheck.ok){showErr(`Pré-requisito não atendido: necessita Idioma ${langCheck.missing.join(' e ')}.`);return;}
+
+  // Determine where this spell goes
+  if(s.tipo==='Truque'){
+    const cnt=char.magias.filter(m=>{const sp=SPELLS.find(x=>x.nome===m);return sp&&sp.tipo==='Truque';}).length;
+    if(cnt>=slots.truques){showErr(`Limite de ${slots.truques} truques atingido.`);return;}
+    char.magias.push(name); renderMagias(); return;
+  }
+
+  // Extra slots (Grimório, Racial)
+  if(slots.extraType&&s.tipo===slots.extraType){
+    const cnt=char.magiasExtra.filter(m=>{const sp=SPELLS.find(x=>x.nome===m);return sp&&sp.tipo===slots.extraType;}).length;
+    if(cnt>=slots.extra){showErr(`Limite de ${slots.extra} ${slots.extraType} atingido.`);return;}
+    char.magiasExtra.push(name); renderMagias(); return;
+  }
+  if(slots.racialExtra&&s.tipo===slots.racialExtra.type){
+    const cnt=char.magiasExtra.filter(m=>{const sp=SPELLS.find(x=>x.nome===m);return sp&&sp.tipo===slots.racialExtra.type;}).length;
+    if(cnt>=slots.racialExtra.count){showErr(`Limite de ${slots.racialExtra.count} magia(s) racial atingido.`);return;}
+    char.magiasExtra.push(name); renderMagias(); return;
+  }
+
+  // Base slots
+  const cntBase=char.magias.filter(m=>{const sp=SPELLS.find(x=>x.nome===m);return sp&&sp.tipo!=='Truque';}).length;
+  const totalBase=slots.base+slots.extraSpells;
+  if(cntBase>=totalBase){showErr(`Limite de ${totalBase} magias atingido.`);return;}
+  char.magias.push(name); renderMagias();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 7: TALENTOS
+// ═══════════════════════════════════════════════════════
+let talentFilter='';
+
+function renderTalentos(){
+  const r=getRaceData();
+  const maxTal=PROF+(r&&r.extraTal?r.extraTal:0); // Proficiência(2) + bônus racial
+  const inherited=getInheritedTraits();
+
+  let html=`<h2>◈ Talentos</h2>
+  <div class="info-box">
+    <b>Talentos = Proficiência (${PROF})${r&&r.extraTal?` + ${r.extraTal} bônus racial`:''} = ${maxTal} talentos</b><br>
+    Talentos com <span style="color:var(--green)">bônus de estatísticas</span> têm seus efeitos calculados automaticamente na ficha.
+    ${inherited.length>0?`<br><b>Traços herdados:</b> ${inherited.map(t=>t.n).join(', ')}`:''}
+  </div>
+  <div class="counter">
+    <span class="cnt-badge${char.talentos.length>=maxTal?' full':''}">Talentos: ${char.talentos.length}/${maxTal}</span>
+  </div>
+  <div class="filters">
+    <span class="fl">Busca:</span>
+    <input class="search" value="${esc(talentFilter)}" placeholder="Buscar talento..." oninput="talentFilter=this.value;renderTalentos()">
+  </div>
+  <div class="tgrid">`;
+
+  let filtered=TALENTS;
+  if(talentFilter){const q=talentFilter.toLowerCase();filtered=filtered.filter(t=>t.nome.toLowerCase().includes(q)||t.descricao.toLowerCase().includes(q));}
+
+  for(const t of filtered){
+    const sel=char.talentos.includes(t.nome);
+    const bns=TALENT_STAT_BONUSES[t.nome];
+    const prereqErr=checkTalentPrereq(t.nome);
+    const locked=!sel&&prereqErr!==null;
+    html+=`<div class="tc${sel?' selected':''}${locked?' disabled':''}"
+      style="${locked?'opacity:.5;cursor:not-allowed;border-color:var(--red)!important;':''}"
+      onclick="toggleTalent('${t.nome.replace(/'/g,"\\'")}',${maxTal})">
+      <div class="tc-name">${t.nome}${sel?' ✓':locked?' 🔒':''}</div>
+      ${bns?`<div class="tc-bonus">📊 Bônus: ${bns.label}</div>`:''}
+      ${locked?`<div style="font-size:.7em;color:var(--red);margin-bottom:3px">🔒 ${prereqErr}</div>`:''}
+      ${!locked&&TALENT_PREREQS[t.nome]?`<div style="font-size:.7em;color:var(--green);margin-bottom:3px">✓ Pré-req: ${TALENT_PREREQS[t.nome].label} — atendido</div>`:''}
+      <div class="tc-desc">${t.descricao}</div>
+    </div>`;
+  }
+  html+=`</div>`;
+  set(html);
+}
+
+function toggleTalent(name,max){
+  if(char.talentos.includes(name)){char.talentos=char.talentos.filter(t=>t!==name);}
+  else{
+    const prereqErr=checkTalentPrereq(name);
+    if(prereqErr){showErr(`Pré-requisito não atendido: ${prereqErr}.`);return;}
+    if(char.talentos.length>=max){showErr(`Limite de ${max} talento(s) atingido.`);return;}
+    char.talentos.push(name);
+  }
+  renderTalentos();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP ENTIDADE: ESCOLHA DE ENTIDADE ALIADA
+// ═══════════════════════════════════════════════════════
+function renderEntidade(){
+  const cl=getClassData();
+  const disponiveis=getEntidadesDisponiveis();
+
+  // Agrupa por tipo para exibição
+  const grupos={};
+  for(const e of disponiveis){
+    if(!grupos[e.tipo]) grupos[e.tipo]=[];
+    grupos[e.tipo].push(e);
+  }
+
+  // Descrição contextual por classe
+  let contextoHtml='';
+  if(char.classe==='Espiritualista'){
+    const tipoLabel=char.espiritualistaChoice==='Antigas'?'Elemental':'Sagrada';
+    contextoHtml=`<div class="info-box">
+      <b>Vínculo Espiritual</b> — Seu personagem estabelece uma conexão sagrada com uma entidade ${tipoLabel}.
+      Esta entidade concede acesso às magias correspondentes e um efeito passivo único.<br>
+      <span style="color:var(--gold)">Você pode ter apenas 1 entidade aliada por ficha.</span>
+    </div>`;
+  } else if(char.classe==='Bruxo'){
+    contextoHtml=`<div class="info-box">
+      <b>Pacto Sobrenatural</b> — Seu Bruxo fez um pacto com uma entidade poderosa que lhe concede magia e poder.
+      A entidade escolhida define a natureza do seu pacto e seu efeito passivo permanente.<br>
+      <span style="color:var(--gold)">Você pode ter apenas 1 entidade aliada por ficha.</span>
+    </div>`;
+  } else {
+    const pactos=char.talentos.filter(t=>['Pacto Ancestral','Pacto Elemental','Pacto Santificado'].includes(t));
+    contextoHtml=`<div class="info-box">
+      <b>Pacto: ${pactos.join(', ')}</b> — Através do seu talento de pacto, seu personagem firma aliança com uma entidade.
+      Esta entidade concede um efeito passivo único permanente.<br>
+      <span style="color:var(--gold)">Você pode ter apenas 1 entidade aliada por ficha.</span>
+    </div>`;
+  }
+
+  // Aviso para Espiritualista sem tipo definido
+  if(disponiveis.length===0){
+    set(`<h2>◈ Entidade Aliada</h2>
+    <div class="info-box" style="border-color:var(--red)">
+      <b>⚠ Atenção:</b> Volte à etapa <b>Classe</b> e escolha o tipo de vínculo espiritual
+      (Entidade Elemental ou Entidade Sagrada) antes de selecionar a entidade.
+    </div>`);
+    return;
+  }
+
+  const TIPO_LABEL={Elemental:'Entidades Elementais',Caótica:'Divindades Caóticas',Sagrada:'Entidades Sagradas (Os Pilares)'};
+  const TIPO_DESC={
+    Elemental:'Espíritos primordiais dos elementos que habitam o mundo desde os primórdios.',
+    Caótica:'Primordiais da Corrupção, nascidos da colisão entre o Tudo e o Nada.',
+    Sagrada:'Os Cinco Pilares — fragmentos do Tudo que governam os grandes domínios da existência.',
+  };
+
+  let html=`<h2>◈ Entidade Aliada</h2>${contextoHtml}`;
+
+  for(const [tipo,lista] of Object.entries(grupos)){
+    const icon=ENTITY_ICONS[tipo]||'◈';
+    const elemColor=ELEM_COLORS[tipo]||'var(--gold)';
+    html+=`<div style="margin:18px 0 8px">
+      <div style="font-size:1em;font-weight:bold;color:${elemColor};letter-spacing:1px;border-bottom:1px solid ${elemColor}33;padding-bottom:6px;margin-bottom:12px">
+        ${icon} ${TIPO_LABEL[tipo]||tipo}
+        <span style="font-size:.8em;font-weight:normal;color:var(--text-dim);margin-left:10px">${TIPO_DESC[tipo]||''}</span>
+      </div>
+      <div class="tgrid" style="grid-template-columns:repeat(auto-fill,minmax(290px,1fr))">`;
+    for(const ent of lista){
+      const sel=char.entidade===ent.nome;
+      const elemC=ELEM_COLORS[ent.elemento]||'var(--gold)';
+      html+=`<div class="tc${sel?' selected':''}"
+        style="cursor:pointer;border-color:${sel?elemC:'var(--border)'};${sel?`box-shadow:0 0 12px ${elemC}55`:''}"
+        onclick="char.entidade=${sel?'null':`'${ent.nome.replace(/'/g,"\\'")}' `};renderEntidade()">
+        <div class="tc-name" style="color:${elemC}">${ent.nome}${sel?' ✓':''}</div>
+        <div style="font-size:.75em;color:var(--text-dim);margin-bottom:4px;font-style:italic">${ent.titulo}</div>
+        <div style="font-size:.7em;margin-bottom:6px;padding:3px 8px;border-radius:10px;display:inline-block;background:${elemC}22;color:${elemC};border:1px solid ${elemC}44">${ent.elemento}</div>
+        <div class="tc-desc" style="margin-bottom:8px">${ent.descricao}</div>
+        <div style="background:var(--bg3);border:1px solid ${elemC}44;border-radius:6px;padding:8px;font-size:.8em">
+          <div style="color:${elemC};font-weight:bold;margin-bottom:3px">⚡ ${ent.efeito_nome}</div>
+          <div style="color:var(--text)">${ent.efeito}</div>
+        </div>
+      </div>`;
+    }
+    html+=`</div></div>`;
+  }
+
+  if(char.entidade){
+    const ent=ENTITIES.find(e=>e.nome===char.entidade);
+    if(ent){
+      const c=ELEM_COLORS[ent.elemento]||'var(--gold)';
+      html+=`<div class="info-box" style="border-color:${c};margin-top:16px">
+        <b style="color:${c}">${ENTITY_ICONS[ent.tipo]||'◈'} Aliança firmada com: ${ent.nome}</b>
+        <br><span style="font-size:.9em">Efeito ativo: <b>${ent.efeito_nome}</b> — ${ent.efeito}</span>
+      </div>`;
+    }
+  }
+
+  set(html);
+}
+
+// ═══════════════════════════════════════════════════════
+//  STEP 8: FICHA FINAL
+// ═══════════════════════════════════════════════════════
+function renderFicha(){
+  const cl=getClassData();
+  const r=getRaceData();
+  const kit=char.kit?KITS[char.kit]:null;
+  const rb=getRacialBonuses();
+  const tb=getTalentBonuses();
+  const slots=getSpellSlots();
+  const inherited=getInheritedTraits();
+
+  function bonusStr(rb,tb){
+    const parts=[];
+    if(rb>0) parts.push(`+${rb} racial`);
+    if(tb>0) parts.push(`+${tb} talento`);
+    return parts.length?` <span class="sh-bonus">(${parts.join(', ')})</span>`:'';
+  }
+
+  let html=`<div class="sheet">
+    <div class="sheet-head">
+      <div class="sh-name">${char.name||'Sem Nome'}</div>
+      <div class="sh-sub">${char.classe||'—'} • ${char.raca||'—'} • Kit ${char.kit||'—'}${char.sexo?` • ${char.sexo}`:''}</div>
+    </div>
+    <div class="sh-cols">
+      <div>`;
+
+  // ATRIBUTOS
+  html+=`<div class="sh-sec"><div class="sh-stitle">◈ ATRIBUTOS</div><div class="sh-sbody">`;
+  for(const [a,n] of Object.entries(ATTR_NAMES)){
+    const v=char.attrs[a]||0;
+    const extra=a==='PRE'?r&&r.bAttrExtra?0:0:0; // só Humano tem extra mas já está nos pontos
+    html+=`<div class="sh-row"><span class="sh-lbl">${n} (${a})</span><span class="sh-val">${v}</span></div>`;
+  }
+  html+=`</div></div>`;
+
+  const eq=getEquipBonuses();
+  const charProfs=getCharProficiencies();
+
+  function bonusStrEq(rVal,tVal,eVal){
+    const parts=[];
+    if(rVal>0) parts.push(`+${rVal} racial`);
+    if(tVal>0) parts.push(`+${tVal} talento`);
+    if(eVal>0) parts.push(`+${eVal} equip`);
+    return parts.length?` <span class="sh-bonus">(${parts.join(', ')})</span>`:'';
+  }
+
+  // ESTATÍSTICAS
+  html+=`<div class="sh-sec"><div class="sh-stitle">◈ ESTATÍSTICAS</div><div class="sh-sbody">
+    <div class="sh-row"><span class="sh-lbl">Vida</span><span class="sh-val">${calcVida()}${bonusStr(rb.vida,tb.vida)}</span></div>
+    <div class="sh-row"><span class="sh-lbl">Mana (PM)</span><span class="sh-val">${calcMana()}${bonusStr(rb.mana+(r?r.bMana:0),tb.mana)}</span></div>
+    <div class="sh-row"><span class="sh-lbl">Defesa Base (DB)</span><span class="sh-val">${calcDB()}${bonusStrEq(rb.db,tb.db,eq.db)}</span></div>
+    <div class="sh-row"><span class="sh-lbl">CD Conjuração</span><span class="sh-val">${calcCD()}${bonusStr(rb.cd,tb.cd)}</span></div>
+    <div class="sh-row"><span class="sh-lbl">Lim. Mana/Turno</span><span class="sh-val">${calcLMT()}${bonusStr(rb.lmt,tb.lmt)}</span></div>
+    <div class="sh-row"><span class="sh-lbl">Proficiência</span><span class="sh-val">${PROF}</span></div>
+    <div class="sh-row"><span class="sh-lbl">Movimento</span><span class="sh-val">${r?r.move:9} m</span></div>
+    <div class="sh-row"><span class="sh-lbl">Magias Conhecidas</span><span class="sh-val">2+${getAttr('INT')}=${slots.base} base + 2 truques</span></div>
+    ${slots.extra>0?`<div class="sh-row"><span class="sh-lbl">${slots.extraType} (adicional)</span><span class="sh-val">${slots.extra}</span></div>`:''}
+    ${slots.extraSpells>0?`<div class="sh-row"><span class="sh-lbl">Magias (Lista Expandida)</span><span class="sh-val">+${slots.extraSpells}</span></div>`:''}
+    ${slots.racialExtra?`<div class="sh-row"><span class="sh-lbl">${slots.racialExtra.type} (racial)</span><span class="sh-val">+${slots.racialExtra.count}</span></div>`:''}
+  </div></div>`;
+
+  // PERÍCIAS
+  const vants=getSkillVantagens();
+  const eqSkills=eq.skills;
+  html+=`<div class="sh-sec"><div class="sh-stitle">◈ PERÍCIAS</div><div class="sh-sbody">`;
+  for(const sk of SKILLS){
+    const lv=char.pericias[sk.n]||0;
+    const eqB=eqSkills[sk.n]||0;
+    const sv=PROF+lv+eqB;
+    const lvName=lv===10?'Avançado':lv===5?'Intermediário':lv===2?'Básico':'—';
+    const hasV=vants.has(sk.n);
+    const rowBg=hasV?'background:rgba(74,154,90,.08);border-radius:3px':'';
+    html+=`<div class="sh-row" style="${rowBg}">
+      <span class="sh-lbl">${sk.n} (${sk.a})${hasV?` <span style="font-size:.68em;padding:1px 4px;border:1px solid var(--green);color:var(--green);border-radius:4px">Vantagem</span>`:''}${eqB>0?` <span style="font-size:.68em;padding:1px 4px;border:1px solid var(--gold);color:var(--gold);border-radius:4px">+${eqB} equip</span>`:''}</span>
+      <span class="sh-val" style="font-size:.82em;font-weight:normal">${lvName} | <b>SV ${sv}</b>${eqB>0?`<span class="sh-bonus">(+${eqB} equip)</span>`:''}</span>
+    </div>`;
+  }
+  html+=`</div></div>`;
+
+  // TALENTOS — coluna esquerda
+  if(char.talentos.length>0){
+    html+=`<div class="sh-sec"><div class="sh-stitle">◈ TALENTOS</div><div class="sh-sbody">`;
+    char.talentos.forEach(tn=>{
+      const t=TALENTS.find(x=>x.nome===tn);
+      const bns=TALENT_STAT_BONUSES[tn];
+      if(t) html+=`<div class="ab"><div class="ab-name">${t.nome}${bns?` <span class="bonus-tag">${bns.label}</span>`:''}</div><div class="ab-desc">${t.descricao}</div></div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  // MAGIAS & TRUQUES — coluna esquerda (truques com descrição completa)
+  {
+    const todasMagias=[...char.magias,...char.magiasExtra];
+    if(todasMagias.length>0){
+      html+=`<div class="sh-sec"><div class="sh-stitle">◈ MAGIAS & TRUQUES</div><div class="sh-sbody">`;
+      const truques=todasMagias.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return s&&s.tipo==='Truque';});
+      const outras=todasMagias.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return !s||s.tipo!=='Truque';});
+      if(truques.length>0){
+        html+=`<div style="margin-bottom:6px"><b style="color:var(--text-dim);font-size:.78em;letter-spacing:1px">TRUQUES (0 PM — À VONTADE)</b></div>`;
+        for(const mn of truques){
+          const s=SPELLS.find(x=>x.nome===mn); if(!s) continue;
+          const nc=ELEM_COLORS[s.natureza]||'var(--border)';
+          html+=`<div class="ab">
+            <div class="ab-name" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+              ${s.nome}
+              <span class="tag" style="border-color:${nc};color:${nc}">${s.natureza||'—'}</span>
+              <span class="tag" style="border-color:var(--green);color:var(--green)">0 PM</span>
+              ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
+              ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
+            </div>
+            <div class="ab-desc">${s.descricao}</div>
+          </div>`;
+        }
+      }
+      if(outras.length>0){
+        html+=`<div style="margin-bottom:6px;margin-top:${truques.length?'10px':'0'}"><b style="color:var(--text-dim);font-size:.78em;letter-spacing:1px">MAGIAS</b></div>`;
+        for(const mn of outras){
+          const s=SPELLS.find(x=>x.nome===mn); if(!s) continue;
+          const nc=ELEM_COLORS[s.natureza]||'var(--border)';
+          const isAdditional=char.magiasExtra.includes(mn);
+          html+=`<div class="ab">
+            <div class="ab-name" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+              ${s.nome}
+              <span class="tag" style="border-color:${nc};color:${nc}">${s.natureza||'—'}</span>
+              <span class="tag">${s.custo} PM</span>
+              ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
+              ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
+              ${isAdditional?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
+            </div>
+            <div class="ab-desc">${s.descricao}</div>
+          </div>`;
+        }
+      }
+      html+=`</div></div>`;
+    }
+  }
+
+  html+=`</div><div>`;
+
+  // HABILIDADES DE CLASSE
+  if(cl){
+    html+=`<div class="sh-sec"><div class="sh-stitle">◈ CLASSE — ${char.classe}</div><div class="sh-sbody">
+      <div class="ab"><div class="ab-name">${cl.hab1}</div><div class="ab-desc">${cl.h1}</div></div>
+      <div class="ab"><div class="ab-name">${cl.hab2}</div><div class="ab-desc">${cl.h2}</div></div>
+      ${cl.armas!=='Nenhuma'?`<div style="font-size:.78em;color:var(--text-dim);margin-top:4px">Proficiências: ${cl.armas}</div>`:''}
+    </div></div>`;
+  }
+
+  // ENTIDADE ALIADA
+  if(char.entidade){
+    const ent=ENTITIES.find(e=>e.nome===char.entidade);
+    if(ent){
+      const elemC=ELEM_COLORS[ent.elemento]||'var(--gold)';
+      const icon=ENTITY_ICONS[ent.tipo]||'◈';
+      html+=`<div class="sh-sec" style="border-color:${elemC}66">
+        <div class="sh-stitle" style="color:${elemC}">◈ ENTIDADE ALIADA — ${icon} ${ent.nome}</div>
+        <div class="sh-sbody">
+          <div style="font-size:.78em;color:var(--text-dim);font-style:italic;margin-bottom:6px">${ent.titulo} • ${ent.elemento}</div>
+          <div style="font-size:.82em;color:var(--text);margin-bottom:8px">${ent.descricao}</div>
+          <div class="ab" style="border-left:2px solid ${elemC};padding-left:8px">
+            <div class="ab-name" style="color:${elemC}">⚡ ${ent.efeito_nome}</div>
+            <div class="ab-desc">${ent.efeito}</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  }
+
+  // HABILIDADES RACIAIS
+  if(r){
+    html+=`<div class="sh-sec"><div class="sh-stitle">◈ RAÇA — ${char.raca}</div><div class="sh-sbody">`;
+    if(RACIAL_DATA[char.raca]){
+      const rd=RACIAL_DATA[char.raca];
+      html+=`<div class="sh-row"><span class="sh-lbl">Altura</span><span class="sh-val">${rd.altura}</span></div>`;
+      html+=`<div class="sh-row"><span class="sh-lbl">Deslocamento</span><span class="sh-val">${rd.movimento}</span></div>`;
+      html+=`<div class="sh-row"><span class="sh-lbl">Expectativa de Vida</span><span class="sh-val">${rd.expectativa_vida}</span></div>`;
+      html+=`<div class="sh-row"><span class="sh-lbl">Idiomas Nativos</span><span class="sh-val" style="font-size:.78em">${rd.idiomas_nativos}</span></div>`;
+      html+='<div style="border-top:1px solid var(--bg3);margin:6px 0"></div>';
+    }
+    r.traits.forEach(t=>{
+      html+=`<div class="ab"><div class="ab-name">${t.n}${t.bonus?` <span class="bonus-tag">${t.bonus}</span>`:''}</div><div class="ab-desc">${t.d}</div></div>`;
+    });
+    if(inherited.length>0){
+      html+=`<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px"><div class="ab-name" style="font-size:.78em;color:var(--text-dim)">TRAÇOS HERDADOS</div>`;
+      inherited.forEach(t=>{
+        html+=`<div class="ab"><div class="ab-name">${t.n}${t.bonus?` <span class="bonus-tag">${t.bonus}</span>`:''}</div><div class="ab-desc">${t.d}</div></div>`;
+      });
+      html+=`</div>`;
+    }
+    // Fauno — aspecto bestial com bônus completo
+    if(char.raca==='Fauno'&&char.faunoAspecto){
+      const asp=FAUNO_ASPECTOS[char.faunoAspecto];
+      if(asp) html+=`<div class="ab" style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">
+        <div class="ab-name">Traços Bestiais — Aspecto ${asp.label} <span class="bonus-tag">Ativo</span></div>
+        <div class="ab-desc">${asp.desc}<br><b>Bônus quando ativado:</b> ${asp.ativo}</div>
+      </div>`;
+    }
+    if(char.draconatoElem) html+=`<div style="font-size:.78em;color:var(--text-dim);margin-top:4px">Elemento da Linhagem: <b>${char.draconatoElem}</b></div>`;
+    html+=`</div></div>`;
+    // Idiomas
+    const allKnown=getKnownLangs();
+    html+=`<div class="sh-sec"><div class="sh-stitle">◈ IDIOMAS</div><div class="sh-sbody" style="display:flex;flex-wrap:wrap;gap:5px">`;
+    allKnown.forEach(l=>{
+      const rl=char.raca?RACE_LANGS[char.raca]:null;
+      const isFixed=['Comum',...(rl?rl.fixos:[])].includes(l);
+      html+=`<span class="spell-pill" style="border-color:${isFixed?'var(--green)':'var(--gold)'};color:${isFixed?'var(--green)':'var(--gold)'}">${l}</span>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  // PROFICIÊNCIAS
+  const profList=getProficienciesDisplay();
+  if(profList.length>0){
+    html+=`<div class="sh-sec"><div class="sh-stitle">◈ PROFICIÊNCIAS</div><div class="sh-sbody" style="display:flex;flex-wrap:wrap;gap:5px;padding:6px 0">`;
+    profList.forEach(p=>{
+      const isUni=p.origem==='universal';
+      html+=`<span class="spell-pill" style="border-color:${isUni?'var(--border)':'var(--gold)'};color:${isUni?'var(--text-dim)':'var(--gold)'}" title="${p.origem}">${p.label}</span>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  // EQUIPAMENTOS
+  if(kit){
+    const kitEB=KIT_EQUIP_BONUSES[char.kit];
+    html+=`<div class="sh-sec"><div class="sh-stitle">◈ EQUIPAMENTOS — Kit ${char.kit}</div><div class="sh-sbody">`;
+    kit.items.forEach(i=>{
+      const ebItem=kitEB?kitEB.items.find(x=>x.n===i.n):null;
+      const needProf=ebItem&&ebItem.prof&&!charProfs.has(ebItem.prof);
+      html+=`<div class="sh-row" style="${needProf?'background:rgba(204,68,68,.07);':''}"}>
+        <span class="sh-lbl">${i.n}${needProf?` <span style="font-size:.68em;padding:1px 4px;border:1px solid var(--red);color:var(--red);border-radius:4px">Sem Prof.</span>`:''}</span>
+        <span style="font-size:.78em;color:var(--text-dim)">${i.d}${ebItem&&ebItem.prof&&charProfs.has(ebItem.prof)?` <span style="color:var(--green);font-size:.9em">✓</span>`:''}</span>
+      </div>`;
+    });
+    html+=`<div style="margin-top:8px">${kit.extras.map(e=>`<span class="spell-pill">${e}</span>`).join('')}</div>`;
+    html+=`</div></div>`;
+  }
+
+  // DESCRIÇÃO
+  if(char.backstory||char.aparencia){
+    html+=`<div class="sh-sec"><div class="sh-stitle">◈ DESCRIÇÃO</div><div class="sh-sbody">`;
+    if(char.aparencia) html+=`<div class="ab"><div class="ab-name">Aparência</div><div class="ab-desc">${esc(char.aparencia)}</div></div>`;
+    if(char.backstory) html+=`<div class="ab"><div class="ab-name">História</div><div class="ab-desc">${esc(char.backstory)}</div></div>`;
+    html+=`</div></div>`;
+  }
+
+  html+=`
+  <div style="text-align:center;padding:40px 0 24px">
+    <button onclick="char.tipo=null;step=0;render()" style="padding:12px 32px;background:transparent;border:1px solid var(--gold-dim);border-radius:8px;color:var(--gold);cursor:pointer;font-family:inherit;font-size:.9em;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(201,162,39,.12)'" onmouseout="this.style.background='transparent'">← Criar Novo Personagem</button>
+  </div>
+  </div></div></div>`;
+  set(html);
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function set(html){document.getElementById('content').innerHTML=html;}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+(async () => {
+  const ok = await loadFromDB();
+  if (ok) render();
+})();
+</script>
+</body>
+</html>
