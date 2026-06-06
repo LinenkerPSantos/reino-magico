@@ -15,12 +15,14 @@
   letter-spacing: 3px;
   text-shadow: 0 0 18px rgba(201,162,39,.35);
   white-space: nowrap;
+  z-index: 1001;
 }
 .brand span {
   font-size: .65em; color: var(--text-dim);
   display: block; letter-spacing: 1px;
 }
 
+/* ── Links (desktop) ─────────────────────────────────────── */
 .links {
   display: flex; align-items: center; gap: 4px; list-style: none;
 }
@@ -38,13 +40,9 @@
 .links a:hover, .dropBtn:hover { color: var(--gold); background: rgba(201,162,39,.08); }
 .links a.active { color: var(--gold); }
 
-/* Dropdown */
+/* ── Dropdown ────────────────────────────────────────────── */
 .dropdown { position: relative; }
 .dropBtn { display: flex; align-items: center; gap: 5px; }
-.dropBtn::after {
-  content: '▾'; font-size: .7em; color: var(--gold-dim); transition: transform .2s;
-}
-.dropdown:hover .dropBtn::after { transform: rotate(-180deg); }
 
 .dropMenu {
   position: absolute; top: calc(100% + 4px); right: 0;
@@ -54,6 +52,7 @@
   opacity: 0; visibility: hidden; transform: translateY(-8px);
   transition: opacity .2s, transform .2s, visibility .2s;
   box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  z-index: 1002;
 }
 .dropdown:hover .dropMenu { opacity: 1; visibility: visible; transform: translateY(0); }
 
@@ -66,15 +65,90 @@
 }
 .dropMenu a:last-child { border-bottom: none; }
 .dropMenu a:hover { background: var(--bg3); color: var(--gold); }
-.dropMenu a.disabled { opacity: .5; pointer-events: none; }
 
 .dmIcon { font-size: 1.1em; }
 .dmInfo { display: flex; flex-direction: column; gap: 2px; }
 .dmTitle { color: var(--text); font-size: .9em; }
 .dmDesc { font-size: .75em; color: var(--text-dim); }
 
-@media (max-width: 700px) {
+/* ── Hamburguer — escondido no desktop ───────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column; justify-content: center; align-items: center;
+  gap: 5px;
+  width: 40px; height: 40px;
+  background: none; border: none; cursor: pointer;
+  padding: 4px; z-index: 1001;
+}
+.hamburger span {
+  display: block; width: 24px; height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: transform .25s, opacity .25s;
+  transform-origin: center;
+}
+/* X quando aberto */
+.hamburgerOpen span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburgerOpen span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburgerOpen span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Overlay ─────────────────────────────────────────────── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 999;
+}
+
+/* ── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
   .nav { padding: 0 16px; }
   .brand span { display: none; }
-  .links a, .dropBtn { padding: 8px 10px; font-size: .8em; }
+
+  /* Mostra hamburguer */
+  .hamburger { display: flex; }
+
+  /* Overlay visível quando menu aberto */
+  .overlay { display: block; }
+
+  /* Menu fechado: escondido fora da tela */
+  .links {
+    position: fixed;
+    top: 0; right: -280px;
+    width: 260px; height: 100dvh;
+    background: rgba(15, 12, 10, .98);
+    border-left: 1px solid var(--border);
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 80px 0 24px;
+    overflow-y: auto;
+    transition: right .28s cubic-bezier(.4,0,.2,1);
+    z-index: 1000;
+  }
+
+  /* Menu aberto */
+  .linksOpen { right: 0; }
+
+  .links a, .dropBtn {
+    padding: 14px 24px;
+    font-size: .95em;
+    border-radius: 0;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: .5px;
+  }
+  .links li:last-child a,
+  .links li:last-child .dropBtn { border-bottom: none; }
+
+  /* Dropdown no mobile: sempre visível dentro do menu */
+  .dropdown .dropMenu {
+    position: static;
+    opacity: 1; visibility: visible; transform: none;
+    box-shadow: none; border: none; border-radius: 0;
+    background: rgba(0,0,0,.25);
+    min-width: unset;
+  }
+  .dropMenu a {
+    padding: 12px 32px;
+    font-size: .85em;
+    border-bottom: 1px solid var(--border);
+  }
 }
