@@ -108,8 +108,11 @@ select.finput option{background:var(--bg2);}
 .sh-val{color:var(--gold);font-weight:bold;}
 .sh-bonus{font-size:.72em;color:#7ad07a;margin-left:4px;}
 .spell-pill{display:inline-block;margin:2px;padding:3px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:.75em;color:var(--text);}
-.print-btn{position:fixed;bottom:16px;right:16px;padding:10px 20px;background:var(--gold-dim);border:1px solid var(--gold);border-radius:7px;color:#1a1000;cursor:pointer;font-weight:bold;font-size:.88em;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.6);}
+#fixedBar{position:fixed;bottom:16px;right:16px;display:flex;gap:8px;align-items:center;z-index:100;}
+.print-btn{padding:10px 20px;background:var(--gold-dim);border:1px solid var(--gold);border-radius:7px;color:#1a1000;cursor:pointer;font-weight:bold;font-size:.88em;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.6);}
 .print-btn:hover{background:var(--gold);}
+.novo-btn{padding:10px 20px;background:var(--bg2);border:1px solid var(--gold-dim);border-radius:7px;color:var(--gold);cursor:pointer;font-weight:bold;font-size:.88em;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.6);transition:all .2s;}
+.novo-btn:hover{background:var(--sel);border-color:var(--gold);}
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
@@ -134,7 +137,7 @@ select.finput option{background:var(--bg2);}
 @media print{
   @page{size:A4;margin:3cm;}
   body{background:white!important;color:black!important;font-size:9pt!important;}
-  .nav-buttons,.steps-bar,.print-btn,#app>header{display:none!important;}
+  .nav-buttons,.steps-bar,.print-btn,#app>header,#fixedBar{display:none!important;}
   #app{max-width:100%;padding:0;margin:0;}
   .sheet{background:white!important;border:none!important;border-radius:0!important;padding:0;}
   .sheet-head{border-bottom:2px solid #333!important;margin-bottom:12px;padding-bottom:10px;}
@@ -765,9 +768,15 @@ function render(){
   const nb=document.getElementById('btnNext');
   nb.style.display=last?'none':'';
   nb.textContent=step===getStepNames().length-2?'Ver Ficha →':'Próximo →';
-  let pb=document.getElementById('printBtn');
-  if(last){if(!pb){pb=document.createElement('button');pb.id='printBtn';pb.className='print-btn';pb.textContent='💾 Salvar como PDF';pb.title='Abre diálogo de impressão — escolha "Salvar como PDF" no navegador';pb.onclick=()=>window.print();document.body.appendChild(pb);}}
-  else if(pb)pb.remove();
+  let bar=document.getElementById('fixedBar');
+  if(last){
+    if(!bar){
+      bar=document.createElement('div');bar.id='fixedBar';
+      const nb=document.createElement('button');nb.className='novo-btn';nb.textContent='← Criar Novo';nb.onclick=()=>{char.tipo=null;step=0;render();};
+      const pb=document.createElement('button');pb.id='printBtn';pb.className='print-btn';pb.textContent='💾 Salvar como PDF';pb.title='Abre diálogo de impressão — escolha "Salvar como PDF" no navegador';pb.onclick=()=>window.print();
+      bar.appendChild(nb);bar.appendChild(pb);document.body.appendChild(bar);
+    }
+  } else if(bar)bar.remove();
 }
 
 
@@ -1508,9 +1517,9 @@ function getKnownLangs(){
   return ['Comum',...fixos,...char.idiomas.filter(l=>!fixos.includes(l)&&l!=='Comum')];
 }
 
-// Idiomas extras concedidos pelo talento Poliglota
+// Idiomas extras concedidos pelo talento Poliglota ("um novo idioma à sua escolha")
 function getTalentLangExtras(){
-  return char.talentos.includes('Poliglota') ? 2 : 0;
+  return char.talentos.includes('Poliglota') ? 1 : 0;
 }
 
 function renderIdiomas(){
@@ -2115,11 +2124,7 @@ function renderFicha(){
     html+=`</div></div>`;
   }
 
-  html+=`
-  <div style="text-align:center;padding:40px 0 24px">
-    <button onclick="char.tipo=null;step=0;render()" style="padding:12px 32px;background:transparent;border:1px solid var(--gold-dim);border-radius:8px;color:var(--gold);cursor:pointer;font-family:inherit;font-size:.9em;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(201,162,39,.12)'" onmouseout="this.style.background='transparent'">← Criar Novo Personagem</button>
-  </div>
-  </div></div></div>`;
+  html+=`</div></div></div>`;
 
   // ── Segunda folha: Magias & Truques (page-break-before:always em @media print) ──
   {
