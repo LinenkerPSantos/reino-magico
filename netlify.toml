@@ -7,13 +7,13 @@
 # IMPORTANTE: substitua a URL abaixo pela URL real do seu serviço no Render
 [[redirects]]
   from   = "/api/*"
-  to     = "https://SEU-BACKEND.onrender.com/api/:splat"
+  to     = "https://reino-magico.onrender.com/api/:splat"
   status = 200
   force  = true
 
 [[redirects]]
   from   = "/img/*"
-  to     = "https://SEU-BACKEND.onrender.com/img/:splat"
+  to     = "https://reino-magico.onrender.com/img/:splat"
   status = 200
   force  = true
 
