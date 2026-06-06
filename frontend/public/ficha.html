@@ -130,7 +130,35 @@ select.finput option{background:var(--bg2);}
 .trait-opt-name{font-weight:bold;color:var(--gold);white-space:nowrap;}
 .trait-opt-desc{color:var(--text);line-height:1.3;font-size:.95em;}
 .bonus-tag{font-size:.7em;padding:1px 5px;border-radius:6px;border:1px solid var(--green);color:var(--green);white-space:nowrap;}
-@media print{body{background:white!important;color:black!important;}.nav-buttons,.steps-bar,.print-btn{display:none!important;}}
+.print-page-break{margin-top:24px;}
+@media print{
+  @page{size:A4;margin:3cm;}
+  body{background:white!important;color:black!important;font-size:9pt!important;}
+  .nav-buttons,.steps-bar,.print-btn,#app>header{display:none!important;}
+  #app{max-width:100%;padding:0;margin:0;}
+  .sheet{background:white!important;border:none!important;border-radius:0!important;padding:0;}
+  .sheet-head{border-bottom:2px solid #333!important;margin-bottom:12px;padding-bottom:10px;}
+  .sh-name{color:#111!important;font-size:16pt!important;}
+  .sh-sub{color:#444!important;}
+  .sh-cols{gap:10px!important;}
+  .sh-sec:not(.spells-sec){border:1px solid #aaa!important;break-inside:avoid;margin-bottom:6px!important;}
+  .sh-sec.spells-sec{border:1px solid #aaa!important;margin-bottom:0!important;}
+  .sh-stitle{background:#eee!important;color:#111!important;border-bottom:1px solid #aaa!important;font-size:7pt!important;padding:3px 8px!important;}
+  .sh-sbody{padding:5px 8px!important;}
+  .sh-row{border-bottom:1px solid #eee!important;padding:2px 0!important;font-size:8pt!important;}
+  .sh-lbl{color:#333!important;}
+  .sh-val{color:#111!important;}
+  .sh-bonus{color:#336!important;}
+  .ab{padding-bottom:5px!important;margin-bottom:5px!important;}
+  .ab-name{color:#111!important;font-size:8pt!important;}
+  .ab-desc{color:#333!important;font-size:7.5pt!important;line-height:1.3!important;}
+  .spell-pill{border:1px solid #888!important;color:#222!important;background:white!important;font-size:7pt!important;}
+  .tag{border:1px solid #888!important;color:#333!important;background:white!important;font-size:6.5pt!important;}
+  .bonus-tag{border:1px solid #336!important;color:#336!important;}
+  .print-page-break{page-break-before:always;break-before:page;margin-top:0;}
+  .spells-sec .sh-sbody{columns:2;column-gap:14px;}
+  .spells-sec .ab{break-inside:avoid;}
+}
 .race-card-img{width:100%;height:90px;object-fit:cover;border-radius:5px;margin-bottom:6px;display:block;}
 
 /* Dados Raciais */
@@ -1480,19 +1508,27 @@ function getKnownLangs(){
   return ['Comum',...fixos,...char.idiomas.filter(l=>!fixos.includes(l)&&l!=='Comum')];
 }
 
+// Idiomas extras concedidos pelo talento Poliglota
+function getTalentLangExtras(){
+  return char.talentos.includes('Poliglota') ? 2 : 0;
+}
+
 function renderIdiomas(){
   const cl=getClassData();
   const r=getRaceData();
   const rl=char.raca?RACE_LANGS[char.raca]:{fixos:[],extras:0};
   const fixos=['Comum',...rl.fixos];
-  const maxExtras=rl.extras||0;
+  const racialExtras=rl.extras||0;
+  const talExtras=getTalentLangExtras();
+  const maxExtras=racialExtras+talExtras;
   const chosen=char.idiomas.filter(l=>!fixos.includes(l));
   const remaining=maxExtras-chosen.length;
 
   let html=`<h2>◈ Idiomas</h2>
   <div class="info-box">
     <b>Idiomas Base:</b> ${fixos.map(l=>`<span class="spell-pill">${l}</span>`).join(' ')}<br>
-    <b>Extras disponíveis:</b> ${maxExtras} (${remaining} restante${remaining!==1?'s':''})<br>
+    <b>Extras disponíveis:</b> ${maxExtras}${racialExtras>0&&talExtras>0?` (${racialExtras} racial + ${talExtras} Poliglota)`:''} — <b>${remaining}</b> restante${remaining!==1?'s':''}<br>
+    ${talExtras>0?`<span style="color:var(--gold)">⭐ <b>Poliglota:</b> +${talExtras} idiomas adicionais desbloqueados.</span><br>`:''}
     ${cl&&cl.classe==='Mago'||char.classe==='Mago'?'<span style="color:var(--gold)">⚠ <b>Mago:</b> Para usar magias do Grimório é necessário saber <b>Arcano</b>. Elfos já conhecem Arcano automaticamente.</span>':''}
     ${char.classe==='Mago'&&!fixos.includes('Arcano')&&!chosen.includes('Arcano')?'<br><span style="color:var(--red)">⚠ Recomendado: escolha <b>Arcano</b> para acessar seu Grimório.</span>':''}
   </div>`;
@@ -1537,7 +1573,8 @@ function toggleLang(lang){
   if(idx>=0){char.idiomas.splice(idx,1);}
   else{
     const chosen=char.idiomas.filter(l=>!fixos.includes(l));
-    if(chosen.length>=rl.extras){showErr(`Limite de ${rl.extras} idiomas extras atingido.`);return;}
+    const maxL=(rl.extras||0)+getTalentLangExtras();
+    if(chosen.length>=maxL){showErr(`Limite de ${maxL} idiomas extras atingido.`);return;}
     char.idiomas.push(lang);
   }
   renderIdiomas();
@@ -1969,52 +2006,6 @@ function renderFicha(){
     html+=`</div></div>`;
   }
 
-  // MAGIAS & TRUQUES — coluna esquerda (truques com descrição completa)
-  {
-    const todasMagias=[...char.magias,...char.magiasExtra];
-    if(todasMagias.length>0){
-      html+=`<div class="sh-sec"><div class="sh-stitle">◈ MAGIAS & TRUQUES</div><div class="sh-sbody">`;
-      const truques=todasMagias.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return s&&s.tipo==='Truque';});
-      const outras=todasMagias.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return !s||s.tipo!=='Truque';});
-      if(truques.length>0){
-        html+=`<div style="margin-bottom:6px"><b style="color:var(--text-dim);font-size:.78em;letter-spacing:1px">TRUQUES (0 PM — À VONTADE)</b></div>`;
-        for(const mn of truques){
-          const s=SPELLS.find(x=>x.nome===mn); if(!s) continue;
-          const nc=ELEM_COLORS[s.natureza]||'var(--border)';
-          html+=`<div class="ab">
-            <div class="ab-name" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
-              ${s.nome}
-              <span class="tag" style="border-color:${nc};color:${nc}">${s.natureza||'—'}</span>
-              <span class="tag" style="border-color:var(--green);color:var(--green)">0 PM</span>
-              ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
-              ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
-            </div>
-            <div class="ab-desc">${s.descricao}</div>
-          </div>`;
-        }
-      }
-      if(outras.length>0){
-        html+=`<div style="margin-bottom:6px;margin-top:${truques.length?'10px':'0'}"><b style="color:var(--text-dim);font-size:.78em;letter-spacing:1px">MAGIAS</b></div>`;
-        for(const mn of outras){
-          const s=SPELLS.find(x=>x.nome===mn); if(!s) continue;
-          const nc=ELEM_COLORS[s.natureza]||'var(--border)';
-          const isAdditional=char.magiasExtra.includes(mn);
-          html+=`<div class="ab">
-            <div class="ab-name" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
-              ${s.nome}
-              <span class="tag" style="border-color:${nc};color:${nc}">${s.natureza||'—'}</span>
-              <span class="tag">${s.custo} PM</span>
-              ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
-              ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
-              ${isAdditional?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
-            </div>
-            <div class="ab-desc">${s.descricao}</div>
-          </div>`;
-        }
-      }
-      html+=`</div></div>`;
-    }
-  }
 
   html+=`</div><div>`;
 
@@ -2129,6 +2120,55 @@ function renderFicha(){
     <button onclick="char.tipo=null;step=0;render()" style="padding:12px 32px;background:transparent;border:1px solid var(--gold-dim);border-radius:8px;color:var(--gold);cursor:pointer;font-family:inherit;font-size:.9em;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background='rgba(201,162,39,.12)'" onmouseout="this.style.background='transparent'">← Criar Novo Personagem</button>
   </div>
   </div></div></div>`;
+
+  // ── Segunda folha: Magias & Truques (page-break-before:always em @media print) ──
+  {
+    const todasMagias=[...char.magias,...char.magiasExtra];
+    if(todasMagias.length>0){
+      const truquesFicha=todasMagias.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return s&&s.tipo==='Truque';});
+      const outrasFicha=todasMagias.filter(m=>{const s=SPELLS.find(x=>x.nome===m);return !s||s.tipo!=='Truque';});
+      html+=`<div class="print-page-break"><div class="sh-sec spells-sec">
+        <div class="sh-stitle">◈ MAGIAS & TRUQUES — ${esc(char.name)||'Personagem'} • ${char.classe||'—'}</div>
+        <div class="sh-sbody">`;
+      if(truquesFicha.length>0){
+        html+=`<div style="margin-bottom:8px"><b style="color:var(--text-dim);font-size:.78em;letter-spacing:1px">TRUQUES (0 PM — À VONTADE)</b></div>`;
+        for(const mn of truquesFicha){
+          const s=SPELLS.find(x=>x.nome===mn); if(!s) continue;
+          const nc=ELEM_COLORS[s.natureza]||'var(--border)';
+          html+=`<div class="ab">
+            <div class="ab-name" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+              ${s.nome}
+              <span class="tag" style="border-color:${nc};color:${nc}">${s.natureza||'—'}</span>
+              <span class="tag" style="border-color:var(--green);color:var(--green)">0 PM</span>
+              ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
+              ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
+            </div>
+            <div class="ab-desc">${s.descricao}</div>
+          </div>`;
+        }
+      }
+      if(outrasFicha.length>0){
+        html+=`<div style="margin-bottom:6px;margin-top:${truquesFicha.length?'12px':'0'}"><b style="color:var(--text-dim);font-size:.78em;letter-spacing:1px">MAGIAS</b></div>`;
+        for(const mn of outrasFicha){
+          const s=SPELLS.find(x=>x.nome===mn); if(!s) continue;
+          const nc=ELEM_COLORS[s.natureza]||'var(--border)';
+          const isAdditional=char.magiasExtra.includes(mn);
+          html+=`<div class="ab">
+            <div class="ab-name" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+              ${s.nome}
+              <span class="tag" style="border-color:${nc};color:${nc}">${s.natureza||'—'}</span>
+              <span class="tag">${s.custo} PM</span>
+              ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
+              ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
+              ${isAdditional?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
+            </div>
+            <div class="ab-desc">${s.descricao}</div>
+          </div>`;
+        }
+      }
+      html+=`</div></div></div>`;
+    }
+  }
   set(html);
 }
 
