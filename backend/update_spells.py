@@ -69,7 +69,9 @@ def cell_int(cell) -> int:
 
 def load_spells_from_xlsx(path: str) -> list[dict]:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
-    ws = wb.active
+    # Usa a planilha "Planilha1" (dados das magias) em vez de wb.active:
+    # o arquivo pode ter outras abas (ex.: tabelas dinâmicas) marcadas como ativas.
+    ws = wb["Planilha1"] if "Planilha1" in wb.sheetnames else wb.active
     rows = list(ws.iter_rows())
     if not rows:
         return []
