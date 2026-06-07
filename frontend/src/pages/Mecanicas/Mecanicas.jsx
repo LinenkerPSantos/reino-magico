@@ -77,6 +77,7 @@ function Cap1() {
   return (
     <div>
       <div className={styles.chHero}>
+          <p className={styles.eyebrow}>Regras e Mecânicas em Geral</p>
         <h2 className={styles.chTitle}>Conceitos Fundamentais</h2>
         <div className={styles.chDivider} />
         <p className={styles.chLead}>Antes de rolar qualquer dado, é preciso compreender a linguagem do Reino Mágico.</p>

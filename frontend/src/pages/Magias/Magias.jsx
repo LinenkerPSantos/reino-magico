@@ -382,10 +382,10 @@ function AtributosConjuracao() {
         <div className={styles.ruleCard}>
           <div className={styles.ruleLabel}>Conhecer não é o mesmo que conjurar</div>
           <p className={styles.ruleDesc}>
-            Um personagem pode possuir magias de nível <strong>Avançado</strong> (ou superior) em sua lista de
+            Um personagem pode possuir magias de nível <strong>Elite</strong> (ou superior) em sua lista de
             magias conhecidas, mas isso não garante que poderá conjurá-las a qualquer momento. Se o
             <strong> custo em PM</strong> da magia ultrapassar o <strong>Limite PM por Turno</strong> do
-            conjurador (Foco/Proficiência + 2, por padrão), ela simplesmente não pode ser lançada naquele
+            conjurador (Proficiência + 2, por padrão), ela simplesmente não pode ser lançada naquele
             turno — mesmo que a reserva total de Mana seja suficiente.
           </p>
           <p className={styles.ruleDesc}>
@@ -479,7 +479,7 @@ export default function Magias() {
   return (
     <div className={styles.page}>
       <div className={styles.hero}>
-        <p className={styles.eyebrow}>Capítulo VII</p>
+        <p className={styles.eyebrow}>As Magias do Mundo</p>
         <h1 className={styles.pageTitle}>Sistema de Magias</h1>
         <div className={styles.divider} />
         <p className={styles.lead}>As regras completas de conjuração, natureza da mana, feitiços e níveis de poder mágico.</p>
