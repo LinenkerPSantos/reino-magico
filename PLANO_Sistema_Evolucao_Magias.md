@@ -85,23 +85,33 @@ Trabalhar **uma etapa por sessão**. Ao concluir uma etapa, marcar `[x]` abaixo 
 parar — a próxima sessão lê este arquivo e continua da etapa seguinte sem precisar
 re-derivar o entendimento.
 
-### [ ] Etapa 1 — Base de dados + helper de "família de magia" (~20–30k)
-- Migração no banco: remover colunas `upg_tipo/upg_custo/upg_nome/upg_desc` de `spells`
-  (`backend/data/rpg.db`, possivelmente também `backend/create_db.py`).
-- Criar função utilitária `getSpellFamily(nome, tipo, natureza)` (em `ficha.html`,
-  vanilla JS) que: recebe uma magia conhecida, remove sufixo de tier do nome
-  (" Elite" / " Maior" / " Avançado" / " Divino ...") e retorna a versão de um
-  `nivel_magia` alvo dentro do mesmo `tipo`+`natureza`, se existir.
-- Testar o helper com casos reais (ex.: "Alarme Mágico" → Elite/Maior/Avançado,
-  "Acelerar" → Divino).
+### [x] Etapa 1 — Base de dados + helper de "família de magia" (~20–30k) — CONCLUÍDA 2026-06-06
+- ✅ Migração no banco: colunas `upg_tipo/upg_custo/upg_nome/upg_desc` já removidas de
+  `spells` (`backend/data/rpg.db` — confirmado via `PRAGMA table_info`; backup em
+  `backend/data/rpg.db.bak_20260606_212950`).
+- ✅ Criada `getSpellBaseName(nome)` e `getSpellFamily(nome, tipo, natureza, nivelAlvo)`
+  em `ficha.html` (perto de `getMagicLevelName`/`getMagicLevelColor`, ~linha 538):
+  remove sufixo de tier (" Elite"/" Maior"/" Avançado"/" Divino ...") e busca a magia
+  com mesmo `tipo`+`natureza`+`nivel_magia` alvo, usando `SPELL_NIVEL_SUFFIX` para
+  os tiers nomeados e prefixo `"<base> Divino"` para o caso nível 8 (título variável).
+- ✅ Testado com 10 casos reais via Node contra o dump do banco: "Alarme Mágico" →
+  Elite/Maior/Avançado e volta, "Acelerar" → Elite/Avançado/Divino Rompante Temporal,
+  e caso negativo (nível sem família correspondente → `null`). Todos passaram.
 
-### [ ] Etapa 2 — Restringir seleção inicial de magias (~20–30k)
-- Atualizar a lógica de seleção de magias da ficha (provavelmente perto de
-  `getCharSpellAccess()` / `renderMagias()`) para só listar magias com
-  `nivel_magia` ≤ 3, dentro dos `tipo` que o personagem tem acesso.
-- Conferir que personagens "iniciais" (não avançados) continuam funcionando como
-  antes (essa restrição vale só na escolha base — a expansão vem das etapas
-  seguintes via aprimoramento).
+### [x] Etapa 2 — Restringir seleção inicial de magias (~20–30k) — CONCLUÍDA 2026-06-06
+- ✅ `getMaxMagicLevel()` (linha ~437) agora **sempre retorna 3**, independente de
+  `char.aprimoramentos.magicLevel`. Antes ela escalava o teto até 6 conforme a
+  Progressão Mágica comprada — isso fazia tiers Elite/Maior/Avançado aparecerem
+  direto no pool de seleção, o que contradiz a nova spec (esses tiers agora só
+  vêm pela Trilha A "Magias Aprimoradas" ou Trilha B "Magias Adicionais").
+- ✅ Como `getMaxMagicLevel()` é a única fonte do teto usado em `renderMagias()`
+  (filtro de nível e lista `filtered`), a mudança propaga automaticamente para
+  base, truques e extras (Grimório/racial) — todas usam o mesmo pool filtrado.
+- ✅ Testado via Playwright com personagem "avançado" + `magicLevel:3` (Avançado,
+  o teto mais alto possível): botões de filtro "Nível máximo" mostraram só
+  `[1,2,3]` (Truques/Básicas/Menor), nenhuma magia Elite/Maior/Avançado apareceu
+  na lista (`htmlContainsElite: false`), confirmando que o cap vale mesmo para
+  quem já comprou toda a Progressão Mágica.
 
 ### [ ] Etapa 3 — Aprimoramento "Magias Adicionais" (~25–35k)
 - Adicionar estado em `char.aprimoramentos` (ex.: `magiasAdicionais: 0`,

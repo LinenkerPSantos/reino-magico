@@ -104,6 +104,7 @@ select.finput option{background:var(--bg2);}
 .ab-desc{font-size:.76em;color:var(--text);line-height:1.4;margin-top:2px;}
 .sh-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid var(--bg3);font-size:.82em;}
 .sh-row:last-child{border-bottom:none;}
+.notes-line{height:26px;border-bottom:1px solid var(--border);}
 .sh-lbl{color:var(--text-dim);}
 .sh-val{color:var(--gold);font-weight:bold;}
 .sh-bonus{font-size:.72em;color:#7ad07a;margin-left:4px;}
@@ -135,7 +136,7 @@ select.finput option{background:var(--bg2);}
 .bonus-tag{font-size:.7em;padding:1px 5px;border-radius:6px;border:1px solid var(--green);color:var(--green);white-space:nowrap;}
 .print-page-break{margin-top:24px;}
 @media print{
-  @page{size:A4;margin:3cm;}
+  @page{size:A4;margin:1.5cm;}
   body{background:white!important;color:black!important;font-size:9pt!important;}
   .nav-buttons,.steps-bar,.print-btn,#app>header,#fixedBar{display:none!important;}
   #app{max-width:100%;padding:0;margin:0;}
@@ -161,6 +162,7 @@ select.finput option{background:var(--bg2);}
   .print-page-break{page-break-before:always;break-before:page;margin-top:0;}
   .spells-sec .sh-sbody{columns:2;column-gap:14px;}
   .spells-sec .ab{break-inside:avoid;}
+  .notes-line{border-bottom:1px solid #ccc!important;}
 }
 .race-card-img{width:100%;height:90px;object-fit:cover;border-radius:5px;margin-bottom:6px;display:block;}
 
@@ -434,12 +436,11 @@ const UPGRADES = [
   {id:'mlAvancado',     nome:'Progressão Mágica: Avançado',     desc:'Desbloqueia magias nível Avançado (6). Requer Maior primeiro.',           custo:800, max:1,    tipo:'magic', nivel:6},
 ];
 
+// Teto da seleção inicial de magias: sempre Truque/Básica/Menor (nível ≤ 3),
+// independente da Progressão Mágica (magicLevel). Tiers superiores não entram
+// mais aqui — são obtidos depois via Trilha A (Magias Aprimoradas, evolui magia
+// já conhecida) ou Trilha B (Magias Adicionais, com gating de proficiência).
 function getMaxMagicLevel(){
-  if(!char.tipo || char.tipo==='inicial') return 3;
-  const apr = char.aprimoramentos;
-  if(apr.magicLevel>=3) return 6;
-  if(apr.magicLevel>=2) return 5;
-  if(apr.magicLevel>=1) return 4;
   return 3;
 }
 
@@ -545,6 +546,33 @@ function getMagicLevelColor(nivel) {
 }
 function getMagicLevelNome(nivel) { return getMagicLevelName(nivel); }
 
+// Família de magia: vínculo entre tiers de uma mesma magia-base por padrão de nome
+// (ex.: "Alarme Mágico" → "Alarme Mágico Elite" → "... Maior" → "... Avançado",
+// "Acelerar" → ... → "Acelerar Divino Rompante Temporal"). Não usa colunas upg_*.
+const SPELL_TIER_SUFFIXES = [' Avançado', ' Maior', ' Elite'];
+const SPELL_NIVEL_SUFFIX  = { 4: ' Elite', 5: ' Maior', 6: ' Avançado' };
+
+function getSpellBaseName(nome) {
+  for (const suf of SPELL_TIER_SUFFIXES) {
+    if (nome.endsWith(suf)) return nome.slice(0, -suf.length);
+  }
+  const divinoIdx = nome.indexOf(' Divino ');
+  if (divinoIdx !== -1) return nome.slice(0, divinoIdx);
+  return nome;
+}
+
+// Retorna a magia da mesma família (mesmo tipo+natureza) no nível alvo, ou null.
+function getSpellFamily(nome, tipo, natureza, nivelAlvo) {
+  const base = getSpellBaseName(nome);
+  const suf = SPELL_NIVEL_SUFFIX[nivelAlvo];
+  return SPELLS.find(s => {
+    if (s.tipo !== tipo || s.natureza !== natureza || s.nivel_magia !== nivelAlvo) return false;
+    if (suf) return s.nome === base + suf;
+    if (nivelAlvo === 8) return s.nome.startsWith(base + ' Divino');
+    return s.nome === base;
+  }) || null;
+}
+
 //  STATE
 // ═══════════════════════════════════════════════════════
 let step = 0;
@@ -566,7 +594,7 @@ let char = {
     periciaInt:0, periciaIntSkills:[],
     periciaAvancado:0, periciaAvancadoSkills:[],
     proficiencia:0, talento:0, cascaGrossa:0,
-    novasMagias:0,
+    novasMagias:0, magiasAdicionaisEscolhidas:[],  // [{tipo, nivel, nomes:[a,b]}] — uma entrada por compra
     magicLevel:0  // 0=Menor(3), 1=Elite(4), 2=Maior(5), 3=Avancado(6)
   },
   faunoAspecto:'', draconatoElem:'',
@@ -2213,6 +2241,7 @@ function renderFicha(){
 
   const eq=getEquipBonuses();
   const charProfs=getCharProficiencies();
+  const profList=getProficienciesDisplay();
 
   function bonusStrEq(rVal,tVal,eVal){
     const parts=[];
@@ -2340,33 +2369,6 @@ function renderFicha(){
     html+=`</div></div>`;
   }
 
-  // PROFICIÊNCIAS
-  const profList=getProficienciesDisplay();
-  if(profList.length>0){
-    html+=`<div class="sh-sec"><div class="sh-stitle">◈ PROFICIÊNCIAS</div><div class="sh-sbody" style="display:flex;flex-wrap:wrap;gap:5px;padding:6px 0">`;
-    profList.forEach(p=>{
-      const isUni=p.origem==='universal';
-      html+=`<span class="spell-pill" style="border-color:${isUni?'var(--border)':'var(--gold)'};color:${isUni?'var(--text-dim)':'var(--gold)'}" title="${p.origem}">${p.label}</span>`;
-    });
-    html+=`</div></div>`;
-  }
-
-  // EQUIPAMENTOS
-  if(kit){
-    const kitEB=KIT_EQUIP_BONUSES[char.kit];
-    html+=`<div class="sh-sec"><div class="sh-stitle">◈ EQUIPAMENTOS — Kit ${char.kit}</div><div class="sh-sbody">`;
-    kit.items.forEach(i=>{
-      const ebItem=kitEB?kitEB.items.find(x=>x.n===i.n):null;
-      const needProf=ebItem&&ebItem.prof&&!charProfs.has(ebItem.prof);
-      html+=`<div class="sh-row" style="${needProf?'background:rgba(204,68,68,.07);':''}"}>
-        <span class="sh-lbl">${i.n}${needProf?` <span style="font-size:.68em;padding:1px 4px;border:1px solid var(--red);color:var(--red);border-radius:4px">Sem Prof.</span>`:''}</span>
-        <span style="font-size:.78em;color:var(--text-dim)">${i.d}${ebItem&&ebItem.prof&&charProfs.has(ebItem.prof)?` <span style="color:var(--green);font-size:.9em">✓</span>`:''}</span>
-      </div>`;
-    });
-    html+=`<div style="margin-top:8px">${kit.extras.map(e=>`<span class="spell-pill">${e}</span>`).join('')}</div>`;
-    html+=`</div></div>`;
-  }
-
   // DESCRIÇÃO
   if(char.backstory||char.aparencia){
     html+=`<div class="sh-sec"><div class="sh-stitle">◈ DESCRIÇÃO</div><div class="sh-sbody">`;
@@ -2377,7 +2379,45 @@ function renderFicha(){
 
   html+=`</div></div></div>`;
 
-  // ── Segunda folha: Magias & Truques (page-break-before:always em @media print) ──
+  // ── Segunda folha: Equipamentos, Proficiências e Anotações/Inventário (page-break-before:always em @media print) ──
+  {
+    html+=`<div class="print-page-break">`;
+
+    // EQUIPAMENTOS
+    if(kit){
+      const kitEB=KIT_EQUIP_BONUSES[char.kit];
+      html+=`<div class="sh-sec"><div class="sh-stitle">◈ EQUIPAMENTOS — Kit ${char.kit}</div><div class="sh-sbody">`;
+      kit.items.forEach(i=>{
+        const ebItem=kitEB?kitEB.items.find(x=>x.n===i.n):null;
+        const needProf=ebItem&&ebItem.prof&&!charProfs.has(ebItem.prof);
+        html+=`<div class="sh-row" style="${needProf?'background:rgba(204,68,68,.07);':''}"}>
+          <span class="sh-lbl">${i.n}${needProf?` <span style="font-size:.68em;padding:1px 4px;border:1px solid var(--red);color:var(--red);border-radius:4px">Sem Prof.</span>`:''}</span>
+          <span style="font-size:.78em;color:var(--text-dim)">${i.d}${ebItem&&ebItem.prof&&charProfs.has(ebItem.prof)?` <span style="color:var(--green);font-size:.9em">✓</span>`:''}</span>
+        </div>`;
+      });
+      html+=`<div style="margin-top:8px">${kit.extras.map(e=>`<span class="spell-pill">${e}</span>`).join('')}</div>`;
+      html+=`</div></div>`;
+    }
+
+    // PROFICIÊNCIAS
+    if(profList.length>0){
+      html+=`<div class="sh-sec"><div class="sh-stitle">◈ PROFICIÊNCIAS</div><div class="sh-sbody" style="display:flex;flex-wrap:wrap;gap:5px;padding:6px 0">`;
+      profList.forEach(p=>{
+        const isUni=p.origem==='universal';
+        html+=`<span class="spell-pill" style="border-color:${isUni?'var(--border)':'var(--gold)'};color:${isUni?'var(--text-dim)':'var(--gold)'}" title="${p.origem}">${p.label}</span>`;
+      });
+      html+=`</div></div>`;
+    }
+
+    // ANOTAÇÕES E INVENTÁRIO — preenche o espaço restante da folha com linhas para escrever à mão
+    html+=`<div class="sh-sec notes-sec"><div class="sh-stitle">◈ ANOTAÇÕES E INVENTÁRIO</div><div class="sh-sbody notes-lines">`;
+    for(let i=0;i<18;i++) html+=`<div class="notes-line"></div>`;
+    html+=`</div></div>`;
+
+    html+=`</div>`;
+  }
+
+  // ── Terceira folha: Magias & Truques (page-break-before:always em @media print) ──
   {
     const todasMagias=[...char.magias,...char.magiasExtra];
     if(todasMagias.length>0){
