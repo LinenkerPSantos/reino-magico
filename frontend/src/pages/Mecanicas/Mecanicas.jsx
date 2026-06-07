@@ -6,6 +6,24 @@ const CHAPTERS = [
   { id: 'cap1', label: 'Conceitos Fundamentais' },
   { id: 'cap2', label: 'Estatísticas' },
   { id: 'cap3', label: 'Ações e Combate' },
+  { id: 'cap4', label: 'Terrenos e Deslocamento' },
+]
+
+const DESLOCAMENTO_SITUACOES = [
+  { s: 'Movimento normal (terreno padrão)', d: '9 metros', o: 'Valor base de todas as raças e classes.' },
+  { s: 'Terreno Arenoso', d: '6 metros', o: 'Reduzido em 3 metros.' },
+  { s: 'Terreno Difícil', d: '4,5 metros', o: 'Reduzido à metade (arredondado para cima).' },
+  { s: 'Condição Enfraquecido', d: '4,5 metros', o: 'Deslocamento reduzido à metade.' },
+  { s: 'Condição Lentidão', d: '4,5 metros', o: 'Deslocamento reduzido à metade.' },
+  { s: 'Condição Congelando / Paralisado', d: '0 metros', o: 'Impossibilitado de se mover.' },
+  { s: 'Condição Aprisionado', d: '0 metros', o: 'Impossibilitado de se mover.' },
+  { s: 'Talento ou habilidade de velocidade', d: '+3 metros', o: 'Acréscimo conforme descrito na habilidade.' },
+]
+
+const TIPOS_TERRENO = [
+  { t: 'Normal', e: 'Deslocamento completo sem penalidade.' },
+  { t: 'Arenoso', e: 'Deslocamento reduzido em −3 metros.' },
+  { t: 'Difícil', e: 'Deslocamento pela metade (arredondado para cima).' },
 ]
 
 const ATTR_COLORS = { FOR:'#e07028', DES:'#4a9a5a', VIT:'#c44', INT:'#7a7aca', PRE:'#c9a227' }
@@ -286,7 +304,59 @@ function Cap3() {
   )
 }
 
-const CHAPTER_COMPONENTS = { cap1: Cap1, cap2: Cap2, cap3: Cap3 }
+function Cap4() {
+  return (
+    <div>
+      <div className={styles.chHero}>
+        <h2 className={styles.chTitle}>Terrenos e Deslocamento</h2>
+        <div className={styles.chDivider} />
+        <p className={styles.chLead}>O campo de batalha é tão importante quanto as armas empunhadas.</p>
+      </div>
+
+      <div className={styles.sec}>
+        <h3 className={styles.secTitle}>Deslocamento Base</h3>
+        <p className={styles.secText}>O deslocamento representa a distância máxima que um personagem pode percorrer em uma única ação de Movimento durante seu turno. O deslocamento padrão no Reino Mágico é de <strong>9 metros por turno</strong> para todas as raças, salvo indicação especial de classe, raça ou talento.</p>
+        <table className={styles.skillTable}>
+          <thead><tr><th>Situação</th><th>Deslocamento</th><th>Observações</th></tr></thead>
+          <tbody>
+            {DESLOCAMENTO_SITUACOES.map(row => (
+              <tr key={row.s}>
+                <td>{row.s}</td>
+                <td>{row.d}</td>
+                <td>{row.o}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className={styles.sec}>
+        <h3 className={styles.secTitle}>Regras Adicionais</h3>
+        <p className={styles.secText}><strong>Escalada e Natação:</strong> ao se mover em superfícies verticais ou dentro d'água sem habilidades específicas, o deslocamento é reduzido à metade e pode exigir testes de Atletismo a critério do Mestre.</p>
+        <p className={styles.secText}><strong>Deslocamento e Ataques:</strong> um personagem pode dividir seu movimento antes e depois de uma ação Padrão no mesmo turno.</p>
+        <p className={styles.secText}>O Mestre pode criar variações de deslocamento para condições ambientais específicas, como lama (−3 m), ventos fortes (−3 m) ou superfícies escorregadias (teste de Reflexo para não cair).</p>
+      </div>
+
+      <div className={styles.sec}>
+        <h3 className={styles.secTitle}>Tipos de Terreno</h3>
+        <table className={styles.skillTable}>
+          <thead><tr><th>Terreno</th><th>Efeito no Deslocamento</th></tr></thead>
+          <tbody>
+            {TIPOS_TERRENO.map(row => (
+              <tr key={row.t}>
+                <td>{row.t}</td>
+                <td>{row.e}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className={styles.secText} style={{marginTop: '14px'}}>O Mestre pode criar variações de terreno adicionais de acordo com o cenário da aventura — lama, gelo, água rasa, vegetação densa — adaptando os modificadores conforme a situação narrativa.</p>
+      </div>
+    </div>
+  )
+}
+
+const CHAPTER_COMPONENTS = { cap1: Cap1, cap2: Cap2, cap3: Cap3, cap4: Cap4 }
 
 export default function Mecanicas() {
   const [activeChapter, setActiveChapter] = useState('cap1')
