@@ -263,6 +263,7 @@ async function loadFromDB() {
     MAGIC_LEVELS        = data.magic_levels;
     RACIAL_DATA         = data.racial_data || {};
     ENTITIES            = data.entities    || [];
+    EQUIPAMENTOS        = data.equipamentos || [];
 
     if (loadEl) loadEl.style.display = 'none';
     return true;
@@ -502,6 +503,7 @@ function getStepNames(){
   base.push('Idiomas','Magias');
   if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.magicLevel>=1)
     base.push('Magias Aprimoradas');
+  if(char.tipo==='avancado') base.push('Mercado');
   base.push('Ficha Final');
   if(char.tipo==='avancado') base.unshift('Aprimoramentos');
   return base;
@@ -564,6 +566,7 @@ let RACE_LANGS        = {}; // carregado do banco de dados
 let FAUNO_ASPECTOS    = {}; // carregado do banco de dados
 let RACIAL_DATA       = {}; // dados raciais do livro
 let ENTITIES          = []; // entidades e divindades (carregado do banco)
+let EQUIPAMENTOS      = []; // catálogo de equipamentos (carregado do banco)
 
 // ═══════════════════════════════════════════════════════
 
@@ -629,6 +632,7 @@ let char = {
     magicLevel:0,  // 0=Menor(3), 1=Elite(4), 2=Maior(5), 3=Avancado(6)
     magiasAprimoradas:[]  // [{original, evoluida, nivel}] — Trilha A: até 3 trocas Iniciais/Sagradas → tier superior
   },
+  mercado:{ moedas:0, itens:[] },  // {moedas: nº em Moedas de Bronze, itens:[{nome,preco,categoria}]}
   faunoAspecto:'', draconatoElem:'',
   hibridoTraits:[],         // [{raceName, traitIdx}] — max 2, raças diferentes, no Maculado/Celestial
   hibridoFaunoAspecto:'',   // aspecto bestial se Fauno for uma das origens do Híbrido
@@ -835,6 +839,7 @@ function render(){
   fns.push(renderIdiomas,renderMagias);
   if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.magicLevel>=1)
     fns.push(renderMagiasAprimoradas);
+  if(char.tipo==='avancado') fns.push(renderMercado);
   fns.push(renderFicha);
   if(char.tipo==='avancado') fns.unshift(renderAprimoramentos);
   document.getElementById('content').innerHTML='';
@@ -2135,7 +2140,8 @@ function renderMagias(){
     <button class="fbtn${!spellFilters.categoria?' on':''}" onclick="setSF('categoria','')">Todos</button>
     ${cats.map(cat=>`<button class="fbtn${spellFilters.categoria===cat?' on':''}" onclick="setSF('categoria','${cat}')">${cat}</button>`).join('')}
     <span class="fl" style="margin-left:6px">Busca:</span>
-    <input class="search" value="${esc(spellFilters.search)}" placeholder="Buscar magia..." oninput="setSF('search',this.value)">
+    <input class="search" value="${esc(spellFilters.search)}" placeholder="Buscar magia... (Enter para buscar)"
+      oninput="spellFilters.search=this.value" onkeydown="if(event.key==='Enter')renderMagias()">
   </div>`;
 
   // Filtered spells
@@ -2260,6 +2266,13 @@ function renderMagiasAprimoradas(){
     "Até 3" é teto, não garantia: se você conhece menos magias elegíveis, só pode evoluir essas.<br>
     <span style="color:var(--gold-dim);font-size:.85em">ℹ Se comprar uma Progressão Mágica maior depois, reverta e evolua novamente para alcançar o novo tier.</span>
   </div>
+  <div class="info-box" style="font-size:.78em;border-color:var(--gold-dim)">
+    <b>📌 Observação — Limite PM por Turno:</b> possuir magias de nível Avançado (ou superior) não garante
+    que você poderá conjurá-las a qualquer momento. Se o custo em PM da magia ultrapassar seu
+    <b>Limite PM por Turno</b> (Foco/Proficiência + 2, por padrão), ela não pode ser lançada naquele turno —
+    mesmo com mana suficiente na reserva. Isto não é uma restrição fixa: <b>armas, equipamentos e itens
+    especiais</b> da campanha, além do aprimoramento de <b>Proficiência</b>, podem elevar esse limite.
+  </div>
   <div class="counter"><span class="cnt-badge${escolhidas.length>=3?' full':''}">Evoluídas: ${escolhidas.length}/3</span></div>`;
 
   if(!elegiveis.length){
@@ -2348,7 +2361,8 @@ function renderTalentos(){
   </div>
   <div class="filters">
     <span class="fl">Busca:</span>
-    <input class="search" value="${esc(talentFilter)}" placeholder="Buscar talento..." oninput="talentFilter=this.value;renderTalentos()">
+    <input class="search" value="${esc(talentFilter)}" placeholder="Buscar talento... (Enter para buscar)"
+      oninput="talentFilter=this.value" onkeydown="if(event.key==='Enter')renderTalentos()">
   </div>
   <div class="tgrid">`;
 
@@ -2481,6 +2495,135 @@ function renderEntidade(){
     }
   }
 
+  set(html);
+}
+
+// ═══════════════════════════════════════════════════════
+//  MERCADO — compra de equipamentos (Personagem Avançado)
+// ═══════════════════════════════════════════════════════
+const CURRENCY_RATES = { MB:1, MP:100, MO:10000, ML:10000000, MG:10000000000 };
+let mercadoFilters = { categoria:'', tier:'', search:'' };
+
+// Converte uma string de preço ("15 MB", "60 MP"...) para o equivalente em Moedas de Bronze (MB)
+function precoEmMB(preco){
+  if(!preco) return 0;
+  const m=String(preco).trim().match(/([\d.,]+)\s*([A-Za-z]+)/);
+  if(!m) return 0;
+  const valor=parseFloat(m[1].replace(/\./g,'').replace(',','.'))||0;
+  const taxa=CURRENCY_RATES[m[2].toUpperCase()]||1;
+  return valor*taxa;
+}
+
+function setMF(k,v){ mercadoFilters[k]=v; renderMercado(); }
+
+function setMercadoMoedas(v){
+  const n=parseInt(v,10);
+  char.mercado.moedas=isNaN(n)||n<0?0:n;
+  renderMercado();
+}
+
+function comprarEquipamento(nome){
+  const item=EQUIPAMENTOS.find(e=>e.nome===nome && e.tier!=='lendario');
+  if(!item) return;
+  const custo=precoEmMB(item.preco);
+  if(char.mercado.moedas<custo){ showErr('Moedas insuficientes para comprar este item.'); return; }
+  char.mercado.moedas-=custo;
+  char.mercado.itens.push({ nome:item.nome, preco:item.preco, categoria:item.categoria });
+  renderMercado();
+}
+
+function removerEquipamento(idx){
+  const it=char.mercado.itens[idx];
+  if(!it) return;
+  char.mercado.moedas+=precoEmMB(it.preco);
+  char.mercado.itens.splice(idx,1);
+  renderMercado();
+}
+
+function renderMercado(){
+  const m=char.mercado;
+  const catalogo=EQUIPAMENTOS.filter(e=>e.tier!=='lendario');
+  const categorias=[...new Set(catalogo.map(e=>e.categoria).filter(Boolean))].sort();
+
+  let html=`<h2>◈ Mercado</h2>
+  <div class="info-box" style="font-size:.8em">
+    Informe quantas <b>Moedas de Bronze (MB)</b> seu personagem possui — a moeda usada para o cálculo
+    de compras aqui — e adquira equipamentos para completar sua ficha. Itens de nível
+    <b style="color:var(--red)">Lendário</b> não estão disponíveis neste mercado: são obtidos apenas
+    durante a campanha, através de feitos extraordinários.
+    <span style="color:var(--text-dim)">(Conversão: 100 MB = 1 MP)</span>
+  </div>
+
+  <div class="filters" style="align-items:center">
+    <span class="fl">Moedas disponíveis:</span>
+    <input type="number" min="0" step="1" class="search" style="max-width:140px"
+      value="${m.moedas}" placeholder="0 (Enter para confirmar)"
+      onkeydown="if(event.key==='Enter')setMercadoMoedas(this.value)"
+      onblur="setMercadoMoedas(this.value)"> <span class="fl">MB</span>
+    <span class="fl" style="margin-left:8px;color:var(--gold-dim)">≈ ${(m.moedas/100).toFixed(2)} MP</span>
+  </div>`;
+
+  if(m.itens.length){
+    const gasto=m.itens.reduce((acc,it)=>acc+precoEmMB(it.preco),0);
+    html+=`<div class="info-box" style="font-size:.78em">
+      <b>Itens adquiridos (${m.itens.length}):</b> total gasto ≈ ${gasto} MB<br>
+      <div style="margin-top:6px">${m.itens.map((it,i)=>
+        `<span class="spell-pill">${it.nome} <span style="color:var(--text-dim)">(${it.preco})</span>
+          <a href="javascript:void(0)" onclick="removerEquipamento(${i})" title="Remover e estornar moedas" style="color:var(--red);margin-left:4px;text-decoration:none">✕</a>
+        </span>`).join('')}</div>
+    </div>`;
+  }
+
+  html+=`<div class="filters">
+    <span class="fl">Categoria:</span>
+    <button class="fbtn${!mercadoFilters.categoria?' on':''}" onclick="setMF('categoria','')">Todas</button>
+    ${categorias.map(c=>`<button class="fbtn${mercadoFilters.categoria===c?' on':''}" onclick="setMF('categoria','${c.replace(/'/g,"\\'")}')">${c}</button>`).join('')}
+  </div>
+  <div class="filters">
+    <span class="fl">Tier:</span>
+    <button class="fbtn${!mercadoFilters.tier?' on':''}" onclick="setMF('tier','')">Todos</button>
+    <button class="fbtn${mercadoFilters.tier==='basico'?' on':''}" onclick="setMF('tier','basico')">Básico</button>
+    <button class="fbtn${mercadoFilters.tier==='intermediario'?' on':''}" onclick="setMF('tier','intermediario')">Intermediário</button>
+    <span class="fl" style="margin-left:6px">Busca:</span>
+    <input class="search" value="${esc(mercadoFilters.search)}" placeholder="Buscar item... (Enter para buscar)"
+      oninput="mercadoFilters.search=this.value" onkeydown="if(event.key==='Enter')renderMercado()">
+  </div>`;
+
+  let filtrados=catalogo;
+  if(mercadoFilters.categoria) filtrados=filtrados.filter(e=>e.categoria===mercadoFilters.categoria);
+  if(mercadoFilters.tier)      filtrados=filtrados.filter(e=>e.tier===mercadoFilters.tier);
+  if(mercadoFilters.search){
+    const q=mercadoFilters.search.toLowerCase();
+    filtrados=filtrados.filter(e=>e.nome.toLowerCase().includes(q));
+  }
+
+  html+=`<div class="apr-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">`;
+  for(const e of filtrados){
+    const custo=precoEmMB(e.preco);
+    const podeComprar=custo<=m.moedas;
+    const tierLabel=e.tier==='intermediario'?'Intermediário':'Básico';
+    const tierColor=e.tier==='intermediario'?'var(--gold)':'var(--text-dim)';
+    html+=`<div class="apr-item">
+      <div class="apr-nome">${e.nome}</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        <span class="tag" style="border-color:${tierColor};color:${tierColor}">${tierLabel}</span>
+        ${e.categoria?`<span class="tag">${e.categoria}${e.subcategoria?` — ${e.subcategoria}`:''}</span>`:''}
+        ${e.dano?`<span class="tag">${e.dano}${e.tipo_dano?` ${e.tipo_dano}`:''}</span>`:''}
+        ${e.bonus?`<span class="tag">${e.bonus}</span>`:''}
+        ${e.bonus_db?`<span class="tag">${e.bonus_db}</span>`:''}
+      </div>
+      ${e.propriedades?`<div class="apr-desc">${e.propriedades}</div>`:''}
+      ${e.descricao?`<div class="apr-desc">${e.descricao}</div>`:''}
+      ${e.requisito?`<div style="font-size:.7em;color:var(--gold-dim)">Requisito: ${e.requisito}</div>`:''}
+      <div class="apr-custo">${e.preco||'—'}</div>
+      <button class="btn${podeComprar?' primary':''}" style="font-size:.78em;padding:6px 12px;align-self:flex-start"
+        ${podeComprar?'':'disabled'} onclick="comprarEquipamento('${e.nome.replace(/'/g,"\\'")}')">
+        ${podeComprar?'Comprar':'Moedas insuficientes'}
+      </button>
+    </div>`;
+  }
+  if(!filtrados.length) html+=`<div style="color:var(--text-dim);padding:20px;grid-column:1/-1">Nenhum item encontrado.</div>`;
+  html+=`</div>`;
   set(html);
 }
 
@@ -2677,6 +2820,19 @@ function renderFicha(){
         </div>`;
       });
       html+=`<div style="margin-top:8px">${kit.extras.map(e=>`<span class="spell-pill">${e}</span>`).join('')}</div>`;
+      html+=`</div></div>`;
+    }
+
+    // ITENS DO MERCADO — equipamentos comprados pelo personagem (Personagem Avançado)
+    if(char.tipo==='avancado' && char.mercado && char.mercado.itens.length){
+      html+=`<div class="sh-sec"><div class="sh-stitle">◈ EQUIPAMENTOS — Adquiridos no Mercado</div><div class="sh-sbody">`;
+      char.mercado.itens.forEach(it=>{
+        html+=`<div class="sh-row">
+          <span class="sh-lbl">${it.nome}${it.categoria?` <span style="font-size:.7em;color:var(--text-dim)">(${it.categoria})</span>`:''}</span>
+          <span style="font-size:.78em;color:var(--gold-dim)">${it.preco||'—'}</span>
+        </div>`;
+      });
+      html+=`<div style="font-size:.75em;color:var(--text-dim);margin-top:6px">Moedas restantes: <b style="color:var(--gold)">${char.mercado.moedas} MB</b></div>`;
       html+=`</div></div>`;
     }
 

@@ -376,6 +376,25 @@ function AtributosConjuracao() {
           </div>
         ))}
       </div>
+
+      <h3 className={styles.subTitle}>Limite PM por Turno — Restrição de Uso</h3>
+      <div className={styles.rulesGrid}>
+        <div className={styles.ruleCard}>
+          <div className={styles.ruleLabel}>Conhecer não é o mesmo que conjurar</div>
+          <p className={styles.ruleDesc}>
+            Um personagem pode possuir magias de nível <strong>Avançado</strong> (ou superior) em sua lista de
+            magias conhecidas, mas isso não garante que poderá conjurá-las a qualquer momento. Se o
+            <strong> custo em PM</strong> da magia ultrapassar o <strong>Limite PM por Turno</strong> do
+            conjurador (Foco/Proficiência + 2, por padrão), ela simplesmente não pode ser lançada naquele
+            turno — mesmo que a reserva total de Mana seja suficiente.
+          </p>
+          <p className={styles.ruleDesc}>
+            Esse limite, porém, não é fixo: <strong>armas, equipamentos e itens especiais</strong> encontrados
+            durante a campanha podem elevá-lo, assim como o aprimoramento de <strong>Proficiência</strong>.
+            Por isso, vale planejar a evolução do personagem para acompanhar o poder das magias que deseja dominar.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
