@@ -689,6 +689,23 @@ function getInheritedTraits(){
   return out;
 }
 
+// Retorna a chave do Aspecto Bestial do Fauno ativo, considerando raça direta, Híbrido e Maculado
+function getActiveFaunoAspecto(){
+  if(char.raca==='Fauno') return char.faunoAspecto||'';
+  if(char.raca==='Híbrido'){
+    const e=char.hibridoTraits.find(x=>x.raceName==='Fauno');
+    if(e){
+      const t=RACES['Fauno']&&RACES['Fauno'].traits[e.traitIdx];
+      if(t&&t.n==='Traços Bestiais') return char.hibridoFaunoAspecto||'';
+    }
+  }
+  if(char.raca==='Maculado'&&char.maculadoTrait&&char.maculadoTrait.raceName==='Fauno'){
+    const t=RACES['Fauno']&&RACES['Fauno'].traits[char.maculadoTrait.traitIdx];
+    if(t&&t.n==='Traços Bestiais') return char.maculadoFaunoAspecto||'';
+  }
+  return '';
+}
+
 function getTalentBonuses(){
   const b={vida:0,mana:0,db:0,cd:0,lmt:0,spells:0};
   for(const t of char.talentos){
@@ -2085,7 +2102,7 @@ function getLangDesc(lang){
     'Infernal':'Linguagem de demônios e pactos. Cada palavra carrega peso contratual.',
     'Celestial':'Idioma sagrado de anjos e ordens divinas.',
     'Selvagem':'Língua tribal direta de povos bestiais e nômades.',
-    'Silvestre':'Linguagem espiritual de fadas e criaturas da floresta.',
+    'Silvestre':'Linguagem espiritual ligada às criaturas da floresta e ao povo Fauno.',
     'Abissal':'Idioma caótico associado ao vazio e à corrupção.',
     'Gigante':'Língua antiga de gigantes e titãs. Raramente sussurrada.',
     'Orc':'Linguagem agressiva de tribos guerreiras. Funcional e direta.',
@@ -2380,12 +2397,13 @@ let talentFilter='';
 function renderTalentos(){
   const r=getRaceData();
   const aprTal=(char.aprimoramentos&&char.aprimoramentos.talento)||0;
-  const maxTal=PROF+(r&&r.extraTal?r.extraTal:0)+aprTal; // Proficiência(2) + bônus racial + aprimoramento
+  const faunoTal=getActiveFaunoAspecto()==='Macaco'?1:0;
+  const maxTal=PROF+(r&&r.extraTal?r.extraTal:0)+aprTal+faunoTal; // Proficiência(2) + bônus racial + aprimoramento + Aspecto Macaco
   const inherited=getInheritedTraits();
 
   let html=`<h2>◈ Talentos</h2>
   <div class="info-box">
-    <b>Talentos = Proficiência (${PROF})${r&&r.extraTal?` + ${r.extraTal} bônus racial`:''}${aprTal>0?` + ${aprTal} aprimoramento`:''} = ${maxTal} talentos</b><br>
+    <b>Talentos = Proficiência (${PROF})${r&&r.extraTal?` + ${r.extraTal} bônus racial`:''}${aprTal>0?` + ${aprTal} aprimoramento`:''}${faunoTal>0?` + ${faunoTal} Aspecto Macaco`:''} = ${maxTal} talentos</b><br>
     Talentos com <span style="color:var(--green)">bônus de estatísticas</span> têm seus efeitos calculados automaticamente na ficha.
     ${inherited.length>0?`<br><b>Traços herdados:</b> ${inherited.map(t=>t.n).join(', ')}`:''}
   </div>

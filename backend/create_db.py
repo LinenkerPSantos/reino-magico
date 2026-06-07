@@ -287,7 +287,7 @@ RACES = {
             {'n': 'Sentidos Aguçados', 'd': 'Vantagem em testes e Salvaguardas de Percepção.', 'bonus': None},
             {'n': 'Instinto Predatório', 'd': 'Vantagem em testes e Salvaguardas de Sobrevivência.', 'bonus': None},
             {'n': 'Garras Naturais', 'd': 'Ataques desarmados causam 1d6 de dano cortante.', 'bonus': None},
-            {'n': 'Traços Bestiais', 'd': 'Uma vez por Descanso Curto, desperta instintos por 3 rodadas. Aspecto escolhido na criação: Urso (resistência física), Lobo (+1 margem crítico), Raposa (vantagem Enganação), Javali (+2 ataques corpo), Guaxinim (+2 ataques mágicos), Falcão (+2 distância).', 'bonus': None},
+            {'n': 'Traços Bestiais', 'd': 'Uma vez por Descanso Curto, desperta instintos por 3 rodadas. Aspecto escolhido na criação: Urso (resistência física), Lobo (+1 margem crítico), Raposa (vantagem Enganação), Javali (+2 ataques corpo), Guaxinim (+2 ataques mágicos), Falcão (+2 distância), Felino (vantagem Atletismo/Reflexo), Macaco (acesso a talento extra — benefício permanente).', 'bonus': None},
         ],
     },
     'Feérico': {
@@ -619,6 +619,8 @@ FAUNO_ASPECTOS = {
     'Javali':  {'label': 'Javali',  'ativo': '+2 nas rolagens de ataque com armas corpo a corpo.','desc': 'Sua ferocidade impulsiona seus ataques. Você recebe +2 nas rolagens de ataque com armas corpo a corpo.'},
     'Guaxinim':{'label': 'Guaxinim','ativo': '+2 nas rolagens de ataque mágico.',               'desc': 'Sua afinidade natural com energias místicas se intensifica. Você recebe +2 nas rolagens de ataque mágico.'},
     'Falcão':  {'label': 'Falcão',  'ativo': '+2 nas rolagens de ataque com armas de longa distância.','desc': 'Sua visão e precisão atingem seu auge. Você recebe +2 nas rolagens de ataque com armas de longa distância.'},
+    'Felino':  {'label': 'Felino',  'ativo': 'Vantagem em testes e Salvaguardas de Atletismo e Reflexo.', 'desc': 'Sua agilidade e equilíbrio felinos afloram. Você recebe vantagem em testes e Salvaguardas de Atletismo e Reflexo.'},
+    'Macaco':  {'label': 'Macaco',  'ativo': 'Acesso a um talento adicional à escolha (benefício permanente).', 'desc': 'Sua natureza curiosa e versátil de macaco abre portas que outros Faunos não enxergam. Diferente dos demais aspectos, este benefício é permanente — não depende do despertar dos instintos: ao escolher o aspecto Macaco, você ganha acesso a um talento adicional à sua escolha, respeitando os pré-requisitos normais.'},
 }
 
 TRAIT_BONUSES = {

@@ -7,6 +7,7 @@ const CHAPTERS = [
   { id: 'cap2', label: 'Estatísticas' },
   { id: 'cap3', label: 'Ações e Combate' },
   { id: 'cap4', label: 'Terrenos e Deslocamento' },
+  { id: 'cap5', label: 'Idiomas' },
 ]
 
 const DESLOCAMENTO_SITUACOES = [
@@ -24,6 +25,24 @@ const TIPOS_TERRENO = [
   { t: 'Normal', e: 'Deslocamento completo sem penalidade.' },
   { t: 'Arenoso', e: 'Deslocamento reduzido em −3 metros.' },
   { t: 'Difícil', e: 'Deslocamento pela metade (arredondado para cima).' },
+]
+
+const IDIOMAS = [
+  { l: 'Comum', d: 'Idioma mais utilizado entre reinos e civilizações. Falado por praticamente todas as raças inteligentes.' },
+  { l: 'Élfico', d: 'Língua antiga, refinada e ligada à magia e à natureza. Frequentemente usada em textos arcânicos e rituais.' },
+  { l: 'Anão', d: 'Idioma robusto e percussivo, usado por povos subterrâneos e forjadores. Rico em termos técnicos de mineração e forja.' },
+  { l: 'Dracônico', d: 'Língua dos dragões e da magia primordial. Muitas fórmulas mágicas têm raízes neste idioma.' },
+  { l: 'Infernal', d: 'Linguagem de demônios, pactos e entidades sombrias. Cada palavra carrega peso contratual.' },
+  { l: 'Celestial', d: 'Idioma sagrado utilizado por anjos e ordens divinas. Sons harmônicos que ressoam de forma diferente em seres corrompidos.' },
+  { l: 'Selvagem', d: 'Língua tribal utilizada por povos bestiais e nômades. Direta, eficiente e rica em terminologia de caça e território.' },
+  { l: 'Silvestre', d: 'Linguagem espiritual ligada as criaturas da floresta e ao povo Fauno. Melodiosa e cheia de metáforas da natureza.' },
+  { l: 'Abissal', d: 'Idioma caótico associado ao vazio e à corrupção. Difícil de aprender sem exposição prolongada ao Abismo.' },
+  { l: 'Gigante', d: 'Língua antiga de gigantes e titãs. Poucos a aprendem por escolha — é simplesmente grande demais para ser sussurrada.' },
+  { l: 'Orc', d: 'Linguagem agressiva de tribos guerreiras. Funcional e direta, valoriza ação sobre descrição.' },
+  { l: 'Feérico', d: 'Idioma místico e espiritual, semelhante ao Silvestre mas com sotaque próprio e expressões únicas do Reinos das Fadas.' },
+  { l: 'Arcano', d: 'Linguagem utilizada em grimórios, runas e fórmulas mágicas. Não é falado em conversas comuns — é invocado.' },
+  { l: 'Naga', d: 'Língua serpentina utilizada por criaturas reptilianas e povos aquáticos ancestrais. Suave e sibilante.' },
+  { l: 'Primordial', d: 'Idioma ancestral dos elementais e forças da natureza. Considerado um dos idiomas mais antigos ainda em uso.' },
 ]
 
 const ATTR_COLORS = { FOR:'#e07028', DES:'#4a9a5a', VIT:'#c44', INT:'#7a7aca', PRE:'#c9a227' }
@@ -437,7 +456,50 @@ function Cap4() {
   )
 }
 
-const CHAPTER_COMPONENTS = { cap1: Cap1, cap2: Cap2, cap3: Cap3, cap4: Cap4 }
+function Cap5() {
+  return (
+    <div>
+      
+      <div className={styles.chHero}>
+        <h2 className={styles.chTitle}>Idiomas</h2>
+        <div className={styles.chDivider} />
+        <p className={styles.chLead}>
+         A comunicação é uma das ferramentas mais valiosas para quem busca evoluir. 
+         Saber ouvir, compreender e transmitir
+          ideias pode abrir caminhos que a força jamais conseguiria.
+          </p>
+      </div>
+
+      <div className={styles.sec}>
+        <h3 className={styles.secTitle}>Idiomas do Reino Mágico</h3>
+        <p className={styles.secText}>
+             O mundo é habitado por raças diversas, cada uma com sua própria língua, 
+        história e forma de nomear as coisas. O idioma que um personagem 
+        fala não é apenas comunicação — é identidade, cultura e, em alguns casos, 
+        poder. Abaixo estão os idiomas do Reino Mágico, todos os personagens 
+        iniciam falando comum e o idioma nativo de sua raça.  
+        </p>
+       
+       
+        <table className={styles.skillTable}>
+          <thead><tr><th>Língua</th><th>Descrição</th></tr></thead>
+          <tbody>
+            {IDIOMAS.map(row => (
+              <tr key={row.l}>
+                <td>{row.l}</td>
+                <td>{row.d}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+
+
+const CHAPTER_COMPONENTS = { cap1: Cap1, cap2: Cap2, cap3: Cap3, cap4: Cap4, cap5: Cap5 }
 
 export default function Mecanicas() {
   const [activeChapter, setActiveChapter] = useState('cap1')
