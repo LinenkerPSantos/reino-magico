@@ -633,7 +633,7 @@ TALENT_STAT_BONUSES = {
     'Proficiência em Magia':      {'cd': 2,   'label': 'CD +2'},
     'Proficiência em Mana':       {'mana': 4, 'label': 'Mana +4'},
     'Proficiência em Vitalidade': {'vida': 6, 'label': 'Vida +6'},
-    'Quebra de Limite':           {'lmt': 1,  'label': 'LMT +1'},
+    'Quebra de Limite':           {'lmt': 2,  'label': 'LMT +2'},
 }
 
 TALENT_VANTAGENS = {
@@ -678,8 +678,10 @@ TALENT_PREREQS = {
     'Genialidade':           {'attr': 'INT', 'min': 3, 'label': 'INT 3+'},
     'Golpe Silenciador':     {'attr': 'DES', 'min': 2, 'label': 'DES 2+'},
     'Hemorragia Brutal':     {'attr': 'FOR', 'min': 2, 'label': 'FOR 2+'},
+    'Maestria das Armas':    {'talentos': ['Proficiência Armas Táticas', 'Proficiência Armas de Disparo'], 'label': 'Proficiência Armas Táticas ou de Disparo'},
     'Maestria Marcial':      {'attr': 'FOR', 'min': 2, 'label': 'FOR 2+'},
     'Mente Fortalecida':     {'attr': 'INT', 'min': 2, 'label': 'INT 2+'},
+    'Mente Gêmeas':          {'attr': 'INT', 'min': 3, 'label': 'INT 3+'},
     'Pacto Ancestral':       {'pacto': True, 'label': 'Sem pacto ativo'},
     'Pacto Elemental':       {'pacto': True, 'label': 'Sem pacto ativo'},
     'Pacto Santificado':     {'pacto': True, 'label': 'Sem pacto ativo'},
@@ -942,12 +944,13 @@ CREATE TABLE IF NOT EXISTS racial_vantagens (
 );
 
 CREATE TABLE IF NOT EXISTS talent_prereqs (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    talent_nome TEXT NOT NULL UNIQUE,
-    attr        TEXT,
-    min_val     INTEGER,
-    pacto       INTEGER DEFAULT 0,
-    label       TEXT
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    talent_nome      TEXT NOT NULL UNIQUE,
+    attr             TEXT,
+    min_val          INTEGER,
+    pacto            INTEGER DEFAULT 0,
+    requires_talento TEXT,
+    label            TEXT
 );
 
 CREATE TABLE IF NOT EXISTS fauno_aspectos (
@@ -1148,9 +1151,11 @@ def main():
 
     # ── Pré-requisitos de Talentos ───────────────────────
     for t_nome, pre in TALENT_PREREQS.items():
+        talentos = pre.get('talentos')
         conn.execute(
-            "INSERT OR IGNORE INTO talent_prereqs(talent_nome,attr,min_val,pacto,label) VALUES(?,?,?,?,?)",
-            (t_nome, pre.get('attr'), pre.get('min'), int(pre.get('pacto', False)), pre.get('label',''))
+            "INSERT OR IGNORE INTO talent_prereqs(talent_nome,attr,min_val,pacto,requires_talento,label) VALUES(?,?,?,?,?,?)",
+            (t_nome, pre.get('attr'), pre.get('min'), int(pre.get('pacto', False)),
+             '|'.join(talentos) if talentos else None, pre.get('label',''))
         )
 
     # ── Aspectos do Fauno ────────────────────────────────

@@ -56,7 +56,7 @@
 55,Proficiência em Vitalidade,Para cada ponto em proficiência recebe +3 em vida máximo.
 56,Proficiência Escudo,Tem acesso a escudos
 57,Prontidão,"Pré-requisito: Destreza 3 ou superior. Você está sempre atento ao ambiente e pronto para reagir ao perigo. Recebe vantagem em salvaguardas, testes de Iniciativa e testes de Percepção."
-58,Quebra de Limite,"Aumenta o limite máximo de Mana por Turno em +1. Caso o conjurador possua ao menos uma magia de categoria superior, o bônus aumenta conforme o maior grau de magia conhecido: Elite: +2 - Maior: +3 - Avançado: +4 - Lendário ou acima: +5"
+58,Quebra de Limite,Aumenta o limite máximo de Mana por Turno em +2.
 59,Reações Rápidas,Você recebe uma reação bônus adicional por rodada.
 60,Refletir Veneno,"Sempre que você sofrer um ataque crítico, a criatura atacante recebe a condição Envenenado por 3 rodadas."
 61,Reserva Arcana,Pré-requisito: Presença 2 ou superior - Você desenvolveu uma reserva mágica secundária que alimenta sua conjuração em momentos críticos. Você possui uma reserva de Mana adicional igual à sua Presença. Essa reserva se recupera somente em descanso longo e pode ser usada normalmente para pagar custos de magias.
@@ -69,3 +69,5 @@
 68,Treinamento Marcial,"Você recebe uma reação adicional do tipo Contra-Ataque por rodada. Ao utilizar essa reação, recebe bônus de Defesa igual à sua Luta. Caso obtenha sucesso na defesa, pode realizar imediatamente um ataque desarmado contra a criatura atacante."
 69,Vigor Inabalável,"Pré-requisito: Vitalidade 2 ou superior -  Sua constituição robusta acelera sua recuperação. Sempre que recuperar Vida por descanso curto ou longo, você recupera pontos adicionais de Vida iguais ao dobro da sua Vitalidade."
 70,Vitalidade Inabalável,"Pré-requisito: Vitalidade 3 ou superior - Seu corpo suporta danos que destruiriam outras criaturas. Ao cair para 0 pontos de vida, pode permanecer consciente até o fim do próximo turno uma vez por descanso longo."
+71,Maestria das Armas,Pré-requisito: possuir Proficiência em Armas Táticas ou Armas de Disparo - Sua habilidade com a arma é muito alta. Recebe +1 dado do dano da arma ao aplicar dano.
+72,Mente Gêmeas,Pré-requisito: Intelecto 3 ou superior - O conjurador escolhe uma magia Sustentada que conhece; essa magia passa a durar uma quantidade de rodadas igual ao seu Intelecto e não pode ser conjurada novamente enquanto durar.

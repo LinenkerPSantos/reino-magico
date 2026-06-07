@@ -394,6 +394,7 @@ function checkTalentPrereq(name){
   const pre=TALENT_PREREQS[name];
   if(!pre) return null;
   if(pre.attr&&getAttr(pre.attr)<pre.min) return `Requer ${pre.label}`;
+  if(pre.talentos&&!pre.talentos.some(t=>char.talentos.includes(t))) return `Requer ${pre.label}`;
   if(pre.pacto){
     const pactos=['Pacto Ancestral','Pacto Elemental','Pacto Santificado'];
     if(pactos.filter(p=>p!==name&&char.talentos.includes(p)).length>0) return 'Já possui um pacto ativo';

@@ -8,6 +8,7 @@ const CHAPTERS = [
   { id: 'cap3', label: 'Ações e Combate' },
   { id: 'cap4', label: 'Terrenos e Deslocamento' },
   { id: 'cap5', label: 'Idiomas' },
+  { id: 'cap6', label: 'Talentos' },
 ]
 
 const DESLOCAMENTO_SITUACOES = [
@@ -43,6 +44,81 @@ const IDIOMAS = [
   { l: 'Arcano', d: 'Linguagem utilizada em grimórios, runas e fórmulas mágicas. Não é falado em conversas comuns — é invocado.' },
   { l: 'Naga', d: 'Língua serpentina utilizada por criaturas reptilianas e povos aquáticos ancestrais. Suave e sibilante.' },
   { l: 'Primordial', d: 'Idioma ancestral dos elementais e forças da natureza. Considerado um dos idiomas mais antigos ainda em uso.' },
+]
+
+const TALENTOS = [
+  { n: 'Aplicar Toxina', d: 'O dano causado pela condição Envenenado é aumentado para 2d6 por rodada.' },
+  { n: 'Afinidade Elemental', d: 'Escolha um elemento entre Água, Fogo, Terra, Vento ou Trovão. Você recebe resistência ao dano causado por esse elemento.' },
+  { n: 'Arqueólogo', d: 'Recebe vantagem em testes de História e Prestidigitação.' },
+  { n: 'Arquimemória Arcana', d: 'Pré-requisito: Intelecto 3 ou superior — Sua mente processa magia e conhecimento em velocidade sobrenatural. Testes para identificar magia recebem vantagem. Uma vez por descanso curto, pode reduzir em 1 o custo de Mana de uma magia.' },
+  { n: 'Atirador Mágico', d: 'Aumenta em 9 metros o alcance das magias conjuradas por você.' },
+  { n: 'Aura de Liderança', d: 'Pré-requisito: Presença 3 ou superior — Sua presença inspira aqueles ao seu redor. Aliados a até 9 metros de você recebem +2 em testes de salvaguarda com base no atributo Presença. Esse bônus é passivo e sempre ativo enquanto você estiver consciente e não estiver com a condição Silenciado ou Amedrontado.' },
+  { n: 'Chamas Incontroláveis', d: 'Ao aplicar um ataque mágico contra uma criatura com elemento fogo e causar a condição Em Chamas, ela causa +1d8 de dano contínuo adicional.' },
+  { n: 'Colosso de Guerra', d: 'Pré-requisito: Armas de duas mãos e Força 3 ou superior — Seu corpo foi treinado para esmagar defesas inimigas. Ao acertar um ataque corpo a corpo, você pode empurrar o alvo 3 metros sem teste.' },
+  { n: 'Coração de Leão', d: 'Pré-requisito: Presença 3 ou superior. Sua coragem e determinação permanecem firmes mesmo diante do impossível. Recebe vantagem em salvaguardas e testes de Vontade.' },
+  { n: 'Corte Profundo', d: 'Ao realizar um acerto crítico com uma arma corpo a corpo do tipo cortante ou perfurante, o alvo sofre Sangramento por 2 rodadas.' },
+  { n: 'Criar Veneno Mortal', d: 'A cada descanso, você pode criar uma quantidade de frascos de Veneno Mortal igual ao seu Intelecto. Cada frasco pode ser aplicado em uma arma corpo a corpo ou à distância (não funciona em armas mágicas). Ataques realizados com armas envenenadas causam dano mágico e aplicam a condição Envenenado ao alvo. Cada frasco possui uma única utilização.' },
+  { n: 'Dançarino das Lâminas', d: 'Pré-requisito: Destreza 3 ou superior — Sua velocidade torna seus movimentos quase impossíveis de acompanhar. Uma vez por rodada, ao errar um ataque corpo a corpo, você pode mover até 3 metros sem provocar ataques de oportunidade.' },
+  { n: 'Disparo Violento', d: 'Ao realizar um acerto crítico com uma arma de ataque à distância contra criaturas a menos de 6 metros de você, o alvo é empurrado 3 metros para trás.' },
+  { n: 'Empunhadura Dupla', d: 'Quando estiver empunhando duas armas de uma mão, o personagem pode realizar um ataque adicional com a arma secundária após executar um ataque. Esse ataque extra causa apenas metade do dano normal da arma secundária.' },
+  { n: 'Encantar com Veneno Mortal', d: 'O primeiro ataque crítico realizado por você com armas corpo a corpo ou à distância aplica Aplicar Toxina por 3 rodadas, aumentando o dano da condição para 2d6.' },
+  { n: 'Envenenar Arma', d: 'Seus ataques críticos com armas corpo a corpo aplicam a condição Envenenado ao alvo.' },
+  { n: 'Execução Final', d: 'Você recebe vantagem em ataques contra criaturas sob Enfraquecido, Paralisado ou Atordoado.' },
+  { n: 'Explosão Tóxica', d: 'Ao final do turno, criaturas envenenadas por você sofrem 1d4 de dano adicional de Veneno.' },
+  { n: 'Físico Escultural', d: 'Pré-requisito: Força 3 ou superior. Seu corpo foi levado ao auge da capacidade física. Recebe vantagem em salvaguardas e testes de Atletismo.' },
+  { n: 'Ganância Insaciável', d: 'Você aprendeu a transformar sofrimento em benefício próprio. Sempre que derrotar uma criatura, recupera Mana ou Vida igual ao seu Intelecto ou Vitalidade. Porém, sofre desvantagem para resistir a efeitos de Provocado relacionados a recompensas, tesouros ou poder.' },
+  { n: 'Gelo Sepulcral', d: 'Ao usar uma magia de ataque que causa a condição Congelando, as criaturas que sobreviverem recebem a condição de Lentidão por 2 rodadas.' },
+  { n: 'Genialidade', d: 'Pré-requisito: Intelecto 3 ou superior. Sua mente possui capacidade analítica e intelectual excepcional. Recebe vantagem em salvaguardas e testes de Investigação.' },
+  { n: 'Golpe Fulminante', d: 'Ao realizar um acerto crítico com uma arma de duas mãos, o alvo fica Atordoado por 1 rodada.' },
+  { n: 'Golpe Silenciador', d: 'Pré-requisito: Destreza 2 ou superior — Ao realizar um acerto crítico com armas de longa distância contra uma criatura, o alvo deve passar em uma salvaguarda de Tenacidade ou ficará Silenciado por 1 rodada.' },
+  { n: 'Gula Abissal', d: 'Você consome energia, vida e poder sem limites. Sempre que causar dano contínuo (Sangramento, Em Chamas, Veneno), recupera Vida igual a metade do dano realizado, uma única vez por rodada. Porém, recebe desvantagem contra efeitos de Fadigado.' },
+  { n: 'Hemorragia Brutal', d: 'Pré-requisito: Força 2 ou superior — Sempre que causar Sangramento, o alvo também recebe a condição Enfraquecido até o fim do próximo turno.' },
+  { n: 'Inveja Predatória', d: 'Você odeia ver outros superiores a você. Uma vez por descanso curto, pode copiar temporariamente um talento de um aliado por 1 rodada a qualquer momento. Porém, após utilizar esse talento terá desvantagem na próxima salvaguarda.' },
+  { n: 'Ira Devastadora', d: 'Quanto mais ferido você está, mais brutal se torna. Sempre que entrar na condição Enfurecido, você recebe resistência a dano físico até o fim da cena.' },
+  { n: 'Lista de Magias Expandida', d: 'Concede 3 magias adicionais iniciais à sua lista de magias conhecidas.' },
+  { n: 'Luxúria Hipnótica', d: 'Sua presença domina emocionalmente aqueles ao redor. Uma vez por combate, pode forçar uma criatura que possa vê-lo a realizar uma salvaguarda de Vontade. Em falha, ela fica Desorientada por 1 rodada.' },
+  { n: 'Maestria das Armas', d: 'Pré-requisito: possuir Proficiência em Armas Táticas ou Armas de Disparo — Sua habilidade com a arma é muito alta. Recebe +1 dado do dano da arma ao aplicar dano.' },
+  { n: 'Maestria Marcial', d: 'Pré-requisito: Força 2 ou superior — Você dominou a arte de maximizar cada golpe. Ao rolar o dano mínimo (1) em qualquer dado de dano com armas físicas, você pode rolar esse dado novamente uma vez, ficando com o segundo resultado. Esse benefício se aplica apenas a armas que você possua proficiência.' },
+  { n: 'Mente Fortalecida', d: 'Pré-requisito: Intelecto 2 ou superior — Seu treinamento mental cria barreiras internas contra influências externas. Você recebe +5 em salvaguardas contra magias e efeitos que causem as condições Alucinado, Confuso ou Provocado. Além disso, condições mentais que você já sofra têm sua duração reduzida em 1 rodada (sempre 1 rodada, nunca menor).' },
+  { n: 'Mente Gêmeas', d: 'Pré-requisito: Intelecto 3 ou superior — O conjurador escolhe uma magia Sustentada que conhece; essa magia passa a durar uma quantidade de rodadas igual ao seu Intelecto e não pode ser conjurada novamente enquanto durar.' },
+  { n: 'Mestre de Esquiva', d: 'Você recebe uma reação adicional do tipo Esquiva por rodada. Ao utilizar essa reação, recebe bônus de Defesa igual ao seu Reflexo até o final da ação defensiva.' },
+  { n: 'Névoa Tóxica', d: 'Criaturas afetadas pela condição Envenenado também sofrem Lentidão enquanto permanecerem sob esse efeito.' },
+  { n: 'Ocultação de Mana', d: 'Você recebe +10 em testes de Furtividade contra detecção mágica.' },
+  { n: 'Olhos de Águia', d: 'Ao utilizar armas de arremesso ou armas de ataque à distância, você ignora penalidades de ataque contra alvos em até 18 metros.' },
+  { n: 'Olhos de Coruja', d: 'Você enxerga no escuro não mágico em até 18 metros. Caso já possua visão no escuro, o alcance aumenta para 32 metros. Além disso, recebe +2 em salvaguardas contra ataques furtivos.' },
+  { n: 'Orgulho Absoluto', d: 'Você acredita estar acima de todos os outros. Sempre que vencer uma salvaguarda contra um efeito hostil, recebe vantagem no próximo ataque ou magia realizada até o fim do turno seguinte. Porém, não pode receber a ação Ajudar ou bônus morais de aliados enquanto estiver consciente.' },
+  { n: 'Pacto Ancestral', d: 'Restrição: não possuir pacto com nenhuma entidade. Permite escolher uma Entidade Caótica, concedendo acesso às Magias de Pacto.' },
+  { n: 'Pacto Elemental', d: 'Restrição: não possuir pacto com nenhuma entidade. Permite escolher uma Entidade Elemental, concedendo acesso às Magias Antigas.' },
+  { n: 'Pacto Santificado', d: 'Restrição: não possuir pacto com nenhuma entidade. Seu personagem recebe a subclasse Sagrado, podendo escolher uma Entidade Sagrada. Além disso, ganha acesso às Magias Sagradas. Ao realizar descansos em locais sagrados, recupera pontos adicionais de regeneração iguais ao seu valor de Presença.' },
+  { n: 'Passo Silencioso', d: 'Pré-requisito: Destreza 2 ou superior — Seu controle corporal permite eliminar completamente o ruído dos seus movimentos. Você nunca sofre penalidade de Furtividade pelo tipo de terreno em que está se movendo. Além disso, ao se mover até a metade do seu deslocamento em um turno, recebe +5 em testes de Furtividade.' },
+  { n: 'Penetração Mágica', d: 'Quando uma criatura possuir resistência contra o tipo de dano mágico causado por você, a efetividade dessa resistência é reduzida pela metade.' },
+  { n: 'Poliglota', d: 'Você aprende um novo idioma à sua escolha. Além disso, recebe vantagem em testes relacionados a idiomas que conhece.' },
+  { n: 'Posição de Fortaleza', d: 'Você recebe uma reação adicional do tipo Bloqueio por rodada. Ao utilizar essa reação, recebe bônus de Defesa igual à sua Tenacidade. Caso ainda sofra dano após o bloqueio, reduza o dano recebido em um valor igual à sua Tenacidade.' },
+  { n: 'Potencializar Veneno', d: 'A duração da condição Envenenado causada por você é aumentada em +2 rodadas.' },
+  { n: 'Preguiça Entorpecente', d: 'Seu corpo se move pouco, mas sua mente evita desperdícios. Sempre que permanecer sem se mover durante um turno inteiro, recebe +2 em Defesa e salvaguardas até o próximo turno.' },
+  { n: 'Proficiência Armadura Leve', d: 'Tem acesso a armaduras leves.' },
+  { n: 'Proficiência Armadura Pesado', d: 'Tem acesso a armaduras pesadas.' },
+  { n: 'Proficiência Armas de Disparo', d: 'Tem acesso a armas de ataque de longa distância.' },
+  { n: 'Proficiência Armas Mágicas', d: 'Tem acesso a armas mágicas.' },
+  { n: 'Proficiência Armas Táticas', d: 'Tem acesso a armas táticas.' },
+  { n: 'Proficiência em Magia', d: 'Aumenta a CD de Conjuração em +2 pontos.' },
+  { n: 'Proficiência em Mana', d: 'Para cada ponto em Proficiência, recebe +2 de Mana máxima.' },
+  { n: 'Proficiência em Vitalidade', d: 'Para cada ponto em Proficiência, recebe +3 em Vida máxima.' },
+  { n: 'Proficiência Escudo', d: 'Tem acesso a escudos.' },
+  { n: 'Prontidão', d: 'Pré-requisito: Destreza 3 ou superior. Você está sempre atento ao ambiente e pronto para reagir ao perigo. Recebe vantagem em salvaguardas, testes de Iniciativa e testes de Percepção.' },
+  { n: 'Quebra de Limite', d: 'Aumenta o limite máximo de Mana por Turno em +2.' },
+  { n: 'Reações Rápidas', d: 'Você recebe uma reação bônus adicional por rodada.' },
+  { n: 'Refletir Veneno', d: 'Sempre que você sofrer um ataque crítico, a criatura atacante recebe a condição Envenenado por 3 rodadas.' },
+  { n: 'Reserva Arcana', d: 'Pré-requisito: Presença 2 ou superior — Você desenvolveu uma reserva mágica secundária que alimenta sua conjuração em momentos críticos. Você possui uma reserva de Mana adicional igual à sua Presença. Essa reserva se recupera somente em descanso longo e pode ser usada normalmente para pagar custos de magias.' },
+  { n: 'Resistência a Caótico', d: 'Você recebe resistência ao elemento caótico. Ao escolher esse elemento, fica restrito ao talento Resistência a Sagrado.' },
+  { n: 'Resistência à Morte', d: 'Sua determinação desafia os limites da sobrevivência. Você recebe vantagem em salvaguardas realizadas enquanto estiver na condição Morrendo.' },
+  { n: 'Resistência a Sagrado', d: 'Você recebe resistência ao elemento sagrado. Ao escolher esse elemento, fica restrito ao talento Resistência a Caótico.' },
+  { n: 'Sensibilidade Aguçada', d: 'Você consegue perceber emoções e intenções de outras criaturas, como medo, raiva ou malícia. Recebe +5 em testes de Carisma relacionados a Persuasão, Intimidação e Enganação.' },
+  { n: 'Sobrevivente Selvagem', d: 'Pré-requisito: Vitalidade 3 ou superior. Você domina técnicas naturais de adaptação e sobrevivência. Recebe vantagem em salvaguardas e testes de Sobrevivência.' },
+  { n: 'Terror Implacável', d: 'Pré-requisito: Presença 2 ou superior — Sempre que reduzir uma criatura a menos da metade da Vida, ela deve realizar uma salvaguarda de Tenacidade. Em caso de falha, fica Amedrontada por 1 rodada.' },
+  { n: 'Treinamento Marcial', d: 'Você recebe uma reação adicional do tipo Contra-Ataque por rodada. Ao utilizar essa reação, recebe bônus de Defesa igual à sua Luta. Caso obtenha sucesso na defesa, pode realizar imediatamente um ataque desarmado contra a criatura atacante.' },
+  { n: 'Vigor Inabalável', d: 'Pré-requisito: Vitalidade 2 ou superior — Sua constituição robusta acelera sua recuperação. Sempre que recuperar Vida por descanso curto ou longo, você recupera pontos adicionais de Vida iguais ao dobro da sua Vitalidade.' },
+  { n: 'Vitalidade Inabalável', d: 'Pré-requisito: Vitalidade 3 ou superior — Seu corpo suporta danos que destruiriam outras criaturas. Ao cair para 0 pontos de vida, pode permanecer consciente até o fim do próximo turno, uma vez por descanso longo.' },
 ]
 
 const ATTR_COLORS = { FOR:'#e07028', DES:'#4a9a5a', VIT:'#c44', INT:'#7a7aca', PRE:'#c9a227' }
@@ -499,7 +575,49 @@ function Cap5() {
 
 
 
-const CHAPTER_COMPONENTS = { cap1: Cap1, cap2: Cap2, cap3: Cap3, cap4: Cap4, cap5: Cap5 }
+function Cap6() {
+  return (
+    <div>
+      <div className={styles.chHero}>
+        <h2 className={styles.chTitle}>Talentos</h2>
+        <div className={styles.chDivider} />
+        <p className={styles.chLead}>
+          Talentos representam habilidades especiais, treinos e traços únicos que distinguem um personagem dos demais — escolhas que moldam seu estilo de jogo e seu caminho de evolução.
+        </p>
+      </div>
+
+      <div className={styles.sec}>
+        <h3 className={styles.secTitle}>Como Conseguir Talentos</h3>
+        <p className={styles.secText}>
+          A quantidade de talentos que um personagem pode possuir é definida pela <strong>Proficiência</strong>. Seu valor inicial é <strong>2</strong>, podendo ser elevado até o máximo de <strong>9</strong> através de aprimoramentos. Cada talento adquirido voluntariamente consome 1 ponto desse limite — habilidades concedidas automaticamente por raça, classe ou outras fontes não consomem o limite de Proficiência.
+        </p>
+        <p className={styles.secText}>
+          Além da Proficiência, algumas raças concedem talentos bônus que não contam para o limite. Após a criação do personagem, é possível adquirir <strong>novos talentos</strong> investindo Pontos de Aprimoramento — cada compra do aprimoramento <strong>Talento</strong> custa <strong>300 pontos</strong> e permite escolher um novo talento, respeitando seus pré-requisitos e restrições.
+        </p>
+        <p className={styles.secText}>
+          Alguns talentos exigem <strong>pré-requisitos</strong> (como um valor mínimo em determinado atributo) ou possuem <strong>restrições</strong> (como não possuir pacto com nenhuma entidade). Esses requisitos devem ser atendidos no momento da escolha do talento.
+        </p>
+      </div>
+
+      <div className={styles.sec}>
+        <h3 className={styles.secTitle}>Lista de Talentos Disponíveis</h3>
+        <p className={styles.secText}>
+          Abaixo estão todos os talentos disponíveis no Reino Mágico, com seus respectivos efeitos.
+        </p>
+        <div className={styles.condGrid}>
+          {TALENTOS.map(t => (
+            <div key={t.n} className={styles.condCard}>
+              <div className={styles.condName}>{t.n}</div>
+              <p className={styles.condEffect}>{t.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const CHAPTER_COMPONENTS = { cap1: Cap1, cap2: Cap2, cap3: Cap3, cap4: Cap4, cap5: Cap5, cap6: Cap6 }
 
 export default function Mecanicas() {
   const [activeChapter, setActiveChapter] = useState('cap1')

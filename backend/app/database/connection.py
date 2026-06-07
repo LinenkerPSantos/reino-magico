@@ -154,6 +154,8 @@ def load_all_data() -> dict:
             d["min"]  = r["min_val"]
         if r["pacto"]:
             d["pacto"] = True
+        if r["requires_talento"]:
+            d["talentos"] = r["requires_talento"].split("|")
         talent_prereqs[r["talent_nome"]] = d
 
     fauno_aspectos = {
