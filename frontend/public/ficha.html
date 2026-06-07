@@ -1133,6 +1133,12 @@ function renderRaca(){
 }
 
 function selectRaca(name){
+  const prevRace=getRaceData();
+  // Remove a magia bônus fixa da raça anterior (não deve persistir ao trocar de raça)
+  if(prevRace&&prevRace.extraSpell){
+    char.magias=char.magias.filter(m=>m!==prevRace.extraSpell);
+    char.magiasExtra=char.magiasExtra.filter(m=>m!==prevRace.extraSpell);
+  }
   char.raca=name;
   char.hibridoTraits=[];
   char.maculadoTrait=null;
@@ -1144,9 +1150,9 @@ function selectRaca(name){
     if(!classPer.includes(k)) delete char.pericias[k];
   }
   const r=RACES[name];
-  // Auto-add fixed racial spell
+  // Auto-add fixed racial spell — é um bônus racial, não conta como magia escolhida pelo jogador
   if(r&&r.extraSpell){
-    if(!char.magias.includes(r.extraSpell)) char.magias.push(r.extraSpell);
+    if(!char.magiasExtra.includes(r.extraSpell)) char.magiasExtra.push(r.extraSpell);
   }
   renderRaca();
 }
