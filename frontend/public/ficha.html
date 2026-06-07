@@ -421,15 +421,17 @@ let TALENT_STAT_BONUSES = {}; // carregado do banco de dados
 //  UPGRADES — Capítulo X (Aprimoramentos)
 // ═══════════════════════════════════════════════════════
 const UPGRADES = [
-  {id:'vidaExtra',      nome:'Vida Extra',                      desc:'Acrescenta +10 pontos de vida máxima.',         custo:200, max:null,   tipo:'stat'},
-  {id:'atributos',      nome:'Atributo Extra',                  desc:'Aumenta atributos disponíveis para distribuir. Limite 5 por atributo.', custo:500, max:null, tipo:'stat'},
-  {id:'novasPericias',  nome:'Nova Perícia Básica',             desc:'Concede uma nova perícia no nível básico (+2).', custo:200, max:null,   tipo:'stat'},
-  {id:'periciaInt',     nome:'Aprimoramento Intermediário',     desc:'Eleva uma perícia básica para intermediária (+5).', custo:300, max:null, tipo:'stat'},
-  {id:'periciaAvancado',nome:'Aprimoramento Avançado',          desc:'Eleva uma perícia intermediária para avançada (+10).', custo:500, max:null, tipo:'stat'},
-  {id:'proficiencia',   nome:'Ponto de Proficiência',           desc:'Aumenta a proficiência máxima. Limite: 9 pontos.', custo:400, max:7,   tipo:'stat'},
-  {id:'mlElite',        nome:'Progressão Mágica: Elite',        desc:'Desbloqueia magias nível Elite (4). Requer Menor primeiro.', custo:300, max:1, tipo:'magic', nivel:4},
-  {id:'mlMaior',        nome:'Progressão Mágica: Maior',        desc:'Desbloqueia magias nível Maior (5). Requer Elite primeiro.', custo:500, max:1, tipo:'magic', nivel:5},
-  {id:'mlAvancado',     nome:'Progressão Mágica: Avançado',     desc:'Desbloqueia magias nível Avançado (6). Requer Maior primeiro.', custo:800, max:1, tipo:'magic', nivel:6},
+  {id:'vidaExtra',      nome:'Vida Extra',                      desc:'Acrescenta +10 pontos de vida máxima.',                                   custo:200, max:null, tipo:'stat'},
+  {id:'novasPericias',  nome:'Nova Perícia Básica',             desc:'Concede uma nova perícia no nível básico (+2).',                          custo:300, max:null, tipo:'stat'},
+  {id:'atributos',      nome:'Aumento de Atributo',             desc:'Concede +1 ponto em um atributo à escolha. Limite 5 por atributo.',       custo:400, max:null, tipo:'stat'},
+  {id:'proficiencia',   nome:'Ponto de Proficiência',           desc:'Aumenta a proficiência máxima. Limite: 9 pontos.',                        custo:500, max:7,    tipo:'stat'},
+  {id:'talento',        nome:'Talento',                         desc:'Permite adquirir um novo talento (respeitando pré-requisitos).',           custo:600, max:null, tipo:'stat'},
+  {id:'cascaGrossa',    nome:'Casca Grossa',                    desc:'Aumenta a Defesa Básica em +1. Máximo 5 vezes.',                          custo:700, max:5,    tipo:'stat'},
+  {id:'periciaInt',     nome:'Perito Intermediário',            desc:'Eleva até 4 perícias básicas para o nível intermediário.',                custo:500, max:null, tipo:'stat'},
+  {id:'periciaAvancado',nome:'Perito Avançado',                 desc:'Eleva até 4 perícias intermediárias para o nível avançado.',              custo:800, max:null, tipo:'stat'},
+  {id:'mlElite',        nome:'Progressão Mágica: Elite',        desc:'Desbloqueia magias nível Elite (4). Requer Menor primeiro.',              custo:400, max:1,    tipo:'magic', nivel:4},
+  {id:'mlMaior',        nome:'Progressão Mágica: Maior',        desc:'Desbloqueia magias nível Maior (5). Requer Elite primeiro.',              custo:600, max:1,    tipo:'magic', nivel:5},
+  {id:'mlAvancado',     nome:'Progressão Mágica: Avançado',     desc:'Desbloqueia magias nível Avançado (6). Requer Maior primeiro.',           custo:800, max:1,    tipo:'magic', nivel:6},
 ];
 
 function getMaxMagicLevel(){
@@ -446,14 +448,17 @@ function getXPGasto(){
   const apr = char.aprimoramentos;
   let total = 0;
   total += apr.vidaExtra       * 200;
-  total += apr.atributos       * 500;
-  total += apr.novasPericias   * 200;
-  total += apr.periciaInt      * 300;
-  total += apr.periciaAvancado * 500;
-  total += apr.proficiencia    * 400;
+  total += apr.atributos       * 400;
+  total += apr.novasPericias   * 300;
+  total += apr.periciaInt      * 500;
+  total += apr.periciaAvancado * 800;
+  total += apr.proficiencia    * 500;
+  total += (apr.talento||0)    * 600;
+  total += (apr.cascaGrossa||0)* 700;
+  total += (apr.novasMagias||0)* 500;
   const ml = apr.magicLevel||0;
-  if(ml>=1) total+=300;
-  if(ml>=2) total+=500;
+  if(ml>=1) total+=400;
+  if(ml>=2) total+=600;
   if(ml>=3) total+=800;
   return total;
 }
@@ -462,6 +467,8 @@ function getXPRestante(){ return (char.xp||0) - getXPGasto(); }
 
 function getStepNames(){
   const base=['Informações','Classe','Raça','Kit Inicial','Atributos','Perícias','Talentos'];
+  if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.periciaInt>=1)
+    base.splice(6,0,'Perícias Avançadas');
   if(needsEntidadeStep()) base.push('Entidade');
   base.push('Idiomas','Magias','Ficha Final');
   if(char.tipo==='avancado') base.unshift('Aprimoramentos');
@@ -556,7 +563,10 @@ let char = {
   xp:0,
   aprimoramentos:{
     vidaExtra:0, atributos:0, novasPericias:0,
-    periciaInt:0, periciaAvancado:0, proficiencia:0,
+    periciaInt:0, periciaIntSkills:[],
+    periciaAvancado:0, periciaAvancadoSkills:[],
+    proficiencia:0, talento:0, cascaGrossa:0,
+    novasMagias:0,
     magicLevel:0  // 0=Menor(3), 1=Elite(4), 2=Maior(5), 3=Avancado(6)
   },
   faunoAspecto:'', draconatoElem:'',
@@ -654,7 +664,8 @@ function calcMana(){
 function calcDB(){
   const rb=getRacialBonuses();
   const eq=getEquipBonuses();
-  return 10+getAttr('DES')+rb.db+getTalentBonuses().db+eq.db;
+  const cg=(char.aprimoramentos&&char.aprimoramentos.cascaGrossa)||0;
+  return 10+getAttr('DES')+rb.db+getTalentBonuses().db+eq.db+cg;
 }
 function calcCD(){
   const cl=getClassData(); if(!cl)return 8;
@@ -758,6 +769,8 @@ function render(){
   document.getElementById('stepsBar').innerHTML=
     STEP_NAMES_CUR.map((n,i)=>`<div class="sp${i===step?' active':i<step?' done':''}">${n}</div>`).join('');
   const fns=[renderInfo,renderClasse,renderRaca,renderKit,renderAtributos,renderPericias,renderTalentos];
+  if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.periciaInt>=1)
+    fns.splice(6,0,renderPericiasAvancadas);
   if(needsEntidadeStep()) fns.push(renderEntidade);
   fns.push(renderIdiomas,renderMagias,renderFicha);
   if(char.tipo==='avancado') fns.unshift(renderAprimoramentos);
@@ -1171,8 +1184,9 @@ function renderAprimoramentos(){
     <div class="xp-bar-wrap"><div class="xp-bar" style="width:${pct}%"></div></div>
     <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
       <label style="font-size:.82em;color:var(--text-dim)">XP disponível:</label>
-      <input type="number" class="finput" style="width:120px;padding:5px 8px" min="0" max="5000"
-        value="${xpTotal}" oninput="char.xp=Math.max(0,Math.min(5000,parseInt(this.value)||0));renderAprimoramentos()">
+      <input type="text" inputmode="numeric" class="finput" style="width:120px;padding:5px 8px"
+        value="${xpTotal}" onchange="char.xp=Math.max(0,Math.min(5000,parseInt(this.value)||0));renderAprimoramentos()"
+        onkeydown="if(event.key==='Enter'){char.xp=Math.max(0,Math.min(5000,parseInt(this.value)||0));renderAprimoramentos();}">
     </div>
     ${xpRest<0?`<div style="color:var(--red);font-size:.78em;margin-top:6px">⚠ XP gasto excede o disponível — remova aprimoramentos.</div>`:''}
   </div>`;
@@ -1185,8 +1199,8 @@ function renderAprimoramentos(){
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px">`;
 
   const mlDefs=[
-    {id:'mlElite', nome:'Elite', nivel:4, custo:300, req:0, cor:'#c9c227'},
-    {id:'mlMaior', nome:'Maior', nivel:5, custo:500, req:1, cor:'#c9a227'},
+    {id:'mlElite', nome:'Elite', nivel:4, custo:400, req:0, cor:'#c9c227'},
+    {id:'mlMaior', nome:'Maior', nivel:5, custo:600, req:1, cor:'#c9a227'},
     {id:'mlAvancado',nome:'Avançado',nivel:6,custo:800,req:2,cor:'#e08820'},
   ];
   mlDefs.forEach(ml=>{
@@ -1210,16 +1224,39 @@ function renderAprimoramentos(){
   });
   html+=`</div>`;
 
-  html+=`<h3 style="margin-bottom:8px;color:var(--gold)">Estatísticas & Perícias</h3>
+  // Novas Magias
+  {
+    const nm = apr.novasMagias||0;
+    const atMaxNM = nm >= 3;
+    const canBuyNM = !atMaxNM && xpRest >= 500;
+    const canRemNM = nm > 0;
+    html+=`<div class="apr-item${nm>0?' comprado':''}" style="margin-bottom:18px">
+      <div class="apr-nome">Novas Magias</div>
+      <div class="apr-desc">Concede acesso a 2 novas magias do nível de conhecimento mágico que possui ou menor.</div>
+      <div class="apr-custo">500 pts cada (max 3)</div>
+      <div style="font-size:.78em;color:var(--gold-dim);margin-top:4px">
+        ℹ Observação: a cada compra, escolha manualmente <b>2 novas magias</b> na aba <b>Magias</b>
+        (respeitando o nível de proficiência mágica e os tipos de magia que o personagem tem acesso).
+      </div>
+      <div class="apr-ctrl">
+        <button class="apr-btn" onclick="alterarApr('novasMagias',-1,500)" ${!canRemNM?'disabled':''}>−</button>
+        <div class="apr-val">${nm}</div>
+        <button class="apr-btn" onclick="alterarApr('novasMagias',1,500)" ${!canBuyNM?'disabled':''}>+</button>
+        ${nm>0?`<span style="font-size:.72em;color:var(--gold-dim)">−${nm*500} pts</span>`:''}
+      </div>
+    </div>`;
+  }
+
+  html+=`<h3 style="margin-bottom:8px;color:var(--gold)">Estatísticas Básicas</h3>
   <div class="apr-grid">`;
 
   const statDefs=[
-    {id:'vidaExtra',      nome:'Vida Extra',          desc:'+10 HP máximos por compra.', custo:200,max:null},
-    {id:'atributos',      nome:'Atributos (+1 ponto)', desc:'Ponto extra para distribuir. Limite 5 por atributo.', custo:500,max:null},
-    {id:'novasPericias',  nome:'Nova Perícia Básica',  desc:'Perícia +2 à escolha.', custo:200,max:null},
-    {id:'periciaInt',     nome:'Perícia Intermediária',desc:'Eleva +2 → +5 em uma perícia.', custo:300,max:null},
-    {id:'periciaAvancado',nome:'Perícia Avançada',     desc:'Eleva +5 → +10 em uma perícia.', custo:500,max:null},
-    {id:'proficiencia',   nome:'Ponto de Proficiência',desc:'Max 9 total. Melhora salvaguardas, talentos e LMT.', custo:400,max:7},
+    {id:'vidaExtra',     nome:'Vida Extra',            desc:'+10 HP máximos por compra.',                              custo:200, max:null},
+    {id:'novasPericias', nome:'Nova Perícia Básica',   desc:'Perícia Básica (+2) à escolha.',                         custo:300, max:null},
+    {id:'atributos',     nome:'Atributo (+1 ponto)',   desc:'Ponto extra para distribuir. Limite 5 por atributo.',    custo:400, max:null},
+    {id:'proficiencia',  nome:'Ponto de Proficiência', desc:'Max 9 total. Melhora salvaguardas, talentos e LMT.',     custo:500, max:7},
+    {id:'talento',       nome:'Talento',               desc:'Adquire um novo talento (respeitando pré-requisitos).',  custo:600, max:null},
+    {id:'cascaGrossa',   nome:'Casca Grossa',          desc:'+1 de Defesa Básica permanente. Máximo 5 vezes.',       custo:700, max:5},
   ];
 
   statDefs.forEach(sd=>{
@@ -1230,7 +1267,7 @@ function renderAprimoramentos(){
     html+=`<div class="apr-item${val>0?' comprado':''}">
       <div class="apr-nome">${sd.nome}</div>
       <div class="apr-desc">${sd.desc}</div>
-      <div class="apr-custo">${sd.custo} pts cada${sd.max?` (max ${sd.max})+base`:''}</div>
+      <div class="apr-custo">${sd.custo} pts cada${sd.max&&sd.max>1?` (max ${sd.max})`:''}</div>
       <div class="apr-ctrl">
         <button class="apr-btn" onclick="alterarApr('${sd.id}',-1,${sd.custo})" ${!canRem?'disabled':''}>−</button>
         <div class="apr-val">${val}</div>
@@ -1241,16 +1278,80 @@ function renderAprimoramentos(){
   });
   html+=`</div>`;
 
+  // ── Evolução de Perícias ─────────────────────────────────────────────
+  html+=`<h3 style="margin:20px 0 8px;color:var(--gold)">Evolução de Perícias</h3>
+  <div class="info-box" style="margin-bottom:10px;font-size:.78em">
+    Todos os personagens iniciam com perícias no nível <b>Básico</b>.
+    Adquira as opções abaixo para desbloquear a seleção de perícias nos níveis superiores.
+  </div>`;
+
+  // Perito Intermediário
+  {
+    const hasInt = apr.periciaInt >= 1;
+    const intSkills = apr.periciaIntSkills || [];
+    const canBuyInt = !hasInt && xpRest >= 500;
+    html+=`<div class="apr-item${hasInt?' comprado':''}" style="margin-bottom:10px">
+      <div class="apr-nome">Perito Intermediário</div>
+      <div class="apr-desc">Libera a aba <b>Perícias Avançadas</b> para evoluir até 4 perícias Básicas para Intermediário (+5).</div>
+      <div class="apr-custo">500 pts — compra única</div>
+      ${hasInt?`<div style="font-size:.78em;color:var(--gold-dim);margin-top:4px">✓ Desbloqueado — acesse a aba <b>Perícias Avançadas</b> para selecionar (${intSkills.length}/4 selecionadas)</div>`:''}
+      <div class="apr-ctrl">
+        ${hasInt
+          ? `<button class="apr-btn" style="font-size:.78em;padding:4px 10px" onclick="alterarApr('periciaInt',-1,500)">Remover</button>
+             <span style="font-size:.72em;color:var(--gold-dim)">−500 pts</span>`
+          : `<button class="btn${canBuyInt?' primary':''}" style="font-size:.8em;padding:5px 14px"
+               onclick="alterarApr('periciaInt',1,500)" ${!canBuyInt?'disabled':''}>
+               ${canBuyInt?'✦ Desbloquear':'XP insuficiente'}
+             </button>`
+        }
+      </div>
+    </div>`;
+  }
+
+  // Perito Avançado
+  {
+    const hasInt = apr.periciaInt >= 1;
+    const intSkills = apr.periciaIntSkills || [];
+    const hasAvç = apr.periciaAvancado >= 1;
+    const avçSkills = apr.periciaAvancadoSkills || [];
+    const canBuyAvç = !hasAvç && hasInt && xpRest >= 800;
+    html+=`<div class="apr-item${hasAvç?' comprado':''}" style="margin-bottom:10px">
+      <div class="apr-nome">Perito Avançado</div>
+      <div class="apr-desc">Libera na aba <b>Perícias Avançadas</b> a opção de evoluir até 4 perícias Intermediárias para Avançado (+10).</div>
+      <div class="apr-custo">800 pts — compra única${!hasInt?' <span style="color:var(--text-dim)">(requer Perito Intermediário)</span>':''}</div>
+      ${hasAvç?`<div style="font-size:.78em;color:var(--gold-dim);margin-top:4px">✓ Desbloqueado — acesse a aba <b>Perícias Avançadas</b> (${avçSkills.length}/4 selecionadas)</div>`:''}
+      <div class="apr-ctrl">
+        ${hasAvç
+          ? `<button class="apr-btn" style="font-size:.78em;padding:4px 10px" onclick="alterarApr('periciaAvancado',-1,800)">Remover</button>
+             <span style="font-size:.72em;color:var(--gold-dim)">−800 pts</span>`
+          : `<button class="btn${canBuyAvç?' primary':''}" style="font-size:.8em;padding:5px 14px"
+               onclick="alterarApr('periciaAvancado',1,800)" ${!canBuyAvç?'disabled':''}>
+               ${!hasInt?'Requer Perito Int.':canBuyAvç?'✦ Desbloquear':'XP insuficiente'}
+             </button>`
+        }
+      </div>
+    </div>`;
+  }
+
   // Resumo de bônus
   if(xpGasto > 0){
     html+=`<div class="info-box" style="margin-top:10px;font-size:.8em">
       <b>Bônus acumulados:</b><br>`;
     if(apr.vidaExtra>0)       html+=`• +${apr.vidaExtra*10} Vida máxima<br>`;
-    if(apr.atributos>0)       html+=`• +${apr.atributos} ponto(s) de atributo extra<br>`;
     if(apr.novasPericias>0)   html+=`• +${apr.novasPericias} perícia(s) básica(s)<br>`;
-    if(apr.periciaInt>0)      html+=`• ${apr.periciaInt} aprimoramento(s) intermediário(s)<br>`;
-    if(apr.periciaAvancado>0) html+=`• ${apr.periciaAvancado} aprimoramento(s) avançado(s)<br>`;
+    if(apr.atributos>0)       html+=`• +${apr.atributos} ponto(s) de atributo extra<br>`;
     if(apr.proficiencia>0)    html+=`• +${apr.proficiencia} proficiência<br>`;
+    if(apr.talento>0)         html+=`• +${apr.talento} talento(s) extra(s)<br>`;
+    if(apr.cascaGrossa>0)     html+=`• +${apr.cascaGrossa} Defesa Básica (Casca Grossa)<br>`;
+    if(apr.periciaInt>0){
+      const iSk=apr.periciaIntSkills||[];
+      html+=`• Perito Intermediário${iSk.length>0?': '+iSk.join(', '):'(nenhuma selecionada)'}<br>`;
+    }
+    if(apr.periciaAvancado>0){
+      const aSk=apr.periciaAvancadoSkills||[];
+      html+=`• Perito Avançado${aSk.length>0?': '+aSk.join(', '):'(nenhuma selecionada)'}<br>`;
+    }
+    if(apr.novasMagias>0)     html+=`• Novas Magias: ${apr.novasMagias}x — ${apr.novasMagias*2} magia(s) extra(s) a escolher na aba Magias<br>`;
     if(apr.magicLevel>=1)     html+=`• Magias Elite desbloqueadas<br>`;
     if(apr.magicLevel>=2)     html+=`• Magias Maior desbloqueadas<br>`;
     if(apr.magicLevel>=3)     html+=`• Magias Avançado desbloqueadas<br>`;
@@ -1258,6 +1359,39 @@ function renderAprimoramentos(){
   }
 
   set(html);
+}
+
+function togglePericiaInt(skillName){
+  const apr = char.aprimoramentos;
+  if(!apr.periciaIntSkills) apr.periciaIntSkills=[];
+  const idx = apr.periciaIntSkills.indexOf(skillName);
+  if(idx>=0){
+    // Remove: reverte avancado desse skill se tiver, depois reverte para Básico
+    const ai=(apr.periciaAvancadoSkills||[]).indexOf(skillName);
+    if(ai>=0){ apr.periciaAvancadoSkills.splice(ai,1); }
+    apr.periciaIntSkills.splice(idx,1);
+    char.pericias[skillName]=2;
+  } else {
+    if(apr.periciaIntSkills.length>=4){showErr('Limite de 4 perícias Intermediárias atingido.');return;}
+    apr.periciaIntSkills.push(skillName);
+    char.pericias[skillName]=5;
+  }
+  renderAprimoramentos();
+}
+
+function togglePericiaAvancado(skillName){
+  const apr = char.aprimoramentos;
+  if(!apr.periciaAvancadoSkills) apr.periciaAvancadoSkills=[];
+  const idx = apr.periciaAvancadoSkills.indexOf(skillName);
+  if(idx>=0){
+    apr.periciaAvancadoSkills.splice(idx,1);
+    char.pericias[skillName]=5; // volta para Intermediário
+  } else {
+    if(apr.periciaAvancadoSkills.length>=4){showErr('Limite de 4 perícias Avançadas atingido.');return;}
+    apr.periciaAvancadoSkills.push(skillName);
+    char.pericias[skillName]=10;
+  }
+  renderAprimoramentos();
 }
 
 function comprarMagicLevel(novoNivel, custo){
@@ -1272,6 +1406,23 @@ function alterarApr(id, delta, custo){
   if(delta>0 && getXPRestante() < custo){showErr('XP insuficiente.');return;}
   if(delta<0 && val<=0) return;
   apr[id] = val + delta;
+  // Limpa seleções de perícias ao remover o upgrade
+  if(id==='periciaInt' && delta<0){
+    for(const sk of (apr.periciaAvancadoSkills||[])) char.pericias[sk]=2;
+    apr.periciaAvancadoSkills=[];
+    apr.periciaAvancado=0;
+    for(const sk of (apr.periciaIntSkills||[])) char.pericias[sk]=2;
+    apr.periciaIntSkills=[];
+    // Força recarregar o step para sumir a aba "Perícias Avançadas"
+    if(step > 0 && step >= getStepNames().length) step = getStepNames().length - 1;
+    render(); return;
+  }
+  if(id==='periciaAvancado' && delta<0){
+    for(const sk of (apr.periciaAvancadoSkills||[])) char.pericias[sk]=5;
+    apr.periciaAvancadoSkills=[];
+  }
+  // Ao comprar periciaInt, recarrega tudo para adicionar a nova aba
+  if(id==='periciaInt' && delta>0){ render(); return; }
   renderAprimoramentos();
 }
 
@@ -1407,6 +1558,94 @@ function getExtraPerSources(){
   return sources;
 }
 
+function renderPericiasAvancadas(){
+  const apr = char.aprimoramentos;
+  const intSkills = apr.periciaIntSkills || [];
+  const avçSkills = apr.periciaAvancadoSkills || [];
+  const hasAvç = apr.periciaAvancado >= 1;
+  const prof = getPROF();
+
+  let html=`<h2>◈ Perícias Avançadas</h2>
+  <div class="info-box">
+    Aqui você escolhe quais perícias Básicas deseja evoluir com os upgrades adquiridos nos Aprimoramentos.
+    Somente perícias já selecionadas na aba <b>Perícias</b> aparecem aqui.
+  </div>`;
+
+  // ── Seção Intermediário ──────────────────────────────────────
+  html+=`<h3 style="margin:20px 0 8px;color:var(--gold)">Básico → Intermediário (+5)
+    <span style="font-size:.65em;font-weight:normal;color:var(--text-dim)">${intSkills.length}/4 selecionadas</span>
+  </h3>`;
+
+  const skillsBasico = SKILLS.filter(sk=>(char.pericias[sk.n]||0)>=2);
+  if(skillsBasico.length===0){
+    html+=`<div style="color:var(--text-dim);font-size:.85em;padding:10px 0;font-style:italic">
+      Nenhuma perícia Básica selecionada. Volte à aba <b>Perícias</b> e escolha suas perícias primeiro.
+    </div>`;
+  } else {
+    html+=`<div class="skills-grid">`;
+    for(const sk of skillsBasico){
+      const isAvçUp = avçSkills.includes(sk.n);
+      const isIntUp = intSkills.includes(sk.n);
+      const effectiveLv = isAvçUp ? 10 : isIntUp ? 5 : 2;
+      const podeAdd = isIntUp || intSkills.length < 4;
+      html+=`<div class="skill-row" style="${isIntUp||isAvçUp?'border-color:var(--gold)':''}">
+        <span class="skill-name">${sk.n}
+          <span style="color:var(--text-dim);font-size:.8em">(${sk.a})</span>
+          ${isAvçUp?`<span style="font-size:.63em;padding:1px 5px;border:1px solid #e08820;color:#e08820;border-radius:4px;margin-left:4px">Avç</span>`:''}
+        </span>
+        <div class="skill-lv">
+          <span class="lbtn on" style="cursor:default">Bás</span>
+          <button class="lbtn${isIntUp||isAvçUp?' on':''}"
+            style="${isIntUp||isAvçUp?'border-color:var(--gold);color:var(--gold)':''}${!podeAdd?'opacity:.4;cursor:not-allowed':''}"
+            ${isAvçUp?'disabled title="Já evoluída para Avançado"':`onclick="togglePericiaInt('${sk.n.replace(/'/g,"\\'")}');render()"`}>
+            Int${isIntUp||isAvçUp?' ✓':''}
+          </button>
+        </div>
+        <span class="skill-sv">${prof+effectiveLv}</span>
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+
+  // ── Seção Avançado (só aparece se comprou Perito Avançado) ────
+  if(hasAvç){
+    html+=`<h3 style="margin:28px 0 8px;color:#e08820">Intermediário → Avançado (+10)
+      <span style="font-size:.65em;font-weight:normal;color:var(--text-dim)">${avçSkills.length}/4 selecionadas</span>
+    </h3>`;
+
+    if(intSkills.length===0){
+      html+=`<div style="color:var(--text-dim);font-size:.85em;padding:10px 0;font-style:italic">
+        Selecione primeiro as perícias Intermediárias acima.
+      </div>`;
+    } else {
+      html+=`<div class="skills-grid">`;
+      for(const skName of intSkills){
+        const sk = SKILLS.find(s=>s.n===skName);
+        if(!sk) continue;
+        const isAvçUp = avçSkills.includes(skName);
+        const podeAdd = isAvçUp || avçSkills.length < 4;
+        html+=`<div class="skill-row" style="${isAvçUp?'border-color:#e08820':''}">
+          <span class="skill-name">${skName}
+            <span style="color:var(--text-dim);font-size:.8em">(${sk.a})</span>
+          </span>
+          <div class="skill-lv">
+            <span class="lbtn on" style="cursor:default;border-color:var(--gold);color:var(--gold)">Int</span>
+            <button class="lbtn${isAvçUp?' on':''}"
+              style="${isAvçUp?'border-color:#e08820;color:#e08820':''}${!podeAdd?'opacity:.4;cursor:not-allowed':''}"
+              onclick="togglePericiaAvancado('${skName.replace(/'/g,"\\'")}');render()">
+              Avç${isAvçUp?' ✓':''}
+            </button>
+          </div>
+          <span class="skill-sv">${prof+(isAvçUp?10:5)}</span>
+        </div>`;
+      }
+      html+=`</div>`;
+    }
+  }
+
+  set(html);
+}
+
 function renderPericias(){
   const cl=getClassData();
   const r=getRaceData();
@@ -1468,6 +1707,10 @@ function renderPericias(){
     html+=`<div class="skill-row" style="${hasVant?'border-color:var(--green);':''}">
       <span class="skill-name">${sk.n} <span style="color:var(--text-dim);font-size:.8em">(${sk.a})</span>${hasVant?` <span style="font-size:.65em;padding:1px 4px;border:1px solid var(--green);color:var(--green);border-radius:4px">Vant.</span>`:''}${eqB>0?` <span style="font-size:.65em;padding:1px 4px;border:1px solid var(--gold);color:var(--gold);border-radius:4px">+${eqB} equip</span>`:''}</span>`;
 
+    const aprInt=(char.aprimoramentos&&char.aprimoramentos.periciaIntSkills)||[];
+    const aprAvç=(char.aprimoramentos&&char.aprimoramentos.periciaAvancadoSkills)||[];
+    const isIntUpg=aprInt.includes(sk.n);
+    const isAvçUpg=aprAvç.includes(sk.n);
     if(isInicial){
       if(isClass){
         html+=`<div class="skill-lv">
@@ -1482,9 +1725,9 @@ function renderPericias(){
     } else {
       html+=`<div class="skill-lv">
         ${isClass?`<span class="lbtn cls" title="Perícia de Classe">Cls</span>`:''}
-        <button class="lbtn${lv===2?' on':''}" onclick="setPer('${sk.n}',${lv===2?0:2},'${isClass?'class':'extra'}',${manualMax},${manualUsed})">Bás</button>
-        <button class="lbtn${lv===5?' on':''}" onclick="setPer('${sk.n}',${lv===5?0:5},'${isClass?'class':'extra'}',${manualMax},${manualUsed})">Int</button>
-        <button class="lbtn${lv===10?' on':''}" onclick="setPer('${sk.n}',${lv===10?0:10},'${isClass?'class':'extra'}',${manualMax},${manualUsed})">Avç</button>
+        <button class="lbtn${lv>=2?' on':''}" ${isIntUpg||isAvçUpg?'disabled title="Upado via Aprimoramento"':`onclick="setPer('${sk.n}',${lv>=2?0:2},'${isClass?'class':'extra'}',${manualMax},${manualUsed})"`}>Bás</button>
+        ${isIntUpg&&!isAvçUpg?`<span class="lbtn on" style="cursor:default;border-color:var(--gold);color:var(--gold)" title="Intermediário via Aprimoramento">Int★</span>`:''}
+        ${isAvçUpg?`<span class="lbtn on" style="cursor:default;border-color:#e08820;color:#e08820" title="Avançado via Aprimoramento">Avç★</span>`:''}
       </div>`;
     }
 
@@ -1498,6 +1741,13 @@ function renderPericias(){
 function setPer(skill,lv,type,maxManual,usedManual){
   const isInicial=!char.tipo||char.tipo==='inicial';
   if(isInicial&&lv>2){showErr('Intermediário e Avançado disponíveis apenas no Personagem Avançado.');return;}
+  // Impede remover perícia que foi aprimorada
+  if(lv===0){
+    const apr=char.aprimoramentos;
+    if((apr.periciaIntSkills||[]).includes(skill)){
+      showErr('Esta perícia foi promovida via Aprimoramento. Remova o upgrade na aba Aprimoramentos.');return;
+    }
+  }
   if(type==='extra'){
     const isAlreadyTrained=char.pericias[skill]>0;
     if(lv>0&&!isAlreadyTrained&&usedManual>=maxManual){showErr(`Limite de ${maxManual} perícias extras atingido.`);return;}
@@ -1774,12 +2024,13 @@ let talentFilter='';
 
 function renderTalentos(){
   const r=getRaceData();
-  const maxTal=PROF+(r&&r.extraTal?r.extraTal:0); // Proficiência(2) + bônus racial
+  const aprTal=(char.aprimoramentos&&char.aprimoramentos.talento)||0;
+  const maxTal=PROF+(r&&r.extraTal?r.extraTal:0)+aprTal; // Proficiência(2) + bônus racial + aprimoramento
   const inherited=getInheritedTraits();
 
   let html=`<h2>◈ Talentos</h2>
   <div class="info-box">
-    <b>Talentos = Proficiência (${PROF})${r&&r.extraTal?` + ${r.extraTal} bônus racial`:''} = ${maxTal} talentos</b><br>
+    <b>Talentos = Proficiência (${PROF})${r&&r.extraTal?` + ${r.extraTal} bônus racial`:''}${aprTal>0?` + ${aprTal} aprimoramento`:''} = ${maxTal} talentos</b><br>
     Talentos com <span style="color:var(--green)">bônus de estatísticas</span> têm seus efeitos calculados automaticamente na ficha.
     ${inherited.length>0?`<br><b>Traços herdados:</b> ${inherited.map(t=>t.n).join(', ')}`:''}
   </div>

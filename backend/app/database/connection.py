@@ -181,6 +181,10 @@ def load_all_data() -> dict:
         "SELECT nome,tipo,elemento,titulo,descricao,efeito_nome,efeito FROM entities ORDER BY tipo,nome"
     ).fetchall()]
 
+    conditions = [dict(r) for r in conn.execute(
+        "SELECT nome,descricao,efeito,salvaguarda FROM conditions ORDER BY nome"
+    ).fetchall()]
+
     equipamentos = [dict(r) for r in conn.execute(
         """SELECT categoria,subcategoria,nome,tier,dano,tipo_dano,alcance,propriedades,bonus,
                   bonus_db,tipo,requisito,descricao,preco,tipo_base,efeitos,maldicao,lore
@@ -208,5 +212,6 @@ def load_all_data() -> dict:
         "fauno_aspectos":      fauno_aspectos,
         "racial_data":         racial_data,
         "entities":            entities,
+        "conditions":          conditions,
         "equipamentos":        equipamentos,
     }

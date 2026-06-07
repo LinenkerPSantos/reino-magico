@@ -1,0 +1,24 @@
+﻿id,nome,descricao,efeito,salvaguarda
+1,Abalado,"A criatura sofre perturbação mental, insegurança ou perda momentânea de concentração.","Sofre –2 em testes de ataque, perícia ou habilidade baseados em Presença.",—
+2,Adormecido,"O personagem cai em um sono profundo, até o final do efeito ou até que receba algum dano.","Perde o turno, incapaz de agir. Ataques contra a criatura adormecida são considerados como vulneráveis.",—
+3,Alucinado,"O personagem perde a noção da realidade, enxergando e reagindo a estímulos inexistentes.","Perde o turno, incapaz de agir.","Salv. Foco — ao sucesso, encerra a condição."
+4,Amedrontado,O personagem é dominado pelo medo diante de uma ameaça específica.,Sofre desvantagem contra o conjurador e recebe -2 na Defesa Básica.,"Salv. Tenacidade — ao sucesso, supera o medo."
+5,Aprisionado,O personagem tem seus movimentos restringidos por força física ou mágica.,"Não pode se mover, mas ainda pode atacar ou conjurar se o alvo estiver ao alcance.","Salv. Atletismo — ao sucesso, se liberta."
+6,Atordoado,O personagem sofre um impacto que compromete totalmente sua capacidade de reação.,Não pode agir e perde o turno.,"Salv. Tenacidade — ao sucesso, recupera o controle."
+7,Cego,O personagem perde completamente a visão do ambiente ao redor.,"Sofre penalidade de -20 em ataques físicos, à distância, mágicos e ações manuais.",—
+8,Confuso,"A mente do personagem entra em desordem, dificultando decisões coerentes.","No início do turno, rola 1d4: 1 = age normalmente; 2–3 = ataca um aliado; 4 = perde o turno e encerra a condição.",—
+9,Congelando,"O corpo do personagem é tomado por frio extremo, limitando suas ações.","Condição não acumulativa (propriedade Água). Novos ataques de Água contra alvo congelado causam metade do dano. O alvo não pode agir, mover-se ou reagir, sofrendo 1d8 de dano contínuo por rodada. Chegar a 0 vida nesta condição causa morte imediata — o corpo transforma-se em estátua de gelo.","Salv. Atletismo — ao sucesso, rompe o efeito."
+10,Desprevenido,O personagem é pego sem preparo ou atenção.,Sofre -2 na Defesa Básica.,—
+11,Desorientado,O alvo perde o controle sobre sua percepção e concentração.,"Cancela imediatamente magias ativas, efeitos sustentados e habilidades de manutenção. Ao atacar ou selecionar alvo, 50% de chance de confundir aliados com inimigos.",—
+12,Em Chamas,"O personagem está envolto em chamas, sofrendo dano contínuo.",Propriedade Fogo. 1d8 de dano contínuo por rodada. Acumulativo: cada novo ataque de Chamas adiciona +1d8 e reinicia a duração. Pode ser extinto por magias de cura ou efeitos com propriedade Água.,"Salv. Reflexo — ao se jogar no chão, encerra a condição, mas fica Vulnerável até o próximo turno."
+13,Enfraquecido,"A força do personagem é drenada, reduzindo sua eficácia.",Causa metade do dano e tem o deslocamento reduzido pela metade.,—
+14,Enfurecido,O personagem perde o controle emocional e entra em estado de agressividade extrema.,"Recebe vantagem em ataques corpo a corpo, mas não pode realizar ataques à distância ou conjurar magias.",—
+15,Envenenado,O corpo do personagem sofre com toxinas que causam dano gradual.,"1d6 de dano contínuo com propriedade Terra por rodada. Condição não acumulativa, exceto quando efeitos, talentos ou magias especificarem explicitamente.","Salv. Tenacidade — ao sucesso, encerra o efeito."
+16,Fadigado,O personagem está exausto física e mentalmente.,Sofre desvantagem em testes e ataques em geral.,"Salv. Vontade — ao sucesso, recupera o foco."
+17,Lentidão,Os movimentos do personagem se tornam pesados e atrasados.,Movimento reduzido pela metade.,"Salv. Tenacidade — ao sucesso, recupera a mobilidade."
+18,Morrendo,"O personagem encontra-se à beira da morte, com o corpo falhando e a consciência oscilando.",Por turno: salv. bem-sucedida = retorna com 1 de Vida; falha = acumula 1 falha (3 falhas = morte). Permanece Vulnerável durante toda a condição.,Salv. Tenacidade ou Vontade.
+19,Paralisado,O corpo do personagem está completamente imobilizado.,"Não pode se mover ou atacar, mas ainda pode conjurar magias.","Salv. Tenacidade — ao sucesso, encerra a condição."
+20,Provocado,O personagem é forçado a agir de forma impulsiva contra um alvo específico.,Deve atacar o conjurador em sua próxima ação.,"Salv. Vontade — ao sucesso, resiste à provocação."
+21,Sangrando,Ferimentos abertos causam perda contínua de vida.,1d8 de dano contínuo por rodada (não acumulativo). Agravamento por reaplicação — efeitos secundários em ordem: Enfraquecido → Silenciado → Vulnerável.,"Salv. Tenacidade — ao sucesso, estanca o sangramento."
+22,Silenciado,O personagem tem sua capacidade de conjurar magia bloqueada.,Não pode conjurar magias.,—
+23,Vulnerável,"O personagem se encontra em estado crítico, exposto a danos extremos.","Redução de -5 na Defesa Básica e não pode utilizar Reações. Se estiver Morrendo, qualquer dano recebido causa morte imediata.",—

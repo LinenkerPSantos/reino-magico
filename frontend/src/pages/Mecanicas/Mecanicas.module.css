@@ -89,10 +89,11 @@
 .restDesc { font-size: .78em; color: var(--text-dim); }
 
 /* Conditions */
-.condGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 10px; }
+.condGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 10px; }
 .condCard { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 7px; padding: 14px; }
-.condName { font-size: .88em; font-weight: bold; color: var(--gold); margin-bottom: 6px; }
-.condEffect { font-size: .78em; color: var(--text); line-height: 1.5; margin-bottom: 4px; }
+.condName { font-size: .88em; font-weight: bold; color: var(--gold); margin-bottom: 5px; }
+.condDesc { font-size: .74em; color: var(--text-dim); font-style: italic; line-height: 1.45; margin-bottom: 7px; }
+.condEffect { font-size: .78em; color: var(--text); line-height: 1.5; margin-bottom: 6px; }
 .condSave { font-size: .72em; color: var(--blue); font-style: italic; }
 
 /* Actions */

@@ -1,0 +1,40 @@
+﻿id,race_id,nome,descricao,bonus
+1,1,Resistência de Pedra,Vantagem em salvaguardas contra venenos e envenenamento.,
+2,1,Proficiência Inata,"Proficiência com Armaduras Leves e Pesadas, independentemente da classe.",
+3,1,Filhos da Pedra,Vantagem em testes e Salvaguardas de Atletismo e Prestidigitação.,
+4,1,Visão de Mineiro,Enxerga em ambientes fechados escuros em até 18 metros.,
+5,2,Afinidade Celestial,Pode aprender e usar magias do elemento Sagrado sem pactos.,
+6,2,Bênção dos Celestiais,"Ao restaurar Vida de criatura por magia/habilidade, o alvo recupera +1d4 HP.",
+7,2,Asas Angelicais,Conhece a magia Voo Menor independentemente da classe.,Magia: Voo Menor
+8,2,Percepção Mágica,Sente usuários de magia em raio de 18m. Vantagem em Foco para detectar conjuradores.,
+9,3,Resistência Elemental,"Escolha um elemento (Fogo, Água, Terra, Vento ou Trovão). Resistência a danos desse elemento.",
+10,3,Presença Imponente,Vantagem em Intimidação e Carisma contra criaturas de tamanho igual ou menor.,
+11,3,Escamas Naturais,"DB +1, mesmo sem armaduras.",DB +1
+12,3,Visão Dracônica,"Enxerga perfeitamente na escuridão total, incluindo mágica.",
+13,4,Visão Élfica,Ignora penalidades de penumbra em até 18 metros.,
+14,4,Resistência Mental,"Vantagem em Salvaguardas contra encantamentos, ilusões e sono mágico.",
+15,4,Afinidade Arcânica,Aprende uma magia adicional do tipo Antiga durante a criação.,+1 Magia Antiga
+16,4,Abençoado pela Mana,Recebe +4 pontos de Mana adicionais.,Mana +4
+17,5,Sentidos Aguçados,Vantagem em testes e Salvaguardas de Percepção.,
+18,5,Instinto Predatório,Vantagem em testes e Salvaguardas de Sobrevivência.,
+19,5,Garras Naturais,Ataques desarmados causam 1d6 de dano cortante.,
+20,5,Traços Bestiais,"Uma vez por Descanso Curto, desperta instintos por 3 rodadas. Aspecto escolhido na criação: Urso (resistência física), Lobo (+1 margem crítico), Raposa (vantagem Enganação), Javali (+2 ataques corpo), Guaxinim (+2 ataques mágicos), Falcão (+2 distância).",
+21,6,Passos Silenciosos,Vantagem em testes e Salvaguardas de Furtividade.,
+22,6,Mente Feérica,Vantagem em testes e Salvaguardas de Investigação e Persuasão.,
+23,6,Afinidade Ilusória,Aprende a magia Ilusão Menor durante a criação.,Magia: Ilusão Menor
+24,6,Pequenino,"Deslocamento 7,5m. Não provoca ataques de oportunidade ao se mover.",
+25,7,Versatilidade,+1 ponto de atributo durante a criação.,Atributos +1 ponto
+26,7,Proficiência Natural,Inicia com um talento ou proficiência adicional.,+1 Talento
+27,7,Mestre em Perícia,Escolha duas perícias adicionais para treinamento.,+2 Perícias
+28,7,Adaptabilidade Humana,Vantagem em testes de Iniciativa.,
+29,8,Herança Dupla,Escolha duas raças como origem (exceto Maculado e Celestial). Recebe um traço racial de cada uma.,+2 Traços de outras raças
+30,8,Sangue Mestiço,Vantagem em testes de Salvaguarda de Vontade.,
+31,8,Identidade Forjada,Recebe uma perícia treinada adicional.,+1 Perícia
+32,9,Resistência ao Fogo,Resistência a dano de Fogo.,
+33,9,Memória das Cinzas,Vantagem em testes de História.,
+34,9,Herança Vermelha,"Proficiência com Armas Táticas e Armaduras Leves, independentemente da classe.",
+35,9,Recuperação Ígnea,"Ao concluir Descanso Curto, recupera 1d4 adicionais de Vida ou Mana à escolha.",
+36,10,Herança Ancestral,Escolha um traço racial de outra raça (exceto Híbrido e Celestial).,+1 Traço de outra raça
+37,10,Fluxo Arcano,Aumenta em +2 o limite de Mana por turno.,LMT +2
+38,10,Sentidos Sombrios,"Enxerga na escuridão total, inclusive mágica, sem penalidades.",
+39,10,Marcados Pelo Vazio,Vantagem em Salvaguardas contra elemento Negativo. Não pode firmar pactos com entidades do elemento Sagrado.,

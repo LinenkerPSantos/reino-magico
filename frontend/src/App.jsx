@@ -8,6 +8,7 @@ import Historia from './pages/Historia/Historia'
 import Magias from './pages/Magias/Magias'
 import Equipamentos from './pages/Equipamentos/Equipamentos'
 import Entidades from './pages/Entidades/Entidades'
+import Aprimoramento from './pages/Aprimoramento/Aprimoramento'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="historia" element={<Historia />} />
           <Route path="magias" element={<Magias />} />
           <Route path="entidades" element={<Entidades />} />
+          <Route path="aprimoramento" element={<Aprimoramento />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

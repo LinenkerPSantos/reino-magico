@@ -1,0 +1,10 @@
+﻿id,nome,nivel,custo,cor
+1,Truques,1,0,#4a9a5a
+2,Básicas,2,2,#7ab54a
+3,Menor,3,4,#a8c84a
+4,Elite,4,6,#c9c227
+5,Maior,5,8,#c9a227
+6,Avançado,6,10,#e08820
+7,Lendário,7,12,#e07028
+8,Divino,8,14,#e05828
+9,Secreto,9,16,#e08898

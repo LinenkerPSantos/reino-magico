@@ -1,0 +1,4 @@
+﻿id,trait_nome,db,lmt,mana,label
+1,Escamas Naturais,1,0,0,DB +1
+2,Fluxo Arcano,0,2,0,LMT +2
+3,Abençoado pela Mana,0,0,4,Mana +4

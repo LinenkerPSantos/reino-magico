@@ -1,0 +1,21 @@
+﻿id,talent_nome,attr,min_val,pacto,label
+1,Arquimemória Arcana,INT,3.0,0,INT 3+
+2,Aura de Liderança,PRE,3.0,0,PRE 3+
+3,Colosso de Guerra,FOR,3.0,0,FOR 3+
+4,Coração de Leão,PRE,3.0,0,PRE 3+
+5,Dançarino das Lâminas,DES,3.0,0,DES 3+
+6,Físico Escultural,FOR,3.0,0,FOR 3+
+7,Genialidade,INT,3.0,0,INT 3+
+8,Golpe Silenciador,DES,2.0,0,DES 2+
+9,Hemorragia Brutal,FOR,2.0,0,FOR 2+
+10,Maestria Marcial,FOR,2.0,0,FOR 2+
+11,Mente Fortalecida,INT,2.0,0,INT 2+
+12,Pacto Ancestral,,,1,Sem pacto ativo
+13,Pacto Elemental,,,1,Sem pacto ativo
+14,Pacto Santificado,,,1,Sem pacto ativo
+15,Passo Silencioso,DES,2.0,0,DES 2+
+16,Prontidão,DES,3.0,0,DES 3+
+17,Reserva Arcana,PRE,2.0,0,PRE 2+
+18,Terror Implacável,PRE,2.0,0,PRE 2+
+19,Vigor Inabalável,VIT,2.0,0,VIT 2+
+20,Vitalidade Inabalável,VIT,3.0,0,VIT 3+

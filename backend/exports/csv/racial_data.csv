@@ -1,0 +1,11 @@
+﻿id,race_id,altura,peso_medio,expectativa_vida,movimento,idiomas_nativos
+1,1,"90 cm a 1,30 m",70 kg a 120 kg,300 a 500 anos,"7,5 metros","Comum, Anão, Dracônico e mais um idioma à escolha."
+2,2,"1,60 m a 1,80 m",60 kg a 90 kg,até 10.000 anos,9 metros,"Comum, Celestial e mais um idioma à escolha."
+3,3,"1,85 m a 2,30 m",120 kg a 180 kg,até 600 anos,9 metros,"Comum, Dracônico, Anão e mais um idioma à escolha."
+4,4,"1,65 m a 1,90 m",60 kg a 90 kg,1.000 a 2.000 anos,9 metros,"Comum, Élfico, Arcano e mais dois idiomas à escolha."
+5,5,"1,70 m a 1,80 m",50 kg a 70 kg,60 a 80 anos,9 metros,"Comum, Silvestre e mais um idioma à escolha."
+6,6,60 cm a 90 cm,35 kg a 60 kg,120 a 200 anos,"7,5 metros","Comum, Silvestre, Élfico, Feérico, Primordial e mais um idioma à escolha."
+7,7,"1,60 m a 2,10 m",50 kg a 150 kg,60 a 100 anos,9 metros,Comum e mais um idioma à escolha.
+8,8,Varia conforme as raças de origem.,Geralmente superior à média das raças de origem.,Média entre as expectativas de vida das raças de origem.,9 metros,"Comum, dois idiomas das raças de origem e mais um à escolha."
+9,9,"1,80 m a 2,00 m",80 kg a 130 kg,150 a 200 anos,9 metros,"Comum, Infernal e mais um idioma à escolha."
+10,10,Varia conforme a raça de origem.,Geralmente inferior ao peso médio da raça de origem.,"Indefinida — alguns vivem uma vida comum, outros parecem não envelhecer.",Igual ao da raça de origem.,"Comum, Infernal ou um idioma da raça de origem, mais um adicional à escolha."

@@ -1,0 +1,11 @@
+﻿id,nome,idiomas,b_mana,b_attr_extra,extra_spell,extra_spell_type,extra_spell_type_count,extra_tal,extra_per,move
+1,Anão,"Anão, Dracônico + 1 idioma.",0,0,,,0,0,0,7.5
+2,Celestial,Comum e Celestial + 1 idioma.,0,0,Voo Menor,,0,0,0,9.0
+3,Draconato,"Dracônico, Anão + 1 idioma.",0,0,,,0,0,0,9.0
+4,Elfo,"Élfico, Arcano + 2 idiomas.",4,0,,Magias Antigas,1,0,0,9.0
+5,Fauno,Comum e Silvestre + 1 idioma.,0,0,,,0,0,0,9.0
+6,Feérico,"Silvestre, Élfico, Feérico, Primordial + 1 idioma.",0,0,Ilusão Menor,,0,0,0,7.5
+7,Humano,Comum + 1 idioma.,0,1,,,0,1,2,9.0
+8,Híbrido,Dois idiomas das raças de origem + 1 idioma adicional.,0,0,,,0,0,1,9.0
+9,Infernal,Infernal + 1 idioma.,0,0,,,0,0,0,9.0
+10,Maculado,Infernal ou Raça de Origem + 1 idioma.,0,0,,,0,0,0,9.0

@@ -1,0 +1,7 @@
+﻿id,nome,label,ativo,desc
+1,Urso,Urso,Resistência contra danos físicos.,Sua resistência se torna quase inabalável. Você recebe Resistência contra danos físicos.
+2,Lobo,Lobo,+1 na margem de crítico em ataques desarmados.,Seus instintos de caça tornam seus golpes mais precisos. Seus ataques desarmados recebem +1 na margem de crítico.
+3,Raposa,Raposa,Vantagem em testes de Enganação.,Sua astúcia e capacidade de manipulação afloram. Você recebe vantagem em testes de Enganação.
+4,Javali,Javali,+2 nas rolagens de ataque com armas corpo a corpo.,Sua ferocidade impulsiona seus ataques. Você recebe +2 nas rolagens de ataque com armas corpo a corpo.
+5,Guaxinim,Guaxinim,+2 nas rolagens de ataque mágico.,Sua afinidade natural com energias místicas se intensifica. Você recebe +2 nas rolagens de ataque mágico.
+6,Falcão,Falcão,+2 nas rolagens de ataque com armas de longa distância.,Sua visão e precisão atingem seu auge. Você recebe +2 nas rolagens de ataque com armas de longa distância.

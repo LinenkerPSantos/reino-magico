@@ -35,6 +35,7 @@ export default function Nav() {
         <li><NavLink to="/equipamentos" onClick={close}>Equipamentos</NavLink></li>
         <li><NavLink to="/magias" onClick={close}>Magias</NavLink></li>
         <li><NavLink to="/entidades" onClick={close}>Entidades</NavLink></li>
+        <li><NavLink to="/aprimoramento" onClick={close}>Aprimoramento</NavLink></li>
         <li className={styles.dropdown}>
           <button className={styles.dropBtn}>Conteúdo ▾</button>
           <div className={styles.dropMenu}>

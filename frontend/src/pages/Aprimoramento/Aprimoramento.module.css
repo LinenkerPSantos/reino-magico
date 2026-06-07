@@ -1,0 +1,75 @@
+.page { max-width: 1000px; margin: 0 auto; padding: 50px 40px 80px; }
+
+/* Hero */
+.hero { text-align: center; margin-bottom: 48px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: .72em; letter-spacing: 5px; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 10px; }
+.pageTitle { font-size: 2.5em; color: var(--gold); letter-spacing: 4px; text-shadow: 0 0 24px rgba(201,162,39,.25); }
+.divider { width: 80px; height: 1px; background: linear-gradient(90deg,transparent,var(--gold),transparent); margin: 14px auto; }
+.lead { color: var(--text-dim); font-size: .9em; line-height: 1.7; font-style: italic; max-width: 600px; margin: 0 auto; }
+
+/* Sections */
+.sec { margin-bottom: 52px; }
+.secTitle {
+  font-size: 1.1em; color: var(--gold); letter-spacing: 2px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.secTitle::before { content: '◈ '; color: var(--gold-dim); }
+.secText { color: var(--text); line-height: 1.8; font-size: .9em; margin-bottom: 14px; }
+
+/* Table */
+.tableWrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+.tableCaption { padding: 8px 14px; background: var(--bg3); font-size: .78em; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+.table { width: 100%; border-collapse: collapse; font-size: .84em; }
+.table th { text-align: left; padding: 10px 14px; background: var(--bg3); color: var(--gold-dim); border-bottom: 1px solid var(--border); font-size: .78em; letter-spacing: .5px; }
+.table td { padding: 10px 14px; border-bottom: 1px solid var(--bg3); color: var(--text); line-height: 1.5; vertical-align: top; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: rgba(201,162,39,.03); }
+.costCol { width: 100px; text-align: right; }
+.upgName { font-weight: bold; color: var(--gold); white-space: nowrap; }
+.costCell { text-align: right; }
+.costBadge {
+  display: inline-block; padding: 3px 9px; border-radius: 10px;
+  background: rgba(201,162,39,.1); border: 1px solid var(--gold-dim);
+  color: var(--gold); font-size: .85em; white-space: nowrap;
+}
+
+/* Rules grid */
+.rulesGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.ruleCard {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 8px; padding: 18px;
+}
+.ruleTitle { font-size: .9em; font-weight: bold; color: var(--gold); margin-bottom: 10px; }
+.ruleText { font-size: .8em; color: var(--text); line-height: 1.6; margin-bottom: 8px; }
+.ruleText:last-child { margin-bottom: 0; }
+
+/* Benefit list */
+.benefitList { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.benefitItem {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; background: var(--card-bg);
+  border: 1px solid var(--card-border); border-left: 3px solid var(--gold-dim);
+  border-radius: 0 6px 6px 0; font-size: .84em; color: var(--text);
+}
+.benefitItem::before { content: '◆'; color: var(--gold-dim); font-size: .7em; flex-shrink: 0; }
+
+/* Attribute cards */
+.attrGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 12px; margin-top: 16px; }
+.attrCard {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 8px; border-top: 3px solid; padding: 14px;
+}
+.attrName { font-size: .9em; font-weight: bold; margin-bottom: 6px; }
+.attrDesc { font-size: .76em; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; font-style: italic; }
+.attrBenefits { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
+.attrBenefits li {
+  font-size: .78em; color: var(--text); padding: 5px 8px;
+  background: rgba(255,255,255,.03); border-radius: 4px;
+}
+.attrBenefits li::before { content: '+ '; color: var(--green); font-weight: bold; }
+
+@media (max-width: 700px) {
+  .page { padding: 30px 16px 60px; }
+  .rulesGrid { grid-template-columns: 1fr; }
+  .attrGrid { grid-template-columns: repeat(2,1fr); }
+}

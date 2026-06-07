@@ -1,0 +1,36 @@
+﻿id,kit_id,item_nome
+1,1,Mochila
+2,1,Cobertor
+3,1,Cantil
+4,1,Saco de Dormir
+5,1,Rações (7 dias)
+6,1,Poção de Cura Menor
+7,1,Kit de Pesca
+8,2,Mochila
+9,2,Cobertor
+10,2,Cantil
+11,2,Saco de Dormir
+12,2,Rações (7 dias)
+13,2,Poção de Mana Menor
+14,2,Kit de Escrita
+15,3,Mochila
+16,3,Cobertor
+17,3,Cantil
+18,3,Saco de Dormir
+19,3,Rações (7 dias)
+20,3,Antídoto
+21,3,Kit de Herbalismo
+22,4,Mochila
+23,4,Cobertor
+24,4,Cantil
+25,4,Saco de Dormir
+26,4,Rações (7 dias)
+27,4,Bomba de Fumaça
+28,4,Kit de Ferramentas de Ladrão
+29,5,Mochila
+30,5,Cobertor
+31,5,Cantil
+32,5,Saco de Dormir
+33,5,Rações (7 dias)
+34,5,Armadilhas de Caça (2)
+35,5,Kit de Cartografia

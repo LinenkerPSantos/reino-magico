@@ -1,0 +1,31 @@
+﻿id,kit_id,nome,descricao,prof
+1,1,Espada Curta,"1d6 | Leve, Finesse",
+2,1,Adaga,"1d4 | Versátil, Arremesso 9m, Leve",
+3,1,Escudo de Metal,DEF +2,Escudo
+4,1,Chapéu de Palha,Vantagem em Sobrevivência,
+5,1,Gibão,DEF +1,Armadura Leve
+6,1,Botas,+2 em Sobrevivência,
+7,2,Varinha,1d4 | +2 nas rolagens de Ataque Mágico,Armas Mágicas
+8,2,Adaga,"1d4 | Versátil, Arremesso 9m, Leve",
+9,2,Componentes Arcanos,Bolsa com cristais e poeiras do pacto,
+10,2,Chapéu do Mago,Absorve 1 dano mágico,
+11,2,Roupa de Aventureiro,+2 em Esquiva,
+12,2,Botas,+2 em Sobrevivência,
+13,3,Martelo de Mão,"1d6 | Leve, Versátil, Arremesso 6m",
+14,3,Adaga,"1d4 | Versátil, Arremesso 9m, Leve",
+15,3,Fogo Alquímico,1d6 Fogo + Em Chamas,
+16,3,Chapéu de Menestrel,Vantagem em Carisma,
+17,3,Roupa de Aventureiro,+2 em Esquiva,
+18,3,Botas,+2 em Sobrevivência,
+19,4,Espada Curta,"1d6 | Leve, Finesse",
+20,4,Adaga,"1d4 | Versátil, Arremesso 9m, Leve",
+21,4,Bomba de Fumaça,Nuvem em raio 3m por 3 rodadas,
+22,4,Capuz do Assassino,+1 Furtividade,
+23,4,Manto do Gatuno,+2 Furtividade,
+24,4,Sandálias do Ladino,+1 Furtividade,
+25,5,Arco Curto,1d6 | Munição (flechas),Armas de Disparo
+26,5,Adaga,"1d4 | Versátil, Arremesso 9m, Leve",
+27,5,Flechas (20),Pacote com 20 unidades,
+28,5,Chapéu do Caçador,+1 rolagens de ataque à distância,
+29,5,Manto do Gatuno,+2 Furtividade,
+30,5,Coturnos do Caçador,"+1,5m de deslocamento",

@@ -11,26 +11,29 @@ const CHAPTERS = [
 const ATTR_COLORS = { FOR:'#e07028', DES:'#4a9a5a', VIT:'#c44', INT:'#7a7aca', PRE:'#c9a227' }
 
 const CONDITIONS = [
-  {n:'Alucinado',e:'Perde o turno, incapaz de agir.',s:'Salv. Foco — encerra ao sucesso'},
-  {n:'Amedrontado',e:'Desvantagem contra o conjurador e -2 na Defesa Básica.',s:'Salv. Tenacidade'},
-  {n:'Aprisionado',e:'Não pode se mover, mas pode atacar ou conjurar ao alcance.',s:'Salv. Atletismo'},
-  {n:'Atordoado',e:'Não pode agir e perde o turno.',s:'Salv. Tenacidade'},
-  {n:'Cego',e:'-20 em ataques físicos, à distância, mágicos e ações manuais.',s:'—'},
-  {n:'Confuso',e:'Rola 1d4: 1=age normal; 2-3=ataca aliado; 4=perde turno e encerra.',s:'—'},
-  {n:'Congelando',e:'Não pode agir, mover ou usar reações. 1d8 dano contínuo. 0 vida = morte imediata.',s:'Salv. Atletismo'},
-  {n:'Desprevenido',e:'-2 na Defesa Básica.',s:'—'},
-  {n:'Em Chamas',e:'1d8 dano contínuo (Fogo). Acumulativo: cada novo ataque +1d8.',s:'Salv. Reflexo'},
-  {n:'Enfraquecido',e:'Causa metade do dano e deslocamento reduzido à metade.',s:'—'},
-  {n:'Enfurecido',e:'Vantagem em ataques corpo a corpo. Não pode usar ataques à distância ou magias.',s:'—'},
-  {n:'Envenenado',e:'1d6 dano contínuo (Terra). Não acumulativo.',s:'Salv. Tenacidade'},
-  {n:'Fadigado',e:'Desvantagem em todos os testes e ataques.',s:'Salv. Vontade'},
-  {n:'Lentidão',e:'Movimento reduzido à metade.',s:'Salv. Tenacidade'},
-  {n:'Morrendo',e:'A cada turno: salv. ou acumula falha. 3 falhas = morte. Sucesso = retorna com 1 Vida.',s:'Salv. Tenacidade ou Vontade'},
-  {n:'Paralisado',e:'Não pode se mover ou atacar, mas ainda pode conjurar magias.',s:'Salv. Tenacidade'},
-  {n:'Provocado',e:'Deve atacar o conjurador em sua próxima ação.',s:'Salv. Vontade'},
-  {n:'Sangrando',e:'1d8 dano contínuo. Agrava: Enfraquecido → Silenciado → Vulnerável.',s:'Salv. Tenacidade'},
-  {n:'Silenciado',e:'Não pode conjurar magias.',s:'—'},
-  {n:'Vulnerável',e:'-5 DB e não pode usar Reações.',s:'—'},
+  {n:'Abalado',      d:'A criatura sofre perturbação mental, insegurança ou perda momentânea de concentração.',                e:'Sofre –2 em testes de ataque, perícia ou habilidade baseados em Presença.',                                                                                                                              s:'—'},
+  {n:'Adormecido',   d:'O personagem cai em um sono profundo, até o final do efeito ou até que receba algum dano.',           e:'Perde o turno, incapaz de agir. Ataques contra a criatura adormecida são considerados como vulneráveis.',                                                                                       s:'—'},
+  {n:'Alucinado',    d:'O personagem perde a noção da realidade, enxergando e reagindo a estímulos inexistentes.',             e:'Perde o turno, incapaz de agir.',                                                                                                                                                            s:'Salv. Foco — ao sucesso, encerra a condição.'},
+  {n:'Amedrontado',  d:'O personagem é dominado pelo medo diante de uma ameaça específica.',                                  e:'Sofre desvantagem contra o conjurador e recebe -2 na Defesa Básica.',                                                                                                                           s:'Salv. Tenacidade — ao sucesso, supera o medo.'},
+  {n:'Aprisionado',  d:'O personagem tem seus movimentos restringidos por força física ou mágica.',                            e:'Não pode se mover, mas ainda pode atacar ou conjurar se o alvo estiver ao alcance.',                                                                                                            s:'Salv. Atletismo — ao sucesso, se liberta.'},
+  {n:'Atordoado',    d:'O personagem sofre um impacto que compromete totalmente sua capacidade de reação.',                    e:'Não pode agir e perde o turno.',                                                                                                                                                               s:'Salv. Tenacidade — ao sucesso, recupera o controle.'},
+  {n:'Cego',         d:'O personagem perde completamente a visão do ambiente ao redor.',                                       e:'Sofre penalidade de -20 em ataques físicos, à distância, mágicos e ações manuais.',                                                                                                            s:'—'},
+  {n:'Confuso',      d:'A mente do personagem entra em desordem, dificultando decisões coerentes.',                            e:'No início do turno, rola 1d4: 1 = age normalmente; 2–3 = ataca um aliado; 4 = perde o turno e encerra a condição.',                                                                          s:'—'},
+  {n:'Congelando',   d:'O corpo do personagem é tomado por frio extremo, limitando suas ações.',                               e:'Condição não acumulativa (propriedade Água). Novos ataques de Água contra alvo congelado causam metade do dano. O alvo não pode agir, mover-se ou reagir, sofrendo 1d8 de dano contínuo por rodada. Chegar a 0 vida nesta condição causa morte imediata — o corpo transforma-se em estátua de gelo.', s:'Salv. Atletismo — ao sucesso, rompe o efeito.'},
+  {n:'Desprevenido', d:'O personagem é pego sem preparo ou atenção.',                                                          e:'Sofre -2 na Defesa Básica.',                                                                                                                                                                   s:'—'},
+  {n:'Desorientado', d:'O alvo perde o controle sobre sua percepção e concentração.',                                          e:'Cancela imediatamente magias ativas, efeitos sustentados e habilidades de manutenção. Ao atacar ou selecionar alvo, 50% de chance de confundir aliados com inimigos.',                        s:'—'},
+  {n:'Em Chamas',    d:'O personagem está envolto em chamas, sofrendo dano contínuo.',                                         e:'Propriedade Fogo. 1d8 de dano contínuo por rodada. Acumulativo: cada novo ataque de Chamas adiciona +1d8 e reinicia a duração. Pode ser extinto por magias de cura ou efeitos com propriedade Água.', s:'Salv. Reflexo — ao se jogar no chão, encerra a condição, mas fica Vulnerável até o próximo turno.'},
+  {n:'Enfraquecido', d:'A força do personagem é drenada, reduzindo sua eficácia.',                                             e:'Causa metade do dano e tem o deslocamento reduzido pela metade.',                                                                                                                                 s:'—'},
+  {n:'Enfurecido',   d:'O personagem perde o controle emocional e entra em estado de agressividade extrema.',                  e:'Recebe vantagem em ataques corpo a corpo, mas não pode realizar ataques à distância ou conjurar magias.',                                                                                      s:'—'},
+  {n:'Envenenado',   d:'O corpo do personagem sofre com toxinas que causam dano gradual.',                                     e:'1d6 de dano contínuo com propriedade Terra por rodada. Condição não acumulativa, exceto quando efeitos, talentos ou magias especificarem explicitamente.',                                   s:'Salv. Tenacidade — ao sucesso, encerra o efeito.'},
+  {n:'Fadigado',     d:'O personagem está exausto física e mentalmente.',                                                      e:'Sofre desvantagem em testes e ataques em geral.',                                                                                                                                               s:'Salv. Vontade — ao sucesso, recupera o foco.'},
+  {n:'Lentidão',     d:'Os movimentos do personagem se tornam pesados e atrasados.',                                           e:'Movimento reduzido pela metade.',                                                                                                                                                              s:'Salv. Tenacidade — ao sucesso, recupera a mobilidade.'},
+  {n:'Morrendo',     d:'O personagem encontra-se à beira da morte, com o corpo falhando e a consciência oscilando.',           e:'Por turno: salv. bem-sucedida = retorna com 1 de Vida; falha = acumula 1 falha (3 falhas = morte). Permanece Vulnerável durante toda a condição.',                                        s:'Salv. Tenacidade ou Vontade.'},
+  {n:'Paralisado',   d:'O corpo do personagem está completamente imobilizado.',                                                 e:'Não pode se mover ou atacar, mas ainda pode conjurar magias.',                                                                                                                                 s:'Salv. Tenacidade — ao sucesso, encerra a condição.'},
+  {n:'Provocado',    d:'O personagem é forçado a agir de forma impulsiva contra um alvo específico.',                          e:'Deve atacar o conjurador em sua próxima ação.',                                                                                                                                              s:'Salv. Vontade — ao sucesso, resiste à provocação.'},
+  {n:'Sangrando',    d:'Ferimentos abertos causam perda contínua de vida.',                                                    e:'1d8 de dano contínuo por rodada (não acumulativo). Agravamento por reaplicação — efeitos secundários em ordem: Enfraquecido → Silenciado → Vulnerável.',                               s:'Salv. Tenacidade — ao sucesso, estanca o sangramento.'},
+  {n:'Silenciado',   d:'O personagem tem sua capacidade de conjurar magia bloqueada.',                                         e:'Não pode conjurar magias.',                                                                                                                                                                    s:'—'},
+  {n:'Vulnerável',   d:'O personagem se encontra em estado crítico, exposto a danos extremos.',                                e:'Redução de -5 na Defesa Básica e não pode utilizar Reações. Se estiver Morrendo, qualquer dano recebido causa morte imediata.',                                                             s:'—'},
 ]
 
 const SKILLS = [
@@ -199,12 +202,17 @@ function Cap2() {
 
       <div className={styles.sec}>
         <h3 className={styles.secTitle}>Condições de Status</h3>
+        <p className={styles.secText}>
+          Condições são efeitos negativos aplicados sobre um personagem ou criatura durante o jogo.
+          Cada condição descreve seu impacto mecânico e, quando aplicável, a salvaguarda necessária para resistir ou encerrar o efeito.
+        </p>
         <div className={styles.condGrid}>
           {CONDITIONS.map(c => (
             <div key={c.n} className={styles.condCard}>
               <div className={styles.condName}>{c.n}</div>
+              <p className={styles.condDesc}>{c.d}</p>
               <p className={styles.condEffect}>{c.e}</p>
-              <p className={styles.condSave}>{c.s}</p>
+              {c.s !== '—' && <p className={styles.condSave}>{c.s}</p>}
             </div>
           ))}
         </div>

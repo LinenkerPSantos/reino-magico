@@ -1,0 +1,71 @@
+﻿id,nome,descricao
+1,Aplicar Toxina,O dano causado pela condição Envenenado é aumentado para 2d6 por rodada.
+2,Afinidade Elemental,"Escolha um elemento entre Água, Fogo, Terra, Vento ou Trovão. Você recebe resistência ao dano causado por esse elemento."
+3,Arqueólogo,Recebe vantagem em testes de História e Prestidigitação.
+4,Arquimemória Arcana,"Pré-requisito: Intelecto 3 ou superior - Sua mente processa magia e conhecimento em velocidade sobrenatural. Testes para identificar magia recebem vantagem. Uma vez por descanso curto, pode reduzir em 1 o custo de Mana de uma magia."
+5,Atirador Mágico,Aumenta em 9 metros o alcance das magias conjuradas por você
+6,Aura de Liderança,Pré-requisito: Presença 3 ou superior - Sua presença inspira aqueles ao seu redor. Aliados a até 9 metros de você recebem +2 em testes de salvaguarda com base no atributo Prenseça. Esse bônus é passivo e sempre ativo enquanto você estiver consciente e não estiver com a condição Silenciado ou Amedrontado.
+7,Chamas Incontroláveis,Ao aplicar um ataque magico contra uma criatura com elemento fogo e causar a condição Em Chamas ela causa +1d8 de dano contínuo adicional.
+8,Colosso de Guerra,"Pré-requisito: Armas de duas mãos e Força 3 ou superior - Seu corpo foi treinado para esmagar defesas inimigas. Ao acertar um ataque corpo a corpo, você pode empurrar o alvo 3 metro sem teste."
+9,Coração de Leão,Pré-requisito: Presença 3 ou superior. Sua coragem e determinação permanecem firmes mesmo diante do impossível. Recebe vantagem em salvaguardas e testes de Vontade
+10,Corte Profundo,"Ao realizar um acerto crítico com uma arma corpo a corpo do tipo cortante ou perfurante, o alvo sofre Sangramento por 2 rodadas."
+11,Criar Veneno Mortal,"A cada descanso, você pode criar uma quantidade de frascos de Veneno Mortal igual ao seu Intelecto. Cada frasco pode ser aplicado em uma arma corpo a corpo ou à distância (não funciona em armas mágicas). Ataques realizados com armas envenenadas causam dano mágico e aplicam a condição Envenenado ao alvo. Cada frasco possui uma única utilização."
+12,Dançarino das Lâminas,"Pré-requisito: Destreza 3 ou superior - Sua velocidade torna seus movimentos quase impossíveis de acompanhar. Uma vez por rodada, ao errar um ataque corpo a corpo, você pode mover até 3 metros sem provocar ataques de oportunidade."
+13,Disparo Violento,"Ao realizar um acerto crítico com uma arma de ataque à distância contra criaturas a menos de 6 metros de você, o alvo é empurrado 3 metros para trás."
+14,Empunhadura Dupla,"Quando estiver empunhando duas armas de uma mão, o personagem pode realizar um ataque adicional com a arma secundária após executar um ataque. Esse ataque extra causa apenas metade do dano normal da arma secundária."
+15,Encantar com Veneno Mortal,"O primeiro ataque crítico realizado por você com armas corpo a corpo ou à distância aplica Aplicar Toxina por 3 rodadas, aumentando o dano da condição para 2d6."
+16,Envenenar Arma,Seus ataques críticos com armas corpo a corpo aplicam a condição Envenenado ao alvo.
+17,Execução Final,"Você recebe vantagem em ataques contra criaturas sob Enfraquecido, Paralisado ou Atordoado."
+18,Explosão Tóxica,"Ao final do turno, criaturas envenenadas por você sofrem 1d4 de dano adicional de Veneno."
+19,Físico Escultural,Pré-requisito: Força 3 ou superior. Seu corpo foi levado ao auge da capacidade física. Recebe vantagem em salvaguardas e testes de Atletismo.
+20,Ganância Insaciável,"Você aprendeu a transformar sofrimento em benefício próprio. Sempre que derrotar uma criatura, recupera Mana ou Vida igual ao seu Intelecto ou Vitalidade. Porém, sofre desvantagem para resistir a efeitos de Provocado relacionados a recompensas, tesouros ou poder."
+21,Gelo Sepulcral,"Ao usar uma magia de ataque que causa a condição Congelando, as criaturas que sobrevivêrem recebem a condição de Lentidão por 2 rodadas."
+22,Genialidade,Pré-requisito: Intelecto 3 ou superior. Sua mente possui capacidade analítica e intelectual excepcional. Recebe vantagem em salvaguardas e testes de Investigação.
+23,Golpe Fulminante,"Ao realizar um acerto crítico com uma arma de duas mãos, o alvo fica Atordoado por 1 rodada."
+24,Golpe Silenciador,"Pré-requisito: Destreza 2 ou superior - Ao realizar um acerto crítico com armas de longa distância, contra uma criatura, o alvo deve passar em uma salvaguarda de Tenacidade ou ficará Silenciado por 1 rodada."
+25,Gula Abissal,"Você consome energia, vida e poder sem limites. Sempre que causar dano contínuo (Sangramento, Em Chamas, Veneno), recupera Vida igual a metade do dano realizado, uma única vez por rodada. Porém, recebe desvantagem contra efeitos de Fadigado."
+26,Hemorragia Brutal,"Pré-requisito: Força 2 ou superior - Sempre que causar Sangramento, o alvo também recebe a condição Enfraquecido até o fim do próximo turno."
+27,Inveja Predatória,"Você odeia ver outros superiores a você. Uma vez por descanso curto, pode copiar temporariamente um talento de um aliado por 1 rodada a qualquer momento. Porém, após utilizar esse talento terá desvantagem no próxima salvaguarda."
+28,Ira Devastadora,"Quanto mais ferido você está, mais brutal se torna. Sempre que entrar na condição Enfurecido, você recebe resistência a dano físico até o fim da cena."
+29,Lista de Magias Expandida,Concede 3 magias adicionais iniciais à sua lista de magias conhecidas.
+30,Luxúria Hipnótica,"Sua presença domina emocionalmente aqueles ao redor. Uma vez por combate, pode forçar uma criatura que possa vê-lo a realizar uma salvaguarda de Vontade. Em falha, ela fica Desorientada por 1 rodada."
+31,Maestria Marcial,"Pré-requisito: Força 2 ou superior - Você dominou a arte de maximizar cada golpe. Ao rolar o dano mínimo (1) em qualquer dado de dano com armas físicas, você pode rolar esse dado novamente uma vez, ficando com o segundo resultado. Esse benefício se aplica apenas a armas que você possua proficiência."
+32,Mente Fortalecida,"Pré-requisito: Intelecto 2 ou superior - Seu treinamento mental cria barreiras internas contra influências externas. Você recebe +5 em salvaguardas contra magias e efeitos que causem as condições Alucinado, Confuso ou Provocado. Além disso, condições mentais que você já sofra têm sua duração reduzida em 1 rodada. (Sempre 1 rodada nunca menor)"
+33,Mestre de Esquiva,"Você recebe uma reação adicional do tipo Esquiva por rodada. Ao utilizar essa reação, recebe bônus de Defesa igual ao seu Reflexo até o final da ação defensiva."
+34,Névoa Tóxica,Criaturas afetadas pela condição Envenenado também sofrem Lentidão enquanto permanecerem sob esse efeito.
+35,Ocultação de Mana,Você recebe +10 em testes de Furtividade contra detecção mágica.
+36,Olhos de Águia,"Ao utilizar armas de arremesso ou armas de ataque à distância, você ignora penalidades de ataque contra alvos em até 18 metros."
+37,Olhos de Coruja,"Você enxerga no escuro não mágico em até 18 metros. Caso já possua visão no escuro, o alcance aumenta para 32 metros. Além disso, recebe +2 em salvaguardas contra ataques furtivos"
+38,Orgulho Absoluto,"Você acredita estar acima de todos os outros. Sempre que vencer uma salvaguarda contra um efeito hostil, recebe vantagem no próximo ataque ou magia realizada até o fim do turno seguinte. Porém, não pode receber a ação Ajudar ou bônus morais de aliados enquanto estiver consciente."
+39,Pacto Ancestral,Restrição: Não Possuir Pacto com Nenhuma Entidade. Permite escolher uma Entidade Caótica e concedendo acesso as Magias de Pacto.
+40,Pacto Elemental,Restrição: Não Possuir Pacto com Nenhuma Entidade. Permite escolher uma Entidade Elemental e concedendo acesso as Magias de Antigas.
+41,Pacto Santificado,"Restrição: Não Possuir Pacto com Nenhuma Entidade. Seu personagem recebe a subclasse Sagrado, podendo escolher uma Entidade Sagrada. Além disso, ganha acesso às Magias Sagradas. Ao realizar descansos em locais sagrados, recupera pontos adicionais de regeneração iguais ao seu valor de Presença."
+42,Passo Silencioso,"Pré-requisito: Destreza 2 ou superior -  Seu controle corporal permite eliminar completamente o ruído dos seus movimentos. Você nunca sofre penalidade de Furtividade pelo tipo de terreno em que está se movendo. Além disso, ao se mover até a metade do seu deslocamento em um turno, recebe +5 em testes de Furtividade."
+43,Penetração Mágica,"Quando uma criatura possuir resistência contra o tipo de dano mágico causado por você, a efetividade dessa resistência é reduzida pela metade."
+44,Poliglota,"Você aprende um novo idioma à sua escolha. Além disso, recebe vantagem em testes relacionados a idiomas que conhece."
+45,Posição de Fortaleza,"Você recebe uma reação adicional do tipo Bloqueio por rodada. Ao utilizar essa reação, recebe bônus de Defesa igual à sua Tenacidade. Caso ainda sofra dano após o bloqueio, reduza o dano recebido em um valor igual à sua Tenacidade."
+46,Potencializar Veneno,A duração da condição Envenenado causada por você é aumentada em +2 rodadas.
+47,Preguiça Entorpecente,"Seu corpo se move pouco, mas sua mente evita desperdícios. Sempre que permanecer sem se mover durante um turno inteiro, recebe +2 em Defesa e salvaguardas até o próximo turno."
+48,Proficiência Armadura Leve,Tem acesso a armaduras leves.
+49,Proficiência Armadura Pesado,Tem acesso a armaduras pesadas.
+50,Proficiência Armas de Disparo,Tem acesso a armas de ataque de longa distância
+51,Proficiência Armas Mágicas,Tem acesso a armas mágicas
+52,Proficiência Armas Táticas,Tem acesso a armas táticas
+53,Proficiência em Magia,Aumenta a CD em +2 pontos.
+54,Proficiência em Mana,Para cada ponto em proficiência recebe +2 de mana máximo.
+55,Proficiência em Vitalidade,Para cada ponto em proficiência recebe +3 em vida máximo.
+56,Proficiência Escudo,Tem acesso a escudos
+57,Prontidão,"Pré-requisito: Destreza 3 ou superior. Você está sempre atento ao ambiente e pronto para reagir ao perigo. Recebe vantagem em salvaguardas, testes de Iniciativa e testes de Percepção."
+58,Quebra de Limite,"Aumenta o limite máximo de Mana por Turno em +1. Caso o conjurador possua ao menos uma magia de categoria superior, o bônus aumenta conforme o maior grau de magia conhecido: Elite: +2 - Maior: +3 - Avançado: +4 - Lendário ou acima: +5"
+59,Reações Rápidas,Você recebe uma reação bônus adicional por rodada.
+60,Refletir Veneno,"Sempre que você sofrer um ataque crítico, a criatura atacante recebe a condição Envenenado por 3 rodadas."
+61,Reserva Arcana,Pré-requisito: Presença 2 ou superior - Você desenvolveu uma reserva mágica secundária que alimenta sua conjuração em momentos críticos. Você possui uma reserva de Mana adicional igual à sua Presença. Essa reserva se recupera somente em descanso longo e pode ser usada normalmente para pagar custos de magias.
+62,Resistência a Caótico,"Você recebe resistência ao elemento caótico, ao escolher esse elemento está restrito ao talento Resistência Sagrada"
+63,Resistência à Morte,Sua determinação desafia os limites da sobrevivência. Você recebe vantagem em salvaguardas realizadas enquanto estiver na condição Morrendo.
+64,Resistência a Sagrado,"Você recebe resistência ao elemento sagrado, ao escolher esse elemento está restrito ao talento Resistência Caótico"
+65,Sensibilidade Aguçada,"Você consegue perceber emoções e intenções de outras criaturas, como medo, raiva ou malícia. Recebe +5 em testes de Carisma relacionados a Persuasão, Intimidação e Enganação."
+66,Sobrevivente Selvagem,Vitalidade 3 ou superior. Você domina técnicas naturais de adaptação e sobrevivência. Recebe vantagem em salvaguardas e testes de Sobrevivência.
+67,Terror Implacável,"Pré-requisito: Presença 2 ou superior - Sempre que reduzir uma criatura a menos da metade da Vida, ela deve realizar uma salvaguarda de Tenacidade. Em caso de falha, fica Amedrontada por 1 rodada."
+68,Treinamento Marcial,"Você recebe uma reação adicional do tipo Contra-Ataque por rodada. Ao utilizar essa reação, recebe bônus de Defesa igual à sua Luta. Caso obtenha sucesso na defesa, pode realizar imediatamente um ataque desarmado contra a criatura atacante."
+69,Vigor Inabalável,"Pré-requisito: Vitalidade 2 ou superior -  Sua constituição robusta acelera sua recuperação. Sempre que recuperar Vida por descanso curto ou longo, você recupera pontos adicionais de Vida iguais ao dobro da sua Vitalidade."
+70,Vitalidade Inabalável,"Pré-requisito: Vitalidade 3 ou superior - Seu corpo suporta danos que destruiriam outras criaturas. Ao cair para 0 pontos de vida, pode permanecer consciente até o fim do próximo turno uma vez por descanso longo."

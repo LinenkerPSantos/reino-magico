@@ -1,6 +1,7 @@
 """
 Cria o banco de dados SQLite para o RPG Reino Mágico.
-Extrai dados de magias e talentos do HTML e importa tudo para rpg.db.
+Magias carregadas de 'Lista de Magia Atualizado.xlsx' (raiz do projeto).
+Talentos extraídos do HTML de backup.
 Execute: python create_db.py
 """
 
@@ -11,23 +12,30 @@ import os
 import sys
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH  = os.path.join(BASE_DIR, 'rpg.db')
-# Usa o backup como fonte de dados (o HTML principal já teve os dados removidos)
-_BACKUP = os.path.join(BASE_DIR, 'Criador_de_Personagem_Reino_Magico_BACKUP.html')
-_MAIN   = os.path.join(BASE_DIR, 'Criador_de_Personagem_Reino_Magico.html')
+try:
+    import openpyxl
+except ImportError:
+    sys.exit("Erro: instale openpyxl com  pip install openpyxl")
+
+BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
+PROJ_DIR  = os.path.dirname(BASE_DIR)
+DB_DIR    = os.path.join(BASE_DIR, 'data')
+DB_PATH   = os.path.join(DB_DIR, 'rpg.db')
+XLSX_PATH = os.path.join(PROJ_DIR, 'Lista de Magia Atualizado.xlsx')
+
+# HTML de backup (só usado para extrair talentos)
+_BACKUP   = os.path.join(BASE_DIR, 'Criador_de_Personagem_Reino_Magico_BACKUP.html')
+_MAIN     = os.path.join(BASE_DIR, 'Criador_de_Personagem_Reino_Magico.html')
 HTML_PATH = _BACKUP if os.path.exists(_BACKUP) else _MAIN
+
+LEVEL_MAP = {
+    "Truques": 1, "Básicas": 2, "Menor": 3, "Elite": 4,
+    "Maior": 5, "Avançado": 6, "Lendário": 7, "Divino": 8, "Secreto": 9,
+}
 
 # ─────────────────────────────────────────────────────────
 # HELPER
 # ─────────────────────────────────────────────────────────
-
-def get_nivel_magia(custo: int) -> int:
-    """Deriva o nível de magia a partir do custo de mana."""
-    if custo <= 0:
-        return 1
-    return 1 + custo // 2
-
 
 def extract_json_array(html: str, var_name: str):
     """Extrai um array JSON atribuído a uma variável JS."""
@@ -37,6 +45,53 @@ def extract_json_array(html: str, var_name: str):
         print(f"  [AVISO] Variável {var_name} não encontrada no HTML.")
         return []
     return json.loads(m.group(1))
+
+
+def _cell_str(cell) -> str:
+    v = cell.value
+    return "" if v is None else str(v).strip()
+
+
+def _cell_int(cell) -> int:
+    v = cell.value
+    if v is None:
+        return 0
+    try:
+        return int(v)
+    except (ValueError, TypeError):
+        s = str(v).strip()
+        return int(s) if s.isdigit() else 0
+
+
+def load_spells_from_xlsx(path: str) -> list:
+    """Lê magias do xlsx e retorna lista de dicts prontos para INSERT."""
+    wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    ws = wb.active
+    rows = list(ws.iter_rows())
+    wb.close()
+    spells = []
+    for row in rows[1:]:      # pula cabeçalho
+        if not row or row[0].value is None:
+            continue
+        nome = _cell_str(row[0])
+        if not nome:
+            continue
+        nivel_str = _cell_str(row[2]) if len(row) > 2 else ""
+        spells.append({
+            "nome":       nome,
+            "tipo":       _cell_str(row[1])  if len(row) > 1  else "",
+            "nivel_magia":LEVEL_MAP.get(nivel_str, 3),
+            "custo_mana": _cell_int(row[3])  if len(row) > 3  else 0,
+            "execucao":   _cell_str(row[4])  if len(row) > 4  else "",
+            "alcance":    _cell_str(row[5])  if len(row) > 5  else "",
+            "categoria":  _cell_str(row[6])  if len(row) > 6  else "",
+            "alvo":       _cell_str(row[7])  if len(row) > 7  else "",
+            "duracao":    _cell_str(row[8])  if len(row) > 8  else "",
+            "natureza":   _cell_str(row[9])  if len(row) > 9  else "",
+            "prereq":     _cell_str(row[10]) if len(row) > 10 else "",
+            "descricao":  _cell_str(row[11]) if len(row) > 11 else "",
+        })
+    return spells
 
 
 # ─────────────────────────────────────────────────────────
@@ -923,14 +978,12 @@ CREATE TABLE IF NOT EXISTS entities (
     efeito      TEXT
 );
 
-CREATE TABLE IF NOT EXISTS upgrades (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome         TEXT NOT NULL UNIQUE,
-    descricao    TEXT,
-    custo        INTEGER DEFAULT 1,
-    max_compras  INTEGER DEFAULT 1,
-    tipo         TEXT,
-    nivel_magico INTEGER DEFAULT 0
+CREATE TABLE IF NOT EXISTS conditions (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome        TEXT NOT NULL UNIQUE,
+    descricao   TEXT DEFAULT '',
+    efeito      TEXT DEFAULT '',
+    salvaguarda TEXT DEFAULT ''
 );
 """
 
@@ -940,21 +993,27 @@ CREATE TABLE IF NOT EXISTS upgrades (
 # ─────────────────────────────────────────────────────────
 
 def main():
+    os.makedirs(DB_DIR, exist_ok=True)
     print(f"Criando banco de dados: {DB_PATH}")
 
-    # Lê o HTML para extrair Magias e Talentos (formato JSON)
-    print("Lendo HTML para extrair magias e talentos...")
+    # Lê magias da planilha xlsx
+    print(f"Lendo magias de: {XLSX_PATH}")
+    if not os.path.exists(XLSX_PATH):
+        print(f"  [ERRO] Planilha não encontrada: {XLSX_PATH}")
+        return
+    spells = load_spells_from_xlsx(XLSX_PATH)
+    print(f"  {len(spells)} magias carregadas.")
+
+    # Lê talentos do HTML de backup
+    print("Lendo talentos do HTML...")
+    talents = []
     try:
         with open(HTML_PATH, encoding='utf-8') as f:
             html = f.read()
+        talents = extract_json_array(html, r'TALENTS')
     except FileNotFoundError:
-        print(f"  [ERRO] HTML não encontrado: {HTML_PATH}")
-        print("  Execute a partir da pasta Database/")
-        return
-
-    spells  = extract_json_array(html, r'SPELLS\s*')
-    talents = extract_json_array(html, r'TALENTS')
-    print(f"  Magias: {len(spells)} | Talentos: {len(talents)}")
+        print(f"  [AVISO] HTML não encontrado: {HTML_PATH} — talentos não serão inseridos.")
+    print(f"  Talentos: {len(talents)}")
 
     # Remove DB existente
     if os.path.exists(DB_PATH):
@@ -973,18 +1032,15 @@ def main():
 
     # ── Magias ───────────────────────────────────────────
     print("Inserindo magias...")
-    for s in spells:
-        custo      = s.get('custo', 0)
-        nivel      = get_nivel_magia(custo)
-        conn.execute(
-            """INSERT INTO spells(nome,tipo,nivel_magia,custo_mana,prereq,execucao,
-               alcance,alvo,duracao,categoria,natureza,descricao)
-               VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
-            (s['nome'], s.get('tipo',''), nivel, custo,
-             s.get('prereq',''), s.get('execucao',''), s.get('alcance',''),
-             s.get('alvo',''), s.get('duracao',''), s.get('categoria',''),
-             s.get('natureza',''), s.get('descricao',''))
-        )
+    conn.executemany(
+        """INSERT INTO spells
+           (nome,tipo,nivel_magia,custo_mana,prereq,execucao,
+            alcance,alvo,duracao,categoria,natureza,descricao)
+           VALUES
+           (:nome,:tipo,:nivel_magia,:custo_mana,:prereq,:execucao,
+            :alcance,:alvo,:duracao,:categoria,:natureza,:descricao)""",
+        spells,
+    )
 
     # ── Talentos ─────────────────────────────────────────
     print("Inserindo talentos...")
@@ -1127,6 +1183,38 @@ def main():
             (rid, rd['altura'], rd['peso_medio'], rd['expectativa_vida'],
              rd['movimento'], rd['idiomas_nativos'])
         )
+
+    # ── Condições de Status ──────────────────────────────
+    print("Inserindo condições de status...")
+    CONDITIONS_DATA = [
+        ('Abalado',      'A criatura sofre perturbação mental, insegurança ou perda momentânea de concentração.',             'Sofre –2 em testes de ataque, perícia ou habilidade baseados em Presença.',                                                                                                                                                                                                                                                      '—'),
+        ('Adormecido',   'O personagem cai em um sono profundo, até o final do efeito ou até que receba algum dano.',         'Perde o turno, incapaz de agir. Ataques contra a criatura adormecida são considerados como vulneráveis.',                                                                                                                                                                                                              '—'),
+        ('Alucinado',    'O personagem perde a noção da realidade, enxergando e reagindo a estímulos inexistentes.',           'Perde o turno, incapaz de agir.',                                                                                                                                                                                                                                                                                         'Salv. Foco — ao sucesso, encerra a condição.'),
+        ('Amedrontado',  'O personagem é dominado pelo medo diante de uma ameaça específica.',                                'Sofre desvantagem contra o conjurador e recebe -2 na Defesa Básica.',                                                                                                                                                                                                                                                     'Salv. Tenacidade — ao sucesso, supera o medo.'),
+        ('Aprisionado',  'O personagem tem seus movimentos restringidos por força física ou mágica.',                          'Não pode se mover, mas ainda pode atacar ou conjurar se o alvo estiver ao alcance.',                                                                                                                                                                                                                                        'Salv. Atletismo — ao sucesso, se liberta.'),
+        ('Atordoado',    'O personagem sofre um impacto que compromete totalmente sua capacidade de reação.',                  'Não pode agir e perde o turno.',                                                                                                                                                                                                                                                                                         'Salv. Tenacidade — ao sucesso, recupera o controle.'),
+        ('Cego',         'O personagem perde completamente a visão do ambiente ao redor.',                                     'Sofre penalidade de -20 em ataques físicos, à distância, mágicos e ações manuais.',                                                                                                                                                                                                                                       '—'),
+        ('Confuso',      'A mente do personagem entra em desordem, dificultando decisões coerentes.',                          'No início do turno, rola 1d4: 1 = age normalmente; 2–3 = ataca um aliado; 4 = perde o turno e encerra a condição.',                                                                                                                                                                                                    '—'),
+        ('Congelando',   'O corpo do personagem é tomado por frio extremo, limitando suas ações.',                             'Condição não acumulativa (propriedade Água). Novos ataques de Água contra alvo congelado causam metade do dano. O alvo não pode agir, mover-se ou reagir, sofrendo 1d8 de dano contínuo por rodada. Chegar a 0 vida nesta condição causa morte imediata — o corpo transforma-se em estátua de gelo.', 'Salv. Atletismo — ao sucesso, rompe o efeito.'),
+        ('Desprevenido', 'O personagem é pego sem preparo ou atenção.',                                                        'Sofre -2 na Defesa Básica.',                                                                                                                                                                                                                                                                                             '—'),
+        ('Desorientado', 'O alvo perde o controle sobre sua percepção e concentração.',                                        'Cancela imediatamente magias ativas, efeitos sustentados e habilidades de manutenção. Ao atacar ou selecionar alvo, 50% de chance de confundir aliados com inimigos.',                                                                                                                                                 '—'),
+        ('Em Chamas',    'O personagem está envolto em chamas, sofrendo dano contínuo.',                                       'Propriedade Fogo. 1d8 de dano contínuo por rodada. Acumulativo: cada novo ataque de Chamas adiciona +1d8 e reinicia a duração. Pode ser extinto por magias de cura ou efeitos com propriedade Água.',                                                                                                               'Salv. Reflexo — ao se jogar no chão, encerra a condição, mas fica Vulnerável até o próximo turno.'),
+        ('Enfraquecido', 'A força do personagem é drenada, reduzindo sua eficácia.',                                           'Causa metade do dano e tem o deslocamento reduzido pela metade.',                                                                                                                                                                                                                                                      '—'),
+        ('Enfurecido',   'O personagem perde o controle emocional e entra em estado de agressividade extrema.',                'Recebe vantagem em ataques corpo a corpo, mas não pode realizar ataques à distância ou conjurar magias.',                                                                                                                                                                                                              '—'),
+        ('Envenenado',   'O corpo do personagem sofre com toxinas que causam dano gradual.',                                   '1d6 de dano contínuo com propriedade Terra por rodada. Condição não acumulativa, exceto quando efeitos, talentos ou magias especificarem explicitamente.',                                                                                                                                                           'Salv. Tenacidade — ao sucesso, encerra o efeito.'),
+        ('Fadigado',     'O personagem está exausto física e mentalmente.',                                                    'Sofre desvantagem em testes e ataques em geral.',                                                                                                                                                                                                                                                                      'Salv. Vontade — ao sucesso, recupera o foco.'),
+        ('Lentidão',     'Os movimentos do personagem se tornam pesados e atrasados.',                                         'Movimento reduzido pela metade.',                                                                                                                                                                                                                                                                                    'Salv. Tenacidade — ao sucesso, recupera a mobilidade.'),
+        ('Morrendo',     'O personagem encontra-se à beira da morte, com o corpo falhando e a consciência oscilando.',         'Por turno: salv. bem-sucedida = retorna com 1 de Vida; falha = acumula 1 falha (3 falhas = morte). Permanece Vulnerável durante toda a condição.',                                                                                                                                                              'Salv. Tenacidade ou Vontade.'),
+        ('Paralisado',   'O corpo do personagem está completamente imobilizado.',                                               'Não pode se mover ou atacar, mas ainda pode conjurar magias.',                                                                                                                                                                                                                                                      'Salv. Tenacidade — ao sucesso, encerra a condição.'),
+        ('Provocado',    'O personagem é forçado a agir de forma impulsiva contra um alvo específico.',                        'Deve atacar o conjurador em sua próxima ação.',                                                                                                                                                                                                                                                                    'Salv. Vontade — ao sucesso, resiste à provocação.'),
+        ('Sangrando',    'Ferimentos abertos causam perda contínua de vida.',                                                  '1d8 de dano contínuo por rodada (não acumulativo). Agravamento por reaplicação — efeitos secundários em ordem: Enfraquecido → Silenciado → Vulnerável.',                                                                                                                                                       'Salv. Tenacidade — ao sucesso, estanca o sangramento.'),
+        ('Silenciado',   'O personagem tem sua capacidade de conjurar magia bloqueada.',                                       'Não pode conjurar magias.',                                                                                                                                                                                                                                                                                          '—'),
+        ('Vulnerável',   'O personagem se encontra em estado crítico, exposto a danos extremos.',                              'Redução de -5 na Defesa Básica e não pode utilizar Reações. Se estiver Morrendo, qualquer dano recebido causa morte imediata.',                                                                                                                                                                                  '—'),
+    ]
+    conn.executemany(
+        "INSERT OR REPLACE INTO conditions(nome,descricao,efeito,salvaguarda) VALUES(?,?,?,?)",
+        CONDITIONS_DATA,
+    )
 
     conn.commit()
     conn.close()
