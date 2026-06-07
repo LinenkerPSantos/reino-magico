@@ -84,7 +84,45 @@ function Cap1() {
 
       <div className={styles.sec}>
         <h3 className={styles.secTitle}>Dados Utilizados</h3>
-        <p className={styles.secText}>No Reino Mágico o destino é moldado por dados do <strong>D4 ao D20</strong>. O <strong>D20</strong> é o coração do sistema — determina o sucesso ou fracasso das ações mais importantes.</p>
+        <p className={styles.secText}>
+          No Reino Mágico, o destino dos personagens é moldado por 
+          diferentes tipos de dados, cada um representando níveis 
+          distintos de poder, risco e imprevisibilidade. 
+          O sistema utiliza uma variedade que vai do <strong>D4 ao D20</strong>, 
+          permitindo desde ações simples até feitos extraordinários.
+        </p>
+        
+        <p className={styles.secText}>
+         Os dados menores, como o <strong>D4 e o D6</strong>, costumam estar 
+         ligados a efeitos mais modestos — pequenos danos, 
+         bônus sutis ou eventos de baixa complexidade. 
+         Já os dados intermediários, como <strong>D8, D10 e D12</strong>, 
+         entram em cena quando as ações ganham mais impacto, seja em 
+         combates mais intensos ou no uso de habilidades mais avançadas.
+        </p>
+        
+        <p className={styles.secText}>
+         No entanto, o verdadeiro coração do sistema é o <strong>D20</strong>. 
+         Ele é o dado principal do jogo e determina 
+         o sucesso ou fracasso das ações mais importantes. 
+         Sempre que um personagem tenta realizar algo 
+         decisivo — atacar um inimigo, resistir a um efeito, 
+         conjurar uma magia poderosa ou superar um 
+         desafio — é o D20 que dita o resultado.
+
+        </p>
+        <p className={styles.secText}>
+        Essa variedade de dados não está ali por acaso: ela cria 
+        uma escala clara de progressão e mantém o jogo dinâmico. 
+        Ao mesmo tempo em que o D20 garante a emoção e
+         a imprevisibilidade dos momentos cruciais, 
+         os demais dados refinam os detalhes, dando profundidade às mecânicas.
+         
+        </p>
+        
+        
+        
+        
         <div className={styles.diceGrid}>
           {['D4','D6','D8','D10','D12'].map(d => (
             <div key={d} className={styles.diceCard}><div className={styles.diceName}>{d}</div></div>
@@ -114,7 +152,21 @@ function Cap1() {
 
       <div className={styles.sec}>
         <h3 className={styles.secTitle}>Perícias</h3>
-        <p className={styles.secText}>As perícias somam um bônus fixo ao resultado dos dados. O jogador pode escolher <strong>2 perícias adicionais</strong> no nível Básico.</p>
+        <p className={styles.secText}>As perícias representam o refinamento das 
+          habilidades de um personagem — não apenas o que ele é capaz de fazer, 
+          mas o quão bem ele executa essas ações. 
+          Elas são o resultado de treino, experiência e especialização 
+          ao longo da jornada.
+          Sempre que um personagem realiza um teste ou ataque, 
+          ele <strong>rola um número de dados de vinte lados (d20) igual ao valor do atributo</strong> 
+          relacionado à ação. Entre os resultados obtidos, 
+          utiliza-se o maior valor, representando o melhor desempenho possível
+           dentro de sua capacidade.</p>
+
+           <p className={styles.secText}>Na criação do personagem, 
+            as perícias iniciais são definidas pela classe. 
+            Além delas, o jogador pode <strong>escolher 2 perícias adicionais</strong>, 
+            que começam no nível Básico (+2).</p>
         <div className={styles.levelCards}>
           <div className={styles.levelCard}><strong>Básico</strong><span className={styles.levelBonus}>+2</span><span>Familiaridade.</span></div>
           <div className={styles.levelCard}><strong>Intermediário</strong><span className={styles.levelBonus}>+5</span><span>Prática consistente.</span></div>
@@ -136,6 +188,13 @@ function Cap1() {
 
       <div className={styles.sec}>
         <h3 className={styles.secTitle}>Sistema Monetário</h3>
+        <p className={styles.secText}>A economia do reino é sustentada 
+          por diferentes tipos de moedas, utilizadas 
+          conforme o valor das transações e a posição social de 
+          seus portadores. Desde simples comerciantes de 
+          vilarejos até grandes nobres e monarcas, 
+          cada camada da sociedade utiliza
+           uma categoria monetária distinta.</p>
         <div className={styles.moneyGrid}>
           {[
             {c:'MB',n:'Moeda de Bronze',d:'Compras cotidianas, alimentação',color:'#cd7f32'},
@@ -151,6 +210,7 @@ function Cap1() {
             </div>
           ))}
         </div>
+        
         <div className={styles.moneyRate}>100 MB = 1 MP · 100 MP = 1 MO · 1.000 MO = 1 ML · 1.000 ML = 1 MG</div>
       </div>
     </div>
@@ -248,12 +308,33 @@ function Cap3() {
         <p className={styles.chLead}>O combate no Reino Mágico é estratégico e dinâmico. Cada decisão importa.</p>
       </div>
 
+   <div className={styles.sec}>
+        <h3 className={styles.secTitle}>Rodada e Turno</h3>
+        <div className={styles.actionList}>
+          {[
+            {l:'⏳ Rodada',d:'Uma rodada representa o ciclo completo do combate, no qual todos os participantes — jogadores e criaturas — têm a oportunidade de agir.'},
+            {l:'👣 Turno',d:'O turno é o intervalo individual dentro dessa rodada, correspondente ao momento específico em que cada participante executa suas ações — ou seja, a sua vez de agir.'},
+
+          ].map(a => (
+            <div key={a.l} className={styles.actionItem}>
+              <div>
+                <div className={styles.actionLabel}>{a.l}</div>
+                <span className={`${styles.actionBadge} ${styles['badge_'+a.c]}`}>{a.t}</span>
+              </div>
+              <p className={styles.actionDesc}>{a.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+
+
       <div className={styles.sec}>
         <h3 className={styles.secTitle}>Tipos de Ação</h3>
         <div className={styles.actionList}>
           {[
-            {l:'Padrão',t:'Básica',c:'green',d:'Ação principal do turno. Usada para atacar, conjurar magias ou executar habilidades centrais.'},
-            {l:'Movimento',t:'Básica',c:'green',d:'Permite deslocamento e reposicionamento no campo de batalha. O personagem pode dividir seu movimento antes e depois de uma ação Padrão.'},
+            {l:'Padrão',t:'Básica',c:'green',d:'É a ação principal do turno, utilizada para atacar, conjurar magias ou executar habilidades centrais. Só pode ser realizada durante a vez do personagem.'},
+            {l:'Movimento',t:'Básica',c:'green',d:'Permite deslocamento e reposicionamento no campo de batalha. O personagem não pode dividir ação de movimento, entretanto pode ser realizado antes ou depois de uma ação Padrão.Assim como a ação padrão, só pode ser usada no próprio turno.'},
             {l:'Reação',t:'Situacional',c:'blue',d:'Acionada dentro ou fora do turno, em resposta a eventos específicos. Limitada a uma vez por rodada.'},
             {l:'Livre',t:'Livre',c:'gold',d:'Interações simples como falar ou realizar ações rápidas. Uso limitado pelo bom senso do mestre.'},
           ].map(a => (

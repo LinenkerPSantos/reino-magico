@@ -483,7 +483,7 @@ function getXPGasto(){
   total += apr.periciaInt      * 500;
   total += apr.periciaAvancado * 800;
   total += apr.proficiencia    * 500;
-  total += (apr.talento||0)    * 600;
+  total += (apr.talento||0)    * 300;
   total += (apr.cascaGrossa||0)* 700;
   total += (apr.novasMagias||0)* 500;
   const ml = apr.magicLevel||0;
@@ -1266,7 +1266,7 @@ function renderAprimoramentos(){
   let html=`<h2>◈ Aprimoramentos</h2>
   <div class="info-box">
     Gaste seus pontos de experiência para melhorar o personagem.<br>
-    <b>Regras:</b> Cap. X — Evolução do Personagem • Máximo: 5.000 pts acumulados
+    <b>Regras:</b> Cap. X — Evolução do Personagem • Máximo: 7.000 pts acumulados
   </div>
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -1277,8 +1277,8 @@ function renderAprimoramentos(){
     <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
       <label style="font-size:.82em;color:var(--text-dim)">XP disponível:</label>
       <input type="text" inputmode="numeric" class="finput" style="width:120px;padding:5px 8px"
-        value="${xpTotal}" onchange="char.xp=Math.max(0,Math.min(5000,parseInt(this.value)||0));renderAprimoramentos()"
-        onkeydown="if(event.key==='Enter'){char.xp=Math.max(0,Math.min(5000,parseInt(this.value)||0));renderAprimoramentos();}">
+        value="${xpTotal}" onchange="char.xp=Math.max(0,Math.min(7000,parseInt(this.value)||0));renderAprimoramentos()"
+        onkeydown="if(event.key==='Enter'){char.xp=Math.max(0,Math.min(7000,parseInt(this.value)||0));renderAprimoramentos();}">
     </div>
     ${xpRest<0?`<div style="color:var(--red);font-size:.78em;margin-top:6px">⚠ XP gasto excede o disponível — remova aprimoramentos.</div>`:''}
   </div>`;
@@ -1388,6 +1388,7 @@ function renderAprimoramentos(){
                   <span class="tag">${s.natureza||'—'}</span>
                   ${s.categoria?`<span class="tag">${s.categoria}</span>`:''}
                   <span class="tag">${s.custo} PM</span>
+                  ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
                 </div>
                 <div class="sc-desc">${s.descricao}</div>
               </div>`;
@@ -1732,6 +1733,9 @@ const TRAIT_EXTRA_PERICIAS = {
 function getExtraPerSources(){
   const r = getRaceData();
   const sources = [];
+
+  // 0. Bônus universal de criação — toda personagem ganha 2 perícias extras em Básico
+  sources.push({label:'Criação de Personagem', desc:'Toda personagem ganha 2 perícias adicionais em nível Básico', val:2, tipo:'base'});
 
   // 1. Bônus base da raça
   if(r && r.extraPer > 0){
@@ -2176,6 +2180,7 @@ function renderMagias(){
         <span class="tag">${s.tipo.replace('Magias de ','').replace('Magias ','')}</span>
         <span class="tag">${s.custo} PM</span>${MAGIC_LEVELS.length?`<span class="tag" style="border-color:${getMagicLevelColor(s.nivel_magia)};color:${getMagicLevelColor(s.nivel_magia)}">${getMagicLevelName(s.nivel_magia)}</span>`:""}
         ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
+        ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
         ${isExtra?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
       </div>
       ${locked?`<div style="font-size:.7em;color:var(--red);margin-bottom:3px">🔒 Requer Idioma: ${langChk.missing.join(', ')}</div>`
@@ -2295,6 +2300,7 @@ function renderMagiasAprimoradas(){
           <span class="tag">${s.natureza||'—'}</span>
           <span class="tag">${s.tipo.replace('Magias ','')}</span>
           ${MAGIC_LEVELS.length?`<span class="tag" style="border-color:${getMagicLevelColor(s.nivel_magia)};color:${getMagicLevelColor(s.nivel_magia)}">${getMagicLevelName(s.nivel_magia)}</span>`:''}
+          ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
         </div>
         <div class="sc-desc">${isEvo?fam.descricao:s.descricao}</div>
         ${isEvo
@@ -2875,6 +2881,7 @@ function renderFicha(){
               <span class="tag" style="border-color:var(--green);color:var(--green)">0 PM</span>
               ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
               ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
+              ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
             </div>
             <div class="ab-desc">${s.descricao}</div>
           </div>`;
@@ -2893,6 +2900,7 @@ function renderFicha(){
               <span class="tag">${s.custo} PM</span>
               ${s.execucao?`<span class="tag">${s.execucao}</span>`:''}
               ${s.alcance?`<span class="tag">${s.alcance}</span>`:''}
+              ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
               ${isAdditional?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
             </div>
             <div class="ab-desc">${s.descricao}</div>

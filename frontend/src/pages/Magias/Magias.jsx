@@ -284,7 +284,7 @@ function MagiasConhecidas({ spells, magic_levels }) {
       <h2 className={styles.secTitle}>Magias Conhecidas</h2>
       <p className={styles.secText}>
         Lista completa de todas as magias do sistema. Cada magia tem um custo em PM, uma natureza elemental,
-        um tipo de acesso e um nível. Use os filtros para encontrar magias por elemento, tipo ou nome.
+        um tipo de acesso, um nível e uma duração. Use os filtros para encontrar magias por elemento, tipo ou nome.
       </p>
 
       <div className={styles.filters}>
@@ -325,6 +325,7 @@ function MagiasConhecidas({ spells, magic_levels }) {
                 <span className={styles.tag}>{s.custo} PM</span>
                 {s.execucao && <span className={styles.tag}>{s.execucao}</span>}
                 {s.alcance && <span className={styles.tag}>{s.alcance}</span>}
+                {s.duracao && <span className={styles.tag}>{s.duracao}</span>}
               </div>
               {s.prereq && <div className={styles.spellPrereq}>Pré-req: {s.prereq}</div>}
               <p className={styles.spellDesc}>{s.descricao}</p>

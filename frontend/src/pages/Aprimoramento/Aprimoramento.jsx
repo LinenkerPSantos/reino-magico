@@ -3,9 +3,9 @@ import styles from './Aprimoramento.module.css'
 const STATS_TABLE = [
   { nome: 'Vida Extra',             efeito: 'Aumenta a Vida Máxima em 10 pontos. Pode ser adquirido múltiplas vezes.',                                                         custo: 200 },
   { nome: 'Nova Perícia Básica',    efeito: 'Concede uma nova perícia no nível Básico.',                                                                                        custo: 300 },
+  { nome: 'Talento',                efeito: 'Permite adquirir um novo Talento, respeitando seus pré-requisitos.',                                                                custo: 300 },
   { nome: 'Aumento de Atributo',    efeito: 'Concede +1 ponto em um atributo à escolha do jogador.',                                                                            custo: 400 },
   { nome: 'Ponto de Proficiência',  efeito: 'Aumenta em +1 o limite máximo de Proficiência (até 9 pontos).',                                                                    custo: 500 },
-  { nome: 'Talento',                efeito: 'Permite adquirir um novo Talento, respeitando seus pré-requisitos.',                                                                custo: 600 },
   { nome: 'Casca Grossa',          efeito: 'Aumenta a Defesa Básica em +1. Pode ser adquirido no máximo 5 vezes, totalizando +5 de Defesa Básica.',                             custo: 700 },
 ]
 
@@ -99,7 +99,7 @@ export default function Aprimoramento() {
           utilizá-los para desenvolver seu personagem de diferentes formas.
         </p>
         <p className={styles.secText}>
-          Cada personagem pode acumular até <strong>5.000 Pontos de Aprimoramento</strong> ao longo
+          Cada personagem pode acumular até <strong>7.000 Pontos de Aprimoramento</strong> ao longo
           de sua jornada. Os pontos podem ser gastos a qualquer momento para adquirir os
           aprimoramentos descritos abaixo.
         </p>
