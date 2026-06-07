@@ -386,12 +386,9 @@ function NiveisMagia({ magic_levels }) {
       <h2 className={styles.secTitle}>Níveis de Magia</h2>
       <p className={styles.secText}>
         As magias são classificadas em <strong>níveis de poder</strong>, que determinam o custo em PM e
-        os pré-requisitos para aprendê-las. Personagens iniciantes acessam apenas os primeiros níveis;
-        magias de nível superior exigem atributos e avanços de personagem.
-      </p>
-      <p className={styles.secText}>
-        O <strong>nível máximo de magia</strong> acessível a um personagem depende do seu nível de Intelecto
-        e da progressão da campanha. Truques (Nível 0) não têm restrição.
+        os pré-requisitos para aprendê-las. Todo personagem começa no nível de proficiência mágica
+        <strong> Menor</strong>, com acesso apenas a magias de Truque, Básica e Menor (níveis 1 a 3) —
+        respeitando os tipos de magia aos quais tem acesso por raça, classe ou talento.
       </p>
       <div className={styles.levelList}>
         {(magic_levels || []).map(ml => (
@@ -407,6 +404,45 @@ function NiveisMagia({ magic_levels }) {
           <p className={styles.empty}>Inicie o backend para carregar os níveis de magia.</p>
         )}
       </div>
+
+      <h3 className={styles.subTitle} style={{ marginTop: 32 }}>Evolução do Conhecimento Mágico</h3>
+      <p className={styles.secText}>
+        Personagens avançados podem investir pontos de experiência no aprimoramento <strong>Progressão
+        Mágica</strong> (Elite, Maior ou Avançado). Essa compra, por si só, <strong>não entrega magias
+        novas</strong> — ela apenas <em>habilita o direito</em> de evoluir ou adquirir magias daquele
+        tier, através de duas trilhas distintas e complementares:
+      </p>
+      <div className={styles.rulesGrid}>
+        <div className={styles.ruleCard}>
+          <div className={styles.ruleLabel}>Trilha A — Magias Aprimoradas</div>
+          <div className={styles.ruleFormula}>Evoluir magia já conhecida</div>
+          <p className={styles.ruleDesc}>
+            Disponível apenas para <strong>Magias Iniciais</strong> e <strong>Magias Sagradas</strong>.
+            Ao desbloquear um novo tier de Progressão Mágica, o personagem pode escolher até <strong>3</strong>
+            {' '}magias que já conhece dessas categorias e trocá-las pela versão de tier superior — vinculadas
+            por nome-base (ex.: "Acelerar" → "Acelerar Elite" → "Acelerar Maior"...). "Até 3" é um teto, não
+            uma garantia: quem conhece menos magias elegíveis só pode evoluir essas.
+          </p>
+        </div>
+        <div className={styles.ruleCard}>
+          <div className={styles.ruleLabel}>Trilha B — Magias Adicionais</div>
+          <div className={styles.ruleFormula}>Adquirir magia nova</div>
+          <p className={styles.ruleDesc}>
+            Cobre os tipos restritos — <strong>Magias Antigas, de Pacto, de Grimório</strong> e <strong>Magia
+            Proibida</strong>. Ter a Progressão Mágica necessária apenas habilita o <em>direito</em> de
+            comprar magias desses tipos em níveis mais altos; é o aprimoramento <strong>"Magias Adicionais"</strong>
+            {' '}que de fato as entrega — 2 magias novas por compra (até 3 compras, totalizando 6 magias extras),
+            sempre respeitando o acesso-base do personagem (ex.: só Elfos têm acesso a Magias Antigas, só
+            Magos a Magias de Grimório).
+          </p>
+        </div>
+      </div>
+      <p className={styles.secText} style={{ marginTop: 12 }}>
+        As duas trilhas são complementares: um Mago com Magias de Grimório, por exemplo, precisa tanto da
+        Progressão Mágica (para abrir o direito a tiers superiores de Grimório) quanto de "Magias Adicionais"
+        (para realmente recebê-las) — enquanto um Elfo pode usar "Magias Adicionais" para reforçar seu acesso
+        natural a Magias Antigas.
+      </p>
     </div>
   )
 }

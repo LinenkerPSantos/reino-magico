@@ -113,35 +113,106 @@ re-derivar o entendimento.
   na lista (`htmlContainsElite: false`), confirmando que o cap vale mesmo para
   quem já comprou toda a Progressão Mágica.
 
-### [ ] Etapa 3 — Aprimoramento "Magias Adicionais" (~25–35k)
-- Adicionar estado em `char.aprimoramentos` (ex.: `magiasAdicionais: 0`,
-  `magiasAdicionaisEscolhidas: []`), custo em `getXPGasto()`.
-- UI de compra em `renderAprimoramentos()`: botão de compra (até 3x), seletor de
-  `tipo`+`nivel_magia` respeitando as regras de acesso/gating da seção 1.3.
-- Função `comprarMagiaAdicional(tipo, nivel)` que valida acesso, XP e limite de 3,
-  e adiciona 2 magias à lista do personagem.
-- Atualizar `Aprimoramento.jsx` (nova linha na tabela `MAGIC_TABLE` ou tabela
-  própria, com custo e descrição).
+### [x] Etapa 3 — Aprimoramento "Magias Adicionais" (~25–35k) — CONCLUÍDA 2026-06-06
+- ✅ Reaproveitado o campo de estado já existente `char.aprimoramentos.novasMagias`
+  (renomeado na UI para "Magias Adicionais", custo já estava em `getXPGasto()`) e
+  adicionado `magiasAdicionaisEscolhidas: []` — array de compras
+  `{tipo, nivel, nomes:[a,b]}`, uma entrada por compra (até 3).
+- ✅ Criadas as helpers de gating Trilha B em `ficha.html` (perto de
+  `getMaxMagicLevel()`, ~linha 446): `getMagicProficiencyLevel()` (mapeia
+  `magicLevel` 0-3 → nível de proficiência 3/4/5/6), `TRILHA_B_TIPOS` (Antigas,
+  Pacto, Grimório, Proibida) e `getMagiasAdicionaisOpcoes()` — cruza acesso-base
+  (`getSpellAccess()`) com o teto certo: `getMagicProficiencyLevel()` para tipos
+  de Trilha B, `getMaxMagicLevel()` (sempre 3) para os demais — implementando
+  literalmente "Inicial nova começa em Básico; Grimório-Elite exige proficiência
+  Elite".
+- ✅ UI de compra em `renderAprimoramentos()` (substituiu o bloco antigo "Novas
+  Magias"): seletor em 3 passos — tipo → nível → 2 magias (cards reaproveitando
+  estilo `.sc`/`.spells-grid`), com estado transitório `maPicker` (não persiste no
+  personagem) e funções `setMAPTipo`/`setMAPNivel`/`toggleMAPSpell`/`resetMAPicker`.
+  Lista as compras já feitas e botão "Desfazer última compra".
+- ✅ Funções `comprarMagiaAdicional()` (valida limite de 3, XP ≥ 500, opção
+  presente em `getMagiasAdicionaisOpcoes()`, magia existe/bate tipo+nível/não
+  duplicada — então grava a compra e empurra as 2 magias para `char.magiasExtra`)
+  e `removerMagiaAdicional()` (desfaz a última compra: remove as magias de
+  `magiasExtra`, decrementa o contador, limpa o picker).
+- ✅ Atualizado `Aprimoramento.jsx`: linha "Novas Magias" → "Magias Adicionais"
+  com a descrição do novo fluxo (proficiência habilita o direito; esta compra
+  entrega as magias), e as 3 linhas de Proficiência (Elite/Maior/Avançada)
+  reescritas para deixar claro que abrem a aba "Magias Aprimoradas" (Trilha A) e
+  habilitam o direito de compra via "Magias Adicionais" (Trilha B) — em vez de
+  sugerir que as magias chegam automaticamente.
+- ✅ Testado via Playwright com personagem Elfo/Mago avançado (`magicLevel:3`):
+  `getMagiasAdicionaisOpcoes()` devolveu corretamente `Magias Antigas` com níveis
+  `[3,5,6]` (gating por proficiência, pois Elfo tem acesso-base) e `Magias
+  Iniciais` travada em `[2]` (não é Trilha B → teto fixo em 3/Menor); fluxo
+  completo de compra (escolher tipo→nível→2 magias→confirmar) debitou 500 XP,
+  adicionou as magias a `char.magiasExtra` e registrou a entrada em
+  `magiasAdicionaisEscolhidas`; tentativa de comprar `Magia Proibida` nível 9
+  (fora do alcance/gating) foi corretamente bloqueada; "Desfazer última compra"
+  reverteu XP, contador e lista de magias extras.
 
-### [ ] Etapa 4 — Aba "Magias Aprimoradas" (Trilha A) (~30–40k)
-- Adicionar passo condicional no step bar (mesmo padrão usado para
-  "Perícias Avançadas": `getStepNames()` + array `fns` em `render()`), aparecendo
-  quando `char.aprimoramentos.magicLevel >= 1`.
-- `renderMagiasAprimoradas()`: lista as magias Iniciais/Sagradas que o personagem
-  já conhece, permite selecionar até 3 (limitado pelo que ele realmente possui) e
-  trocar pela versão de tier superior usando `getSpellFamily()`.
-- Função de toggle/troca (`toggleMagiaAprimorada(nomeOriginal)`) com lógica de
-  reverter ao remover (parecida com `togglePericiaInt`/`togglePericiaAvancado`).
+### [x] Etapa 4 — Aba "Magias Aprimoradas" (Trilha A) (~30–40k) — CONCLUÍDA 2026-06-06
+- ✅ Passo condicional adicionado em `getStepNames()` (push de `'Magias
+  Aprimoradas'` logo após `'Magias'`) e no array `fns` de `render()`
+  (`fns.push(renderMagiasAprimoradas)`), ambos sob a guarda
+  `char.tipo==='avancado' && char.aprimoramentos.magicLevel>=1` — mesmo padrão de
+  "Perícias Avançadas". `comprarMagicLevel()` agora chama `render()` (em vez de
+  só `renderAprimoramentos()`) na primeira compra de Progressão Mágica, para que
+  a nova aba apareça imediatamente na barra de passos.
+- ✅ Estado novo `char.aprimoramentos.magiasAprimoradas: []` — array
+  `{original, evoluida, nivel}`, uma entrada por magia evoluída (até 3).
+- ✅ `renderMagiasAprimoradas()`: lista as magias `Magias Iniciais`/`Magias
+  Sagradas` que o personagem já conhece (reconhecendo também as já evoluídas,
+  exibidas pelo nome original + seta para a versão atual), calcula a versão-alvo
+  via `getSpellFamily(original, tipo, natureza, getMagicProficiencyLevel())` e
+  mostra botão "✦ Evoluir" / "↩ Reverter" com os estados corretos (limite de 3,
+  já conhece a versão, família incompleta no banco).
+- ✅ `toggleMagiaAprimorada(nomeOriginal)`: ao evoluir, troca o nome da magia
+  *in-place* em `char.magias`/`char.magiasExtra` (de "Alarme Mágico" para "Alarme
+  Mágico Elite", por ex.) e registra `{original, evoluida, nivel}`; ao reverter,
+  troca de volta usando o registro salvo e remove a entrada — mesma filosofia de
+  reverter de `togglePericiaInt`/`togglePericiaAvancado`.
+- ✅ Atualizado o resumo de bônus em `renderAprimoramentos()`: a linha
+  "Magias Elite/Maior/Avançado desbloqueadas" (que sugeria entrega automática,
+  contradizendo a nova spec) virou "Direito de evoluir/adquirir magias até o tier
+  X (aba Magias Aprimoradas / Magias Adicionais)", e foi adicionada uma linha
+  listando as trocas feitas em Magias Aprimoradas.
+- ✅ Testado via Playwright (Humano/Mago avançado): comprar Proficiência Elite
+  abriu a aba "Magias Aprimoradas" na barra de passos automaticamente; evoluir
+  "Alarme Mágico" → "Alarme Mágico Elite" trocou o nome em `char.magias` mantendo
+  as outras magias intactas; o limite de 3 foi respeitado (3ª evolução aceita, 4ª
+  bloqueada); reverter restaurou o nome original em `char.magias` e decrementou o
+  contador corretamente.
 
-### [ ] Etapa 5 — Polimento, textos e testes manuais (~15–25k)
-- Atualizar texto da página `Magias` (React) explicando Trilha A vs Trilha B.
-- Revisar `Aprimoramento.jsx` (descrições do `MAGIC_TABLE` para refletir o novo
-  fluxo: proficiência só libera o "direito"; "Magias Adicionais" é quem entrega
-  as magias de Trilha B).
-- Testar fluxo completo na ficha: personagem avançado comprando proficiência →
-  abrindo aba nova → evoluindo magias da Trilha A → comprando Magias Adicionais →
-  recebendo magias da Trilha B com gating correto.
-- Apagar este arquivo de plano quando tudo estiver validado pelo usuário.
+### [x] Etapa 5 — Polimento, textos e testes manuais (~15–25k) — CONCLUÍDA 2026-06-06
+- ✅ Atualizada a página `Magias` (React, [Magias.jsx](frontend/src/pages/Magias/Magias.jsx)):
+  a aba "Níveis de Magia" ganhou uma nova seção "Evolução do Conhecimento Mágico"
+  com dois cards lado a lado — "Trilha A — Magias Aprimoradas" (evoluir magia já
+  conhecida, Iniciais/Sagradas, até 3, vínculo por nome-base) e "Trilha B —
+  Magias Adicionais" (adquirir magia nova, tipos restritos, gating de
+  acesso-base + Progressão Mágica) — e um parágrafo final amarrando as duas
+  trilhas como complementares (ex.: Mago de Grimório precisa das duas; Elfo usa
+  "Magias Adicionais" para reforçar Magias Antigas). Texto introdutório do nível
+  também revisado para descrever o ponto de partida real (Menor, níveis 1-3).
+- ✅ `Aprimoramento.jsx` já tinha sido revisado durante a Etapa 3 (linha "Novas
+  Magias" → "Magias Adicionais" e as 3 entradas de Proficiência reescritas para
+  deixar claro que abrem a aba "Magias Aprimoradas"/habilitam "Magias
+  Adicionais" em vez de entregar magias automaticamente) — conferido novamente,
+  sem pendências.
+- ✅ Teste de fluxo completo via Playwright (Elfo/Mago avançado, do zero):
+  selecionar 2 magias Iniciais → comprar Proficiência Elite (debita 400 XP, abre
+  a aba "Magias Aprimoradas" automaticamente) → evoluir "Alarme Mágico" →
+  "Alarme Mágico Elite" (Trilha A) → comprar "Magias Adicionais" por 500 XP e
+  receber 2 "Magias Antigas" de nível Menor — corretamente limitadas ao teto
+  `min(profLvl, níveis disponíveis no banco)` já que Antigas só tem níveis
+  [3,5,6] e profLvl=4 → só nível 3 qualifica (Trilha B) → checagem final de
+  gating confirmou que "Magias de Pacto" nem aparece nas opções (Elfo/Mago não
+  tem acesso-base) e que "Magias de Grimório" Avançado (nível 6) fica fora do
+  alcance com profLvl=4. Tudo correto.
+
+**Sistema 100% implementado e testado.** Apague este arquivo quando o usuário
+validar o fluxo completo na campanha.
 
 
 ## 3. Notas para quem retomar

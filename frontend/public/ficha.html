@@ -444,6 +444,34 @@ function getMaxMagicLevel(){
   return 3;
 }
 
+// Nível máximo de magia que a Progressão Mágica do personagem desbloqueia
+// (3=Menor, 4=Elite, 5=Maior, 6=Avançado) — usado para o gating da Trilha B,
+// diferente de getMaxMagicLevel() que é o teto fixo da seleção inicial.
+function getMagicProficiencyLevel(){
+  const ml = (char.aprimoramentos && char.aprimoramentos.magicLevel) || 0;
+  return [3,4,5,6][ml] || 3;
+}
+
+// Categorias de Trilha B (exigem acesso-base + proficiência + compra de Magias Adicionais)
+const TRILHA_B_TIPOS = ['Magias Antigas','Magias de Pacto','Magias de Grimório','Magia Proibida'];
+
+// Combinações tipo+nível que "Magias Adicionais" pode conceder agora, respeitando
+// o gating da seção 1.3 do plano: Trilha A (Truque/Iniciais/Sagradas) fica limitada
+// ao mesmo teto da seleção inicial (nível ≤ Menor); Trilha B fica limitada pela
+// Progressão Mágica desbloqueada (proficiência), além de exigir acesso-base à categoria.
+function getMagiasAdicionaisOpcoes(){
+  const access = getSpellAccess();
+  const profLvl = getMagicProficiencyLevel();
+  const opcoes = [];
+  for(const tipo of access){
+    const niveisDisponiveis = [...new Set(SPELLS.filter(s=>s.tipo===tipo).map(s=>s.nivel_magia))].sort((a,b)=>a-b);
+    const teto = TRILHA_B_TIPOS.includes(tipo) ? profLvl : getMaxMagicLevel();
+    const niveis = niveisDisponiveis.filter(n=>n<=teto);
+    if(niveis.length) opcoes.push({tipo, niveis});
+  }
+  return opcoes;
+}
+
 function getXPGasto(){
   if(!char.aprimoramentos) return 0;
   const apr = char.aprimoramentos;
@@ -471,7 +499,10 @@ function getStepNames(){
   if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.periciaInt>=1)
     base.splice(6,0,'Perícias Avançadas');
   if(needsEntidadeStep()) base.push('Entidade');
-  base.push('Idiomas','Magias','Ficha Final');
+  base.push('Idiomas','Magias');
+  if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.magicLevel>=1)
+    base.push('Magias Aprimoradas');
+  base.push('Ficha Final');
   if(char.tipo==='avancado') base.unshift('Aprimoramentos');
   return base;
 }
@@ -595,7 +626,8 @@ let char = {
     periciaAvancado:0, periciaAvancadoSkills:[],
     proficiencia:0, talento:0, cascaGrossa:0,
     novasMagias:0, magiasAdicionaisEscolhidas:[],  // [{tipo, nivel, nomes:[a,b]}] — uma entrada por compra
-    magicLevel:0  // 0=Menor(3), 1=Elite(4), 2=Maior(5), 3=Avancado(6)
+    magicLevel:0,  // 0=Menor(3), 1=Elite(4), 2=Maior(5), 3=Avancado(6)
+    magiasAprimoradas:[]  // [{original, evoluida, nivel}] — Trilha A: até 3 trocas Iniciais/Sagradas → tier superior
   },
   faunoAspecto:'', draconatoElem:'',
   hibridoTraits:[],         // [{raceName, traitIdx}] — max 2, raças diferentes, no Maculado/Celestial
@@ -800,7 +832,10 @@ function render(){
   if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.periciaInt>=1)
     fns.splice(6,0,renderPericiasAvancadas);
   if(needsEntidadeStep()) fns.push(renderEntidade);
-  fns.push(renderIdiomas,renderMagias,renderFicha);
+  fns.push(renderIdiomas,renderMagias);
+  if(char.tipo==='avancado' && char.aprimoramentos && char.aprimoramentos.magicLevel>=1)
+    fns.push(renderMagiasAprimoradas);
+  fns.push(renderFicha);
   if(char.tipo==='avancado') fns.unshift(renderAprimoramentos);
   document.getElementById('content').innerHTML='';
   fns[step]();
@@ -1192,6 +1227,30 @@ function selectMaculadoTrait(raceName,traitIdx){
 // ═══════════════════════════════════════════════════════
 //  STEP: APRIMORAMENTOS (Personagem Avançado)
 // ═══════════════════════════════════════════════════════
+// Estado transitório do seletor de "Magias Adicionais" (Trilha B) — não é salvo no personagem
+let maPicker = {tipo:'', nivel:null, escolhidas:[]};
+function resetMAPicker(){ maPicker = {tipo:'', nivel:null, escolhidas:[]}; }
+function setMAPTipo(tipo){
+  maPicker.tipo = (maPicker.tipo===tipo) ? '' : tipo;
+  maPicker.nivel = null;
+  maPicker.escolhidas = [];
+  renderAprimoramentos();
+}
+function setMAPNivel(nivel){
+  maPicker.nivel = (maPicker.nivel===nivel) ? null : nivel;
+  maPicker.escolhidas = [];
+  renderAprimoramentos();
+}
+function toggleMAPSpell(nome){
+  const i = maPicker.escolhidas.indexOf(nome);
+  if(i>=0){ maPicker.escolhidas.splice(i,1); }
+  else {
+    if(maPicker.escolhidas.length>=2){ showErr('Escolha no máximo 2 magias.'); return; }
+    maPicker.escolhidas.push(nome);
+  }
+  renderAprimoramentos();
+}
+
 function renderAprimoramentos(){
   const apr = char.aprimoramentos;
   const xpTotal = char.xp||0;
@@ -1238,7 +1297,7 @@ function renderAprimoramentos(){
     const color = ml.cor;
     html+=`<div class="apr-item${unlocked?' comprado':''}" style="${unlocked?'border-color:'+color:''}">
       <div class="apr-nome" style="color:${color}">Nível ${ml.nome}</div>
-      <div class="apr-desc">Desbloqueia magias de nível ${ml.nivel}.</div>
+      <div class="apr-desc">Habilita o direito de evoluir (Magias Aprimoradas) ou adquirir via "Magias Adicionais" magias de nível ${ml.nivel}.</div>
       <div class="apr-custo">${ml.custo} pts</div>
       ${unlocked
         ? `<div style="font-size:.72em;color:${color}">✓ Desbloqueado</div>`
@@ -1252,27 +1311,102 @@ function renderAprimoramentos(){
   });
   html+=`</div>`;
 
-  // Novas Magias
+  // Magias Adicionais (Trilha B — entrega magias de tipos/níveis a que o personagem tem direito)
   {
-    const nm = apr.novasMagias||0;
-    const atMaxNM = nm >= 3;
-    const canBuyNM = !atMaxNM && xpRest >= 500;
-    const canRemNM = nm > 0;
-    html+=`<div class="apr-item${nm>0?' comprado':''}" style="margin-bottom:18px">
-      <div class="apr-nome">Novas Magias</div>
-      <div class="apr-desc">Concede acesso a 2 novas magias do nível de conhecimento mágico que possui ou menor.</div>
-      <div class="apr-custo">500 pts cada (max 3)</div>
-      <div style="font-size:.78em;color:var(--gold-dim);margin-top:4px">
-        ℹ Observação: a cada compra, escolha manualmente <b>2 novas magias</b> na aba <b>Magias</b>
-        (respeitando o nível de proficiência mágica e os tipos de magia que o personagem tem acesso).
-      </div>
-      <div class="apr-ctrl">
-        <button class="apr-btn" onclick="alterarApr('novasMagias',-1,500)" ${!canRemNM?'disabled':''}>−</button>
-        <div class="apr-val">${nm}</div>
-        <button class="apr-btn" onclick="alterarApr('novasMagias',1,500)" ${!canBuyNM?'disabled':''}>+</button>
-        ${nm>0?`<span style="font-size:.72em;color:var(--gold-dim)">−${nm*500} pts</span>`:''}
-      </div>
-    </div>`;
+    const na = apr.novasMagias||0;
+    const atMaxNA = na >= 3;
+    const opcoes = getMagiasAdicionaisOpcoes();
+
+    html+=`<div class="apr-item${na>0?' comprado':''}" style="margin-bottom:18px">
+      <div class="apr-nome">Magias Adicionais</div>
+      <div class="apr-desc">Concede 2 magias novas por compra, escolhidas dentre os tipos e níveis aos quais você
+        tem <b>direito de acesso</b> — a Progressão Mágica (proficiência) só habilita esse direito; é esta compra
+        que entrega as magias de fato. Limite: 3 compras (até 6 magias extras).</div>
+      <div class="apr-custo">500 pts cada (max 3)</div>`;
+
+    if(na>0){
+      html+=`<div style="margin-top:8px">`;
+      apr.magiasAdicionaisEscolhidas.forEach((c,i)=>{
+        html+=`<div style="font-size:.76em;color:var(--gold-dim);margin-bottom:2px">
+          ${i+1}ª compra — ${c.tipo.replace('Magias ','')} (nível ${getMagicLevelName?getMagicLevelName(c.nivel):c.nivel}): <b>${c.nomes.join(', ')}</b>
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+
+    if(atMaxNA){
+      html+=`<div style="font-size:.76em;color:var(--gold-dim);margin-top:8px">✓ Limite de 3 compras atingido.</div>`;
+    } else if(xpRest < 500){
+      html+=`<div style="font-size:.76em;color:var(--red);margin-top:8px">XP insuficiente para nova compra (500 pts).</div>`;
+    } else if(!opcoes.length){
+      html+=`<div style="font-size:.76em;color:var(--red);margin-top:8px">Nenhum tipo/nível disponível no momento — verifique acesso a tipos de magia e proficiência mágica.</div>`;
+    } else {
+      html+=`<div style="margin-top:10px">
+        <div style="font-size:.78em;color:var(--text-dim);margin-bottom:4px">1. Escolha o tipo de magia:</div>
+        <div class="filters">
+          ${opcoes.map(o=>`<button class="fbtn${maPicker.tipo===o.tipo?' on':''}" onclick="setMAPTipo('${o.tipo}')">${o.tipo.replace('Magias ','')}</button>`).join('')}
+        </div>
+      </div>`;
+
+      const opSel = opcoes.find(o=>o.tipo===maPicker.tipo);
+      if(opSel){
+        html+=`<div style="margin-top:8px">
+          <div style="font-size:.78em;color:var(--text-dim);margin-bottom:4px">2. Escolha o nível:</div>
+          <div class="filters">
+            ${opSel.niveis.map(n=>{
+              const ml=MAGIC_LEVELS.find(m=>m.nivel===n);
+              const on=maPicker.nivel===n;
+              return `<button class="fbtn${on?' on':''}" style="border-color:${on?(ml?ml.cor:'var(--gold)'):'var(--border)'};color:${on?(ml?ml.cor:'var(--gold)'):'var(--text-dim)'}" onclick="setMAPNivel(${n})">${ml?ml.nome:'Nível '+n}</button>`;
+            }).join('')}
+          </div>
+        </div>`;
+
+        if(maPicker.nivel!=null){
+          const candidatos = SPELLS.filter(s=>s.tipo===maPicker.tipo && s.nivel_magia===maPicker.nivel
+            && !char.magias.includes(s.nome) && !char.magiasExtra.includes(s.nome));
+          html+=`<div style="margin-top:8px">
+            <div style="font-size:.78em;color:var(--text-dim);margin-bottom:4px">
+              3. Escolha 2 magias <span class="cnt-badge${maPicker.escolhidas.length>=2?' full':''}">${maPicker.escolhidas.length}/2</span>:
+            </div>`;
+          if(!candidatos.length){
+            html+=`<div style="font-size:.76em;color:var(--red)">Nenhuma magia disponível neste tipo/nível (todas já conhecidas).</div>`;
+          } else {
+            html+=`<div class="spells-grid" style="max-height:260px;overflow:auto">`;
+            candidatos.forEach(s=>{
+              const isSel=maPicker.escolhidas.includes(s.nome);
+              const limitReached=!isSel && maPicker.escolhidas.length>=2;
+              html+=`<div class="sc${isSel?' selected':''}${limitReached?' disabled':''}"
+                style="${limitReached?'opacity:.45;cursor:not-allowed;':'cursor:pointer;'}"
+                onclick="${limitReached?'':`toggleMAPSpell('${s.nome.replace(/'/g,"\\'")}')`}">
+                <div class="sc-name">${s.nome}${isSel?' ✓':''}</div>
+                <div class="sc-meta">
+                  <span class="tag">${s.natureza||'—'}</span>
+                  ${s.categoria?`<span class="tag">${s.categoria}</span>`:''}
+                  <span class="tag">${s.custo} PM</span>
+                </div>
+                <div class="sc-desc">${s.descricao}</div>
+              </div>`;
+            });
+            html+=`</div>`;
+          }
+          html+=`</div>`;
+        }
+
+        const podeConfirmar = maPicker.tipo && maPicker.nivel!=null && maPicker.escolhidas.length===2 && xpRest>=500;
+        html+=`<div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn${podeConfirmar?' primary':''}" style="font-size:.78em;padding:6px 14px" ${!podeConfirmar?'disabled':''} onclick="comprarMagiaAdicional()">Confirmar compra (500 pts)</button>
+          <button class="btn" style="font-size:.78em;padding:6px 14px" onclick="resetMAPicker();renderAprimoramentos()">Limpar seleção</button>
+        </div>`;
+      }
+    }
+
+    if(na>0){
+      html+=`<div style="margin-top:10px">
+        <button class="btn" style="font-size:.75em;padding:5px 12px" onclick="removerMagiaAdicional()">Desfazer última compra (−500 pts)</button>
+      </div>`;
+    }
+
+    html+=`</div>`;
   }
 
   html+=`<h3 style="margin-bottom:8px;color:var(--gold)">Estatísticas Básicas</h3>
@@ -1379,10 +1513,13 @@ function renderAprimoramentos(){
       const aSk=apr.periciaAvancadoSkills||[];
       html+=`• Perito Avançado${aSk.length>0?': '+aSk.join(', '):'(nenhuma selecionada)'}<br>`;
     }
-    if(apr.novasMagias>0)     html+=`• Novas Magias: ${apr.novasMagias}x — ${apr.novasMagias*2} magia(s) extra(s) a escolher na aba Magias<br>`;
-    if(apr.magicLevel>=1)     html+=`• Magias Elite desbloqueadas<br>`;
-    if(apr.magicLevel>=2)     html+=`• Magias Maior desbloqueadas<br>`;
-    if(apr.magicLevel>=3)     html+=`• Magias Avançado desbloqueadas<br>`;
+    if(apr.novasMagias>0)     html+=`• Magias Adicionais: ${apr.novasMagias}x — ${apr.novasMagias*2} magia(s) extra(s) recebida(s)<br>`;
+    if(apr.magicLevel>=1){
+      const mlNomes=['Elite','Maior','Avançado'].slice(0,apr.magicLevel).join(', ');
+      html+=`• Direito de evoluir/adquirir magias até o tier ${mlNomes} (aba Magias Aprimoradas / Magias Adicionais)<br>`;
+    }
+    if(apr.magiasAprimoradas&&apr.magiasAprimoradas.length>0)
+      html+=`• Magias Aprimoradas: ${apr.magiasAprimoradas.length}x — ${apr.magiasAprimoradas.map(m=>`${m.original} → ${m.evoluida}`).join(', ')}<br>`;
     html+=`</div>`;
   }
 
@@ -1424,7 +1561,48 @@ function togglePericiaAvancado(skillName){
 
 function comprarMagicLevel(novoNivel, custo){
   if(getXPRestante() < custo){showErr('XP insuficiente.');return;}
+  const abriuAba = (char.aprimoramentos.magicLevel||0) < 1 && novoNivel >= 1;
   char.aprimoramentos.magicLevel = novoNivel;
+  // Primeira compra de Progressão Mágica abre a aba "Magias Aprimoradas" — recarrega tudo
+  if(abriuAba){ render(); return; }
+  renderAprimoramentos();
+}
+
+// Trilha B — compra do aprimoramento "Magias Adicionais": entrega 2 magias escolhidas
+// dentre tipo+nível liberados por getMagiasAdicionaisOpcoes() (acesso-base + gating de proficiência)
+function comprarMagiaAdicional(){
+  const apr = char.aprimoramentos;
+  const na = apr.novasMagias||0;
+  if(na>=3){showErr('Limite de 3 compras de Magias Adicionais atingido.');return;}
+  if(getXPRestante() < 500){showErr('XP insuficiente.');return;}
+  const {tipo, nivel, escolhidas} = maPicker;
+  if(!tipo||nivel==null){showErr('Escolha o tipo e o nível da magia.');return;}
+  if(escolhidas.length!==2){showErr('Escolha exatamente 2 magias.');return;}
+
+  const opcoes = getMagiasAdicionaisOpcoes();
+  const opSel = opcoes.find(o=>o.tipo===tipo);
+  if(!opSel||!opSel.niveis.includes(nivel)){showErr('Este tipo/nível não está disponível para você no momento.');return;}
+
+  for(const nome of escolhidas){
+    const s = SPELLS.find(x=>x.nome===nome);
+    if(!s||s.tipo!==tipo||s.nivel_magia!==nivel){showErr('Seleção de magia inválida.');return;}
+    if(char.magias.includes(nome)||char.magiasExtra.includes(nome)){showErr(`"${nome}" já é conhecida.`);return;}
+  }
+
+  apr.novasMagias = na+1;
+  apr.magiasAdicionaisEscolhidas.push({tipo, nivel, nomes:[...escolhidas]});
+  for(const nome of escolhidas) char.magiasExtra.push(nome);
+  resetMAPicker();
+  renderAprimoramentos();
+}
+
+function removerMagiaAdicional(){
+  const apr = char.aprimoramentos;
+  const compra = apr.magiasAdicionaisEscolhidas.pop();
+  if(!compra) return;
+  for(const nome of compra.nomes) char.magiasExtra = char.magiasExtra.filter(m=>m!==nome);
+  apr.novasMagias = Math.max(0,(apr.novasMagias||0)-1);
+  resetMAPicker();
   renderAprimoramentos();
 }
 
@@ -2043,6 +2221,109 @@ function toggleSpell(name){
   const totalBase=slots.base+slots.extraSpells;
   if(cntBase>=totalBase){showErr(`Limite de ${totalBase} magias atingido.`);return;}
   char.magias.push(name); renderMagias();
+}
+
+// ═══════════════════════════════════════════════════════
+//  TRILHA A — MAGIAS APRIMORADAS (evoluir magia já conhecida)
+//  Aba condicional: aparece quando char.aprimoramentos.magicLevel >= 1
+// ═══════════════════════════════════════════════════════
+function renderMagiasAprimoradas(){
+  const apr = char.aprimoramentos;
+  if(!apr.magiasAprimoradas) apr.magiasAprimoradas=[];
+  const escolhidas = apr.magiasAprimoradas;
+  const profLvl = getMagicProficiencyLevel();
+  const profNome = getMagicLevelName(profLvl);
+  const profCor = getMagicLevelColor(profLvl);
+
+  // Mapa evoluída → registro, para reconhecer magias já trocadas na lista do personagem
+  const evoMap = {};
+  escolhidas.forEach(m=>{ evoMap[m.evoluida]=m; });
+
+  // Magias elegíveis: Iniciais/Sagradas que o personagem já conhece (mostrando o nome original)
+  const vistos = new Set();
+  const elegiveis = [];
+  for(const nome of [...char.magias, ...char.magiasExtra]){
+    const reg = evoMap[nome];
+    const original = reg ? reg.original : nome;
+    if(vistos.has(original)) continue;
+    const s = SPELLS.find(x=>x.nome===original);
+    if(!s || !['Magias Iniciais','Magias Sagradas'].includes(s.tipo)) continue;
+    vistos.add(original);
+    elegiveis.push({original, s, reg});
+  }
+
+  let html=`<h2>◈ Magias Aprimoradas</h2>
+  <div class="info-box">
+    Sua Progressão Mágica atual habilita o tier <b style="color:${profCor}">${profNome}</b>.
+    Escolha até <b>3</b> magias que você já conhece — de <b>Magias Iniciais</b> ou <b>Magias Sagradas</b> —
+    para evoluí-las à versão desse tier (vínculo por nome-base, ex.: "Acelerar" → "Acelerar ${profNome}").
+    "Até 3" é teto, não garantia: se você conhece menos magias elegíveis, só pode evoluir essas.<br>
+    <span style="color:var(--gold-dim);font-size:.85em">ℹ Se comprar uma Progressão Mágica maior depois, reverta e evolua novamente para alcançar o novo tier.</span>
+  </div>
+  <div class="counter"><span class="cnt-badge${escolhidas.length>=3?' full':''}">Evoluídas: ${escolhidas.length}/3</span></div>`;
+
+  if(!elegiveis.length){
+    html+=`<div class="info-box" style="border-color:var(--red);font-size:.85em">
+      Nenhuma magia elegível encontrada. Volte à aba <b>Magias</b> e escolha ao menos uma magia
+      do tipo <b>Magias Iniciais</b> ou <b>Magias Sagradas</b>.
+    </div>`;
+  } else {
+    html+=`<div class="spells-grid">`;
+    for(const {original, s, reg} of elegiveis){
+      const isEvo = !!reg;
+      const fam = getSpellFamily(original, s.tipo, s.natureza, profLvl);
+      const jaConhece = fam && (char.magias.includes(fam.nome)||char.magiasExtra.includes(fam.nome)) && !isEvo;
+      const atMax = !isEvo && escolhidas.length>=3;
+      const podeEvoluir = !isEvo && fam && !jaConhece && !atMax;
+
+      html+=`<div class="sc${isEvo?' selected':''}">
+        <div class="sc-name">${original}${isEvo?` <span style="color:${profCor}">→ ${reg.evoluida}</span>`:''}</div>
+        <div class="sc-meta">
+          <span class="tag">${s.natureza||'—'}</span>
+          <span class="tag">${s.tipo.replace('Magias ','')}</span>
+          ${MAGIC_LEVELS.length?`<span class="tag" style="border-color:${getMagicLevelColor(s.nivel_magia)};color:${getMagicLevelColor(s.nivel_magia)}">${getMagicLevelName(s.nivel_magia)}</span>`:''}
+        </div>
+        <div class="sc-desc">${isEvo?fam.descricao:s.descricao}</div>
+        ${isEvo
+          ? `<button class="btn" style="font-size:.75em;margin-top:6px" onclick="toggleMagiaAprimorada('${original.replace(/'/g,"\\'")}')">↩ Reverter para "${original}"</button>`
+          : fam
+            ? `<button class="btn${podeEvoluir?' primary':''}" style="font-size:.75em;margin-top:6px" ${!podeEvoluir?'disabled':''} onclick="toggleMagiaAprimorada('${original.replace(/'/g,"\\'")}')">
+                 ${atMax?'Limite de 3 atingido':jaConhece?`Já conhece "${fam.nome}"`:`✦ Evoluir para "${fam.nome}"`}
+               </button>`
+            : `<div style="font-size:.72em;color:var(--text-dim);margin-top:6px">Sem versão ${profNome} para esta magia (família incompleta no banco)</div>`
+        }
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+  set(html);
+}
+
+function toggleMagiaAprimorada(nomeOriginal){
+  const apr = char.aprimoramentos;
+  if(!apr.magiasAprimoradas) apr.magiasAprimoradas=[];
+  const idx = apr.magiasAprimoradas.findIndex(m=>m.original===nomeOriginal);
+
+  if(idx>=0){
+    // Reverter: troca a versão evoluída de volta pelo nome original na lista do personagem
+    const {original, evoluida} = apr.magiasAprimoradas[idx];
+    if(char.magias.includes(evoluida)) char.magias = char.magias.map(m=>m===evoluida?original:m);
+    else if(char.magiasExtra.includes(evoluida)) char.magiasExtra = char.magiasExtra.map(m=>m===evoluida?original:m);
+    apr.magiasAprimoradas.splice(idx,1);
+  } else {
+    if(apr.magiasAprimoradas.length>=3){showErr('Limite de 3 magias aprimoradas atingido.');return;}
+    const s = SPELLS.find(x=>x.nome===nomeOriginal);
+    if(!s){showErr('Magia não encontrada.');return;}
+    const alvo = getMagicProficiencyLevel();
+    const fam = getSpellFamily(nomeOriginal, s.tipo, s.natureza, alvo);
+    if(!fam){showErr(`"${nomeOriginal}" não possui versão de tier ${getMagicLevelName(alvo)}.`);return;}
+    if(char.magias.includes(fam.nome)||char.magiasExtra.includes(fam.nome)){showErr(`Você já conhece "${fam.nome}".`);return;}
+    if(char.magias.includes(nomeOriginal)) char.magias = char.magias.map(m=>m===nomeOriginal?fam.nome:m);
+    else if(char.magiasExtra.includes(nomeOriginal)) char.magiasExtra = char.magiasExtra.map(m=>m===nomeOriginal?fam.nome:m);
+    else { showErr('Esta magia não está mais na sua lista de magias conhecidas.'); return; }
+    apr.magiasAprimoradas.push({original: nomeOriginal, evoluida: fam.nome, nivel: alvo});
+  }
+  renderMagiasAprimoradas();
 }
 
 // ═══════════════════════════════════════════════════════

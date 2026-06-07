@@ -15,10 +15,10 @@ const PERICIAS_TABLE = [
 ]
 
 const MAGIC_TABLE = [
-  { nome: 'Proficiência Elite',    efeito: 'Eleva o conhecimento mágico para o nível Elite. Além disso, o personagem escolhe 3 magias que já conhece e as aprimora para suas versões Elite.',     custo: 400 },
-  { nome: 'Proficiência Maior',    efeito: 'Eleva o conhecimento mágico para o nível Maior. Além disso, o personagem escolhe 3 magias que já conhece e as aprimora para suas versões Maiores.',   custo: 600 },
-  { nome: 'Proficiência Avançada', efeito: 'Eleva o conhecimento mágico para o nível Avançado. Além disso, o personagem escolhe 3 magias que já conhece e as aprimora para suas versões Avançadas.', custo: 800 },
-  { nome: 'Novas Magias', efeito: 'Concede acesso a 2 novas magias do nível de conhecimento mágico que possui ou menor (escolhidas manualmente na aba Magias). Pode ser adquirido no máximo 3 vezes, totalizando até 6 magias extras.', custo: 500 },
+  { nome: 'Proficiência Elite',    efeito: 'Eleva o conhecimento mágico para o nível Elite. Abre a aba "Magias Aprimoradas", onde o personagem pode escolher até 3 magias que já conhece (Iniciais ou Sagradas) e evoluí-las para suas versões Elite. Também habilita o direito de adquirir magias de nível Elite via o aprimoramento "Magias Adicionais", respeitando o acesso de cada tipo.', custo: 400 },
+  { nome: 'Proficiência Maior',    efeito: 'Eleva o conhecimento mágico para o nível Maior. Expande a aba "Magias Aprimoradas" (até 3 magias evoluídas para a versão Maior) e habilita o direito de adquirir magias de nível Maior via "Magias Adicionais", respeitando o acesso de cada tipo.', custo: 600 },
+  { nome: 'Proficiência Avançada', efeito: 'Eleva o conhecimento mágico para o nível Avançado. Expande a aba "Magias Aprimoradas" (até 3 magias evoluídas para a versão Avançada) e habilita o direito de adquirir magias de nível Avançado via "Magias Adicionais", respeitando o acesso de cada tipo.', custo: 800 },
+  { nome: 'Magias Adicionais', efeito: 'Concede 2 magias novas por compra, escolhidas no momento da compra dentre os tipos e níveis aos quais o personagem tem direito de acesso — combinação de acesso-base (raça/classe/talento) com a Progressão Mágica adquirida (a proficiência apenas habilita o direito; esta compra entrega as magias de fato). Pode ser adquirido no máximo 3 vezes, totalizando até 6 magias extras.', custo: 500 },
 ]
 
 const ATTR_BENEFITS = [
