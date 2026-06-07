@@ -59,6 +59,7 @@
 .loreTabActive { color: var(--gold); border-bottom-color: var(--gold); }
 .lorePanel { animation: fadeIn .2s; }
 .loreText { font-size: .88em; color: var(--text); line-height: 1.8; }
+.loreText + .loreText { margin-top: 12px; }
 
 /* Race banner image */
 .raceBanner {
