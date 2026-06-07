@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGameData } from '../../hooks/useGameData'
-import { ENTITY_IMAGES, ENTITY_LORE } from './entidadesData'
+import { ENTITY_IMAGES, ENTITY_LORE, ENTITY_DOMAIN_IMAGES } from './entidadesData'
 import styles from './Entidades.module.css'
 
 const ELEM_COLORS = {
@@ -38,11 +38,19 @@ function getImage(nome) {
   return key ? ENTITY_IMAGES[key] : null
 }
 
+function getDomainImage(nome) {
+  if (ENTITY_DOMAIN_IMAGES[nome]) return ENTITY_DOMAIN_IMAGES[nome]
+  const n = normalize(nome)
+  const key = Object.keys(ENTITY_DOMAIN_IMAGES).find(k => normalize(k) === n)
+  return key ? ENTITY_DOMAIN_IMAGES[key] : null
+}
+
 function DetailPanel({ detail }) {
   const [tab, setTab] = useState('lore')
   const c = ELEM_COLORS[detail.elemento] || 'var(--gold)'
   const lore = getLore(detail.nome)
   const img = getImage(detail.nome)
+  const domainImg = getDomainImage(detail.nome)
 
   const tabs = [
     { id: 'lore',   label: 'Lore' },
@@ -106,6 +114,11 @@ function DetailPanel({ detail }) {
           {lore.dominio.desc.split('\n\n').map((p, i) => (
             <p key={i} className={styles.loreText}>{p}</p>
           ))}
+          {domainImg && (
+            <div className={styles.detailImgWrap}>
+              <img src={domainImg} alt={lore.dominio.nome} className={styles.detailImg} />
+            </div>
+          )}
           {lore.habilidades && (
             <div className={styles.habilidadesList} style={{ borderColor: c + '44' }}>
               <p className={styles.habilidadesLabel} style={{ color: c }}>Habilidades Divinas</p>
