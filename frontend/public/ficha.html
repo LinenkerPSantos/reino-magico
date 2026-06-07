@@ -512,6 +512,27 @@ function getStepNames(){
 const STEP_NAMES = ['Informações','Classe','Raça','Kit Inicial','Atributos','Perícias','Idiomas','Magias','Talentos','Ficha Final'];
 const ATTR_NAMES = {FOR:'Força',DES:'Destreza',VIT:'Vitalidade',INT:'Intelecto',PRE:'Presença'};
 const ELEM_COLORS = {Fogo:'#c44',Água:'#4a7fc4',Terra:'#8a6d1a',Vento:'#4a9a5a',Trovão:'#8a4ac4',Arcano:'#7a7aca',Caótico:'#c44',Sagrado:'#c9a227',Sagrada:'#c9a227',Negativo:'#888'};
+
+// Habilidades Divinas — nome-base da magia → entidade sagrada vinculada (espelha entidadesData.js)
+const SPELL_ENTITY_BASES = {
+  'Aurora Restauradora':'O Primeiro Amanhecer','Chama da Persistência':'O Primeiro Amanhecer','Último Amanhecer':'O Primeiro Amanhecer',
+  'Horizonte Dourado':'O Primeiro Amanhecer','Julgamento da Aurora':'O Primeiro Amanhecer','Amanhecer Eterno':'O Primeiro Amanhecer',
+  'Toque do Silêncio':'O Senhor do Silêncio','Descanso Misericordioso':'O Senhor do Silêncio','Último Suspiro':'O Senhor do Silêncio',
+  'Lanterna dos Mortos':'O Senhor do Silêncio','Balança da Justiça':'O Senhor do Silêncio','Caminho Final':'O Senhor do Silêncio',
+  'Ideia Materializada':'O Arquiteto Sem Face','Reescrever Estrutura':'O Arquiteto Sem Face','Biblioteca Perdida':'O Arquiteto Sem Face',
+  'Colapso Conceitual':'O Arquiteto Sem Face','Traço Arcano':'O Arquiteto Sem Face','Rascunho da Realidade':'O Arquiteto Sem Face',
+  'Acelerar':'O Guardião do Tempo','Vislumbre do Futuro':'O Guardião do Tempo','Eco Temporal':'O Guardião do Tempo',
+  'Relógio Quebrado':'O Guardião do Tempo','Segundo Roubado':'O Guardião do Tempo','Última Badalada':'O Guardião do Tempo',
+  'Fio Compartilhado':'A Tecelã','Nó do Destino':'A Tecelã','Presságio':'A Tecelã',
+  'Romper Fio':'A Tecelã','Teia Invisível':'A Tecelã','Tapeçaria Infinita':'A Tecelã',
+};
+// Versões evoluídas (Maior, Avançado, Elite, Divino...) compartilham o nome-base
+function getSpellEntity(nome){
+  for(const base in SPELL_ENTITY_BASES){
+    if(nome===base||nome.startsWith(base+' ')) return SPELL_ENTITY_BASES[base];
+  }
+  return null;
+}
 const ENTITY_ICONS = {Elemental:'🌿',Caótica:'🌀',Sagrada:'✨'};
 const RACE_IMAGES = {
   'Anão':      '/img/Ra%C3%A7as/An%C3%B5es.png',
@@ -1380,6 +1401,7 @@ function renderAprimoramentos(){
             candidatos.forEach(s=>{
               const isSel=maPicker.escolhidas.includes(s.nome);
               const limitReached=!isSel && maPicker.escolhidas.length>=2;
+              const entidade=s.tipo==='Magias Sagradas'?getSpellEntity(s.nome):null;
               html+=`<div class="sc${isSel?' selected':''}${limitReached?' disabled':''}"
                 style="${limitReached?'opacity:.45;cursor:not-allowed;':'cursor:pointer;'}"
                 onclick="${limitReached?'':`toggleMAPSpell('${s.nome.replace(/'/g,"\\'")}')`}">
@@ -1390,6 +1412,7 @@ function renderAprimoramentos(){
                   <span class="tag">${s.custo} PM</span>
                   ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
                 </div>
+                ${entidade?`<div style="font-size:.7em;color:var(--gold);margin-bottom:3px">Entidade: ${entidade}</div>`:''}
                 <div class="sc-desc">${s.descricao}</div>
               </div>`;
             });
@@ -2170,6 +2193,7 @@ function renderMagias(){
     const cc=CAT_COLORS[s.categoria]||'var(--border)';
     const langChk=canLearnSpell(s);
     const locked=!langChk.ok&&!sel;
+    const entidade=s.tipo==='Magias Sagradas'?getSpellEntity(s.nome):null;
     html+=`<div class="sc${inBase?' selected':inExtra?' extra-selected':''}${locked?' disabled':''}"
       style="${locked?'opacity:.45;cursor:not-allowed;border-color:var(--red)!important;':''}"
       onclick="toggleSpell('${s.nome.replace(/'/g,"\\'")}')">
@@ -2183,6 +2207,7 @@ function renderMagias(){
         ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
         ${isExtra?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
       </div>
+      ${entidade?`<div style="font-size:.7em;color:var(--gold);margin-bottom:3px">Entidade: ${entidade}</div>`:''}
       ${locked?`<div style="font-size:.7em;color:var(--red);margin-bottom:3px">🔒 Requer Idioma: ${langChk.missing.join(', ')}</div>`
               :s.prereq?`<div style="font-size:.7em;color:var(--gold);margin-bottom:3px">Pré-req: ${s.prereq}</div>`:''}
       <div class="sc-desc">${s.descricao}</div>
@@ -2293,6 +2318,7 @@ function renderMagiasAprimoradas(){
       const jaConhece = fam && (char.magias.includes(fam.nome)||char.magiasExtra.includes(fam.nome)) && !isEvo;
       const atMax = !isEvo && escolhidas.length>=3;
       const podeEvoluir = !isEvo && fam && !jaConhece && !atMax;
+      const entidade=s.tipo==='Magias Sagradas'?getSpellEntity(original):null;
 
       html+=`<div class="sc${isEvo?' selected':''}">
         <div class="sc-name">${original}${isEvo?` <span style="color:${profCor}">→ ${reg.evoluida}</span>`:''}</div>
@@ -2302,6 +2328,7 @@ function renderMagiasAprimoradas(){
           ${MAGIC_LEVELS.length?`<span class="tag" style="border-color:${getMagicLevelColor(s.nivel_magia)};color:${getMagicLevelColor(s.nivel_magia)}">${getMagicLevelName(s.nivel_magia)}</span>`:''}
           ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
         </div>
+        ${entidade?`<div style="font-size:.7em;color:var(--gold);margin-bottom:3px">Entidade: ${entidade}</div>`:''}
         <div class="sc-desc">${isEvo?fam.descricao:s.descricao}</div>
         ${isEvo
           ? `<button class="btn" style="font-size:.75em;margin-top:6px" onclick="toggleMagiaAprimorada('${original.replace(/'/g,"\\'")}')">↩ Reverter para "${original}"</button>`
@@ -2893,6 +2920,7 @@ function renderFicha(){
           const s=SPELLS.find(x=>x.nome===mn); if(!s) continue;
           const nc=ELEM_COLORS[s.natureza]||'var(--border)';
           const isAdditional=char.magiasExtra.includes(mn);
+          const entidade=s.tipo==='Magias Sagradas'?getSpellEntity(s.nome):null;
           html+=`<div class="ab">
             <div class="ab-name" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
               ${s.nome}
@@ -2903,6 +2931,7 @@ function renderFicha(){
               ${s.duracao?`<span class="tag">${s.duracao}</span>`:''}
               ${isAdditional?`<span class="tag" style="border-color:var(--purple);color:var(--purple)">adicional</span>`:''}
             </div>
+            ${entidade?`<div style="font-size:.7em;color:var(--gold);margin-bottom:2px">Entidade: ${entidade}</div>`:''}
             <div class="ab-desc">${s.descricao}</div>
           </div>`;
         }

@@ -1,6 +1,20 @@
 import { useState } from 'react'
 import { useGameData } from '../../hooks/useGameData'
+import { ENTITY_LORE } from '../Entidades/entidadesData'
 import styles from './Magias.module.css'
+
+// Mapeia o nome-base de cada Habilidade Divina à entidade que a concede
+const SPELL_ENTITY_BASES = Object.entries(ENTITY_LORE)
+  .filter(([, lore]) => lore.habilidades)
+  .flatMap(([entidade, lore]) => lore.habilidades.map(nome => [nome, entidade]))
+
+// Versões evoluídas (Maior, Avançado, Elite, Divino...) compartilham o nome-base
+function getSpellEntity(nome) {
+  for (const [base, entidade] of SPELL_ENTITY_BASES) {
+    if (nome === base || nome.startsWith(base + ' ')) return entidade
+  }
+  return null
+}
 
 const ELEM_COLORS = {
   Fogo:'#e05c3a', Água:'#4a9fc8', Terra:'#8a6a3a', Vento:'#7acfa0',
@@ -316,6 +330,7 @@ function MagiasConhecidas({ spells, magic_levels }) {
         {filtered.map(s => {
           const nc = ELEM_COLORS[s.natureza] || 'var(--border)'
           const ml = (magic_levels || []).find(l => l.nivel === s.nivel_magia)
+          const entidade = s.tipo === 'Magias Sagradas' ? getSpellEntity(s.nome) : null
           return (
             <div key={s.nome} className={styles.spellCard}>
               <div className={styles.spellName}>{s.nome}</div>
@@ -327,6 +342,7 @@ function MagiasConhecidas({ spells, magic_levels }) {
                 {s.alcance && <span className={styles.tag}>{s.alcance}</span>}
                 {s.duracao && <span className={styles.tag}>{s.duracao}</span>}
               </div>
+              {entidade && <div className={styles.spellPrereq}>Entidade: {entidade}</div>}
               {s.prereq && <div className={styles.spellPrereq}>Pré-req: {s.prereq}</div>}
               <p className={styles.spellDesc}>{s.descricao}</p>
             </div>
