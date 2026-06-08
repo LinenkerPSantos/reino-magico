@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reino Mágico — Gerador de Criaturas e NPCs</title>
+<style>
+:root{--bg:#0f0c0a;--bg2:#1a1510;--bg3:#241d14;--border:#4a3820;--gold:#c9a227;--gold-dim:#8a6d1a;--text:#e8d9b8;--text-dim:#9a8870;--card-bg:#1e1710;--card-border:#3a2e1e;--sel:#2a2008;--green:#4a9a5a;--red:#c44;--blue:#4a7fc4;--purple:#8a4ac4;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;min-height:100vh;background-image:radial-gradient(ellipse at center,#1a130a 0%,#080503 100%);}
+#app{max-width:1200px;margin:0 auto;padding:16px 16px 80px;}
+header{text-align:center;padding:16px 0 10px;font-size:1.5em;letter-spacing:2px;color:var(--gold);text-shadow:0 0 20px rgba(201,162,39,.4);border-bottom:2px solid var(--border);margin-bottom:8px;}
+header small{display:block;font-size:.46em;letter-spacing:1px;color:var(--text-dim);margin-top:8px;text-transform:none;}
+.intro{font-size:.78em;color:var(--text-dim);text-align:center;max-width:760px;margin:10px auto 20px;line-height:1.6;}
+.tabs{display:flex;justify-content:center;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{padding:7px 14px;border-radius:16px;border:1px solid var(--border);font-size:.78em;color:var(--text-dim);background:var(--bg2);cursor:pointer;transition:all .2s;font-family:inherit;}
+.tab:hover{border-color:var(--gold-dim);color:var(--text);}
+.tab.active{border-color:var(--gold);color:var(--gold);background:var(--sel);}
+.sec{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;}
+.sec.active{display:block;}
+h2{font-size:1.12em;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:14px;letter-spacing:1px;}
+h3{font-size:.92em;color:var(--gold);margin:16px 0 8px;}
+.hint{font-size:.74em;color:var(--text-dim);margin-bottom:12px;line-height:1.55;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media (max-width:760px){.grid2,.grid3,.grid4{grid-template-columns:1fr 1fr;}}
+.fg{margin-bottom:12px;}
+.fl{display:block;font-size:.8em;color:var(--text-dim);margin-bottom:4px;}
+.finput,select.finput,textarea.finput{width:100%;padding:8px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:inherit;font-size:.88em;}
+.finput:focus{outline:none;border-color:var(--gold);}
+textarea.finput{min-height:64px;resize:vertical;font-family:inherit;}
+select.finput option{background:var(--bg3);}
+.attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:6px;}
+@media (max-width:760px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+.attr-box{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:10px;text-align:center;}
+.attr-name{font-size:.72em;color:var(--text-dim);}
+.attr-abbr{font-size:.64em;color:var(--gold-dim);margin-bottom:4px;}
+.attr-input{width:60px;text-align:center;font-size:1.1em;color:var(--gold);background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:4px;font-family:inherit;}
+.derived-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px;}
+.derived-box{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:10px 12px;}
+.derived-lbl{font-size:.7em;color:var(--text-dim);}
+.derived-val{font-size:1.3em;color:var(--gold);font-weight:bold;}
+.derived-formula{font-size:.64em;color:var(--text-dim);font-style:italic;margin-top:2px;}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+@media (max-width:760px){.skills-grid{grid-template-columns:1fr;}}
+.skill-row{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:5px;background:var(--card-bg);border:1px solid var(--card-border);font-size:.8em;}
+.skill-name{flex:1;}
+.skill-attr{font-size:.66em;color:var(--gold-dim);}
+.skill-sel{padding:3px 6px;border-radius:4px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.72em;font-family:inherit;}
+.skill-tot{min-width:48px;text-align:right;color:var(--gold);font-size:.8em;font-weight:bold;}
+.elem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+@media (max-width:760px){.elem-grid{grid-template-columns:1fr 1fr;}}
+.elem-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;background:var(--card-bg);border:1px solid var(--card-border);font-size:.8em;}
+.elem-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.elem-name{flex:1;}
+.elem-sel{padding:3px 6px;border-radius:4px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.72em;font-family:inherit;}
+.chk-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:.88em;}
+.chk-row input{width:16px;height:16px;}
+#magiaFields{display:none;}
+#magiaFields.show{display:block;}
+.actions-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.action-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:12px;}
+.action-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.action-title{font-size:.82em;color:var(--gold);font-weight:bold;}
+.action-rm{padding:3px 9px;border-radius:5px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:.7em;font-family:inherit;}
+.action-rm:hover{background:var(--red);color:#fff;}
+.btn{padding:9px 18px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-family:inherit;font-size:.86em;transition:all .2s;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn.primary{background:var(--gold-dim);border-color:var(--gold);color:#1a1000;font-weight:bold;}
+.btn.primary:hover{background:var(--gold);}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;margin-bottom:12px;}
+#resumoBox{width:100%;min-height:440px;font-family:'Courier New',monospace;font-size:.78em;line-height:1.55;white-space:pre-wrap;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:14px;resize:vertical;}
+#resumoBox:focus{outline:none;border-color:var(--gold);}
+.copy-msg{font-size:.76em;color:var(--green);}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-dim);}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>⚔ Gerador de Criaturas &amp; NPCs<small>Reino Mágico — ferramenta de bestiário, inspirada em Pathfinder, Tormenta20 e Ordem Paranormal</small></header>
+  <p class="intro">Preencha as seções abaixo para montar uma criatura ou NPC de combate. Os campos são genéricos o bastante para qualquer tipo de monstro — ajuste à sua mesa. No final, a aba <strong>Resumo</strong> consolida tudo em um bloco de texto único, pronto para copiar e colar na sua planilha de bestiário e decidir o que será promovido ao livro de monstros.</p>
+  <div class="tabs" id="tabs"></div>
+  <div id="sections"></div>
+</div>
+<script>
+// ---------- Dados base do sistema (Reino Mágico) ----------
+const ATTRS = [
+  {k:'FOR', n:'Força'},
+  {k:'DES', n:'Destreza'},
+  {k:'VIT', n:'Vitalidade'},
+  {k:'INT', n:'Intelecto'},
+  {k:'PRE', n:'Presença'},
+];
+
+const SKILLS = [
+  {n:'Atletismo', a:'FOR'},{n:'Carisma', a:'PRE'},{n:'Enganação', a:'PRE'},
+  {n:'Foco', a:'INT'},{n:'Furtividade', a:'DES'},{n:'História', a:'INT'},
+  {n:'Iniciativa', a:'DES'},{n:'Intimidação', a:'PRE'},{n:'Investigação', a:'INT'},
+  {n:'Luta', a:'FOR'},{n:'Percepção', a:'PRE'},{n:'Persuasão', a:'INT'},
+  {n:'Pontaria', a:'DES'},{n:'Prestidigitação', a:'DES'},{n:'Reflexo', a:'DES'},
+  {n:'Sobrevivência', a:'VIT'},{n:'Tenacidade', a:'VIT'},{n:'Vontade', a:'INT'},
+];
+
+const SKILL_LEVELS = [
+  {l:'— Sem treino', short:'Sem treino', b:0},
+  {l:'Básico (+2)', short:'Básico', b:2},
+  {l:'Intermediário (+5)', short:'Intermediário', b:5},
+  {l:'Avançado (+10)', short:'Avançado', b:10},
+];
+
+const ELEMENTOS = [
+  {n:'Terra', c:'#8a6a3a'},{n:'Fogo', c:'#e05c3a'},{n:'Água', c:'#4a9fc8'},
+  {n:'Vento', c:'#7acfa0'},{n:'Trovão', c:'#c9c227'},{n:'Sagrado', c:'#c9a227'},
+  {n:'Caótico', c:'#cc4444'},{n:'Arcano', c:'#9a5ed4'},{n:'Negativo', c:'#777777'},
+];
+
+const RESIST_OPCOES = [
+  {v:'normal', l:'Normal'},
+  {v:'resistente', l:'Resistente (½ dano)'},
+  {v:'vulneravel', l:'Vulnerável (×2 dano)'},
+  {v:'imune', l:'Imune'},
+];
+
+const NATUREZAS = [
+  'Aberração','Bestial','Celestial','Constructo','Dragão','Elemental','Espírito',
+  'Fada / Feérico','Demônio / Caótico','Gigante','Humanoide','Monstruosidade',
+  'Limo','Planta','Morto-Vivo','Paranormal / Anômalo','Outro (descrever no conceito)',
+];
+
+const TAMANHOS = ['Minúsculo','Pequeno','Médio','Grande','Enorme','Colossal'];
+
+const PAPEIS = [
+  'Brutamonte (dano corpo a corpo / tanque)',
+  'Atirador (dano à distância)',
+  'Conjurador (magias ofensivas ou de suporte)',
+  'Líder (comanda e fortalece aliados)',
+  'Furtivo (emboscadas, mobilidade, dano único)',
+  'Suporte / Curandeiro',
+  'Controlador (debuffs, controle de área)',
+  'Defensor (protege aliados, absorve dano)',
+];
+
+const TIPOS_CONJURACAO = [
+  'Arcana','Divina / Sagrada','Natural / Ancestral','Pacto / Ocultismo',
+  'Caótica / Amaldiçoada','Psiônica / Paranormal',
+];
+
+const MAGIC_LEVELS = [
+  {nivel:1, nome:'Truques'},{nivel:2, nome:'Básicas'},{nivel:3, nome:'Menor'},
+  {nivel:4, nome:'Elite'},{nivel:5, nome:'Maior'},{nivel:6, nome:'Avançado'},
+  {nivel:7, nome:'Lendário'},{nivel:8, nome:'Divino'},{nivel:9, nome:'Secreto'},
+];
+
+const TIPOS_ACAO = ['Corpo a Corpo','À Distância','Mágico','Especial / Passiva','Reação'];
+
+const TABS = [
+  {k:'identidade', l:'① Identidade'},
+  {k:'atributos',  l:'② Atributos & Perícias'},
+  {k:'defesas',    l:'③ CD & Resistências'},
+  {k:'magias',     l:'④ Magias'},
+  {k:'acoes',      l:'⑤ Ações de Combate'},
+  {k:'resumo',     l:'⑥ Resumo Final'},
+];
+
+let acoes = [];
+
+// ---------- Helpers ----------
+function $(id){ return document.getElementById(id); }
+function num(id){ const el=$(id); return el ? (parseInt(el.value)||0) : 0; }
+function val(id){ const el=$(id); return el ? el.value : ''; }
+function fmt(n){ return (n>=0?'+':'')+n; }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ---------- Construção das seções ----------
+function buildSections(){
+  const secIdentidade = `
+  <div class="sec" data-sec="identidade">
+    <h2>① Identidade da Criatura</h2>
+    <p class="hint">Dados básicos de identificação. A "Natureza" reúne tipos clássicos de Pathfinder/Tormenta20 e entidades de Ordem Paranormal — escolha a que mais combina ou descreva algo próprio no conceito.</p>
+    <div class="grid2">
+      <div class="fg"><label class="fl">Nome da Criatura / NPC</label><input class="finput" id="f-nome" placeholder="Ex: Espreitador das Brumas"></div>
+      <div class="fg"><label class="fl">Conceito rápido (uma frase)</label><input class="finput" id="f-conceito" placeholder="Ex: Predador feérico que se camufla em névoa"></div>
+    </div>
+    <div class="grid4">
+      <div class="fg"><label class="fl">Natureza / Tipo</label>
+        <select class="finput" id="f-natureza">
+          <option value="">— selecione —</option>
+          ${NATUREZAS.map(n=>`<option>${n}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Tamanho</label>
+        <select class="finput" id="f-tamanho">${TAMANHOS.map(t=>`<option ${t==='Médio'?'selected':''}>${t}</option>`).join('')}</select>
+      </div>
+      <div class="fg"><label class="fl">Papel de Combate</label>
+        <select class="finput" id="f-papel"><option value="">— selecione —</option>${PAPEIS.map(p=>`<option>${p}</option>`).join('')}</select>
+      </div>
+      <div class="fg"><label class="fl">Nível / ND (Desafio)</label><input class="finput" id="f-nivel" type="number" min="1" max="20" value="1"></div>
+    </div>
+    <div class="fg"><label class="fl">Descrição / Comportamento em combate</label><textarea class="finput" id="f-descricao" placeholder="Aparência, motivações, táticas preferidas, fraquezas conhecidas..."></textarea></div>
+  </div>`;
+
+  const secAtributos = `
+  <div class="sec" data-sec="atributos">
+    <h2>② Atributos, Perícias e Estatísticas Derivadas</h2>
+    <p class="hint">Defina os modificadores dos cinco atributos do sistema (Força, Destreza, Vitalidade, Intelecto, Presença) e a Proficiência da criatura. As estatísticas abaixo são <strong>sugestões automáticas</strong>, calculadas com as mesmas fórmulas-base do Reino Mágico (10 + atributo + Proficiência) — sinta-se livre para ajustar os valores finais conforme o ND desejado.</p>
+    <div class="attr-grid">
+      ${ATTRS.map(a=>`
+        <div class="attr-box">
+          <div class="attr-name">${a.n}</div>
+          <div class="attr-abbr">${a.k}</div>
+          <input class="attr-input" id="attr-${a.k}" type="number" value="0" step="1">
+        </div>`).join('')}
+      <div class="attr-box">
+        <div class="attr-name">Proficiência</div>
+        <div class="attr-abbr">PROF</div>
+        <input class="attr-input" id="f-prof" type="number" value="2" step="1" min="0">
+      </div>
+    </div>
+    <div class="derived-grid" id="derivedBox"></div>
+
+    <h3>Perícias</h3>
+    <p class="hint">Marque o grau de treino em cada perícia. O total exibido soma o modificador do atributo associado + o bônus de treino + a Proficiência (quando treinada).</p>
+    <div class="skills-grid" id="skillsBox"></div>
+  </div>`;
+
+  const secDefesas = `
+  <div class="sec" data-sec="defesas">
+    <h2>③ CD, Salvaguardas e Resistências Elementais</h2>
+    <div class="grid2">
+      <div class="fg">
+        <label class="fl">Atributo-base da CD de habilidades especiais da criatura</label>
+        <select class="finput" id="f-cdAtributo">${ATTRS.map(a=>`<option value="${a.k}">${a.n} (${a.k})</option>`).join('')}</select>
+        <p class="hint" style="margin:6px 0 0">CD para que personagens resistam a ataques especiais, venenos, medo, alterações de estado etc. Fórmula sugerida: <strong>8 + atributo + Proficiência</strong> (mesma lógica da CD de Conjuração do sistema).</p>
+      </div>
+      <div class="derived-box" style="align-self:start">
+        <div class="derived-lbl">CD de Resistência da Criatura</div>
+        <div class="derived-val" id="cdResistVal">8</div>
+        <div class="derived-formula" id="cdResistFormula">8 + atributo + Proficiência</div>
+      </div>
+    </div>
+
+    <h3>Bônus extra de Salvaguardas (opcional)</h3>
+    <p class="hint">Use para representar resiliências específicas, além do bônus padrão de atributo + Proficiência (ex.: um morto-vivo com bônus extra em Tenacidade contra medo).</p>
+    <div class="grid3">
+      <div class="fg"><label class="fl">Reflexo (DES) — bônus extra</label><input class="finput" id="sv-Reflexo" type="number" value="0"></div>
+      <div class="fg"><label class="fl">Vontade (INT) — bônus extra</label><input class="finput" id="sv-Vontade" type="number" value="0"></div>
+      <div class="fg"><label class="fl">Tenacidade (VIT) — bônus extra</label><input class="finput" id="sv-Tenacidade" type="number" value="0"></div>
+    </div>
+
+    <h3>Resistências e Vulnerabilidades a Elementos</h3>
+    <p class="hint">Para cada um dos Cinco Pilares (mais o elemento Negativo), defina como a criatura reage ao dano daquela natureza elemental.</p>
+    <div class="elem-grid" id="elemBox"></div>
+  </div>`;
+
+  const secMagias = `
+  <div class="sec" data-sec="magias">
+    <h2>④ Base de Conjuração (opcional)</h2>
+    <div class="chk-row"><input type="checkbox" id="f-conjuradora"><label for="f-conjuradora">Esta criatura conjura magias ou usa habilidades sobrenaturais baseadas em Mana</label></div>
+    <div id="magiaFields">
+      <div class="grid2">
+        <div class="fg"><label class="fl">Tipo de Conjuração</label>
+          <select class="finput" id="f-tipoConjuracao"><option value="">— selecione —</option>${TIPOS_CONJURACAO.map(t=>`<option>${t}</option>`).join('')}</select>
+        </div>
+        <div class="fg"><label class="fl">Atributo de Conjuração</label>
+          <select class="finput" id="f-atribConjuracao"><option value="INT">Intelecto (INT) — conjurador arcano</option><option value="PRE">Presença (PRE) — conjurador social/espiritual</option></select>
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="fg"><label class="fl">Nível Máximo de Magia</label>
+          <select class="finput" id="f-nivelMagiaMax">${MAGIC_LEVELS.map(m=>`<option value="${m.nivel}">${m.nivel} — ${m.nome}</option>`).join('')}</select>
+        </div>
+        <div class="fg"><label class="fl">Reserva de Mana (PM)</label><input class="finput" id="f-mana" type="number" value="0"></div>
+        <div class="fg"><label class="fl">Elemento / Natureza preferida</label>
+          <select class="finput" id="f-elementoPreferido"><option value="">— nenhum —</option>${ELEMENTOS.map(e=>`<option>${e.n}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="derived-box" style="max-width:300px;margin-bottom:12px;">
+        <div class="derived-lbl">CD de Conjuração</div>
+        <div class="derived-val" id="cdConjVal">8</div>
+        <div class="derived-formula" id="cdConjFormula">8 + atributo + Proficiência</div>
+      </div>
+      <div class="fg"><label class="fl">Magias / Habilidades sobrenaturais conhecidas</label>
+        <textarea class="finput" id="f-magiasConhecidas" placeholder="Liste magias, truques ou habilidades sobrenaturais que a criatura pode usar (uma por linha). Ex:&#10;Bola de Fogo Menor — 4 PM&#10;Toque Gélido (truque)"></textarea>
+      </div>
+    </div>
+  </div>`;
+
+  const secAcoes = `
+  <div class="sec" data-sec="acoes">
+    <h2>⑤ Ações de Combate</h2>
+    <p class="hint">Adicione ataques, habilidades especiais e reações. Cada entrada vira um bloco no resumo final, pronto para virar uma linha de bestiário (nome, tipo, bônus/CD, dano ou efeito, alcance e descrição).</p>
+    <div class="actions-list" id="actionsList"></div>
+    <button class="btn" onclick="addAction()">+ Adicionar Ação</button>
+  </div>`;
+
+  const secResumo = `
+  <div class="sec" data-sec="resumo">
+    <h2>⑥ Resumo Consolidado</h2>
+    <p class="hint">Bloco de texto com todos os dados preenchidos — copie e cole na sua planilha de bestiário para decidir o que será promovido ao livro de monstros. O texto é editável: ajuste manualmente o que quiser antes de copiar.</p>
+    <div class="btn-row">
+      <button class="btn primary" onclick="gerarResumo()">🔄 Atualizar Resumo</button>
+      <button class="btn" onclick="copiarResumo()">📋 Copiar para Área de Transferência</button>
+      <button class="btn" onclick="limparTudo()">🗑 Limpar Tudo</button>
+      <span class="copy-msg" id="copyMsg"></span>
+    </div>
+    <textarea id="resumoBox" spellcheck="false"></textarea>
+  </div>`;
+
+  $('sections').innerHTML = secIdentidade + secAtributos + secDefesas + secMagias + secAcoes + secResumo;
+}
+
+// ---------- Abas ----------
+function showTab(key){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.k===key));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('active', s.dataset.sec===key));
+  if(key==='resumo') gerarResumo();
+}
+
+// ---------- Atributos / derivados ----------
+function renderDerived(){
+  const FOR=num('attr-FOR'), DES=num('attr-DES'), VIT=num('attr-VIT'), PRE=num('attr-PRE');
+  const prof = num('f-prof');
+  const vida = 10 + VIT + prof*2;
+  const defesa = 10 + DES + prof;
+  const iniciativa = DES + prof;
+  const mana = PRE*2 + prof*2;
+  $('derivedBox').innerHTML = `
+    <div class="derived-box"><div class="derived-lbl">❤ Vida (sugestão)</div><div class="derived-val">${vida}</div><div class="derived-formula">10 + Vitalidade (${fmt(VIT)}) + Proficiência×2 (+${prof*2})</div></div>
+    <div class="derived-box"><div class="derived-lbl">🛡 Defesa (sugestão)</div><div class="derived-val">${defesa}</div><div class="derived-formula">10 + Destreza (${fmt(DES)}) + Proficiência (+${prof})</div></div>
+    <div class="derived-box"><div class="derived-lbl">⚡ Iniciativa (sugestão)</div><div class="derived-val">${fmt(iniciativa)}</div><div class="derived-formula">Destreza (${fmt(DES)}) + Proficiência (+${prof})</div></div>
+    <div class="derived-box"><div class="derived-lbl">🔮 Mana / PM (se aplicável)</div><div class="derived-val">${mana}</div><div class="derived-formula">Presença×2 (${PRE*2}) + Proficiência×2 (+${prof*2})</div></div>
+  `;
+  renderCD();
+}
+
+function renderCD(){
+  const prof = num('f-prof');
+
+  const cdAttr = val('f-cdAtributo') || 'FOR';
+  const cdAttrName = (ATTRS.find(a=>a.k===cdAttr)||{}).n || '—';
+  const cdAttrMod = num('attr-'+cdAttr);
+  const cdResist = 8 + cdAttrMod + prof;
+  if($('cdResistVal')){
+    $('cdResistVal').textContent = cdResist;
+    $('cdResistFormula').textContent = `8 + ${cdAttrName} (${fmt(cdAttrMod)}) + Proficiência (+${prof})`;
+  }
+
+  const conjAttr = val('f-atribConjuracao') || 'INT';
+  const conjAttrName = conjAttr==='PRE' ? 'Presença' : 'Intelecto';
+  const conjAttrMod = num('attr-'+conjAttr);
+  const cdConj = 8 + conjAttrMod + prof;
+  if($('cdConjVal')){
+    $('cdConjVal').textContent = cdConj;
+    $('cdConjFormula').textContent = `8 + ${conjAttrName} (${fmt(conjAttrMod)}) + Proficiência (+${prof})`;
+  }
+}
+
+// ---------- Perícias ----------
+function buildSkillsBox(){
+  $('skillsBox').innerHTML = SKILLS.map(sk=>`
+    <div class="skill-row">
+      <span class="skill-name">${sk.n} <span class="skill-attr">(${sk.a})</span></span>
+      <select class="skill-sel" id="sk-${sk.n}" onchange="updateSkillTotals()">
+        ${SKILL_LEVELS.map((lv,i)=>`<option value="${i}">${lv.l}</option>`).join('')}
+      </select>
+      <span class="skill-tot" id="sk-tot-${sk.n}"></span>
+    </div>`).join('');
+  updateSkillTotals();
+}
+function updateSkillTotals(){
+  const prof = num('f-prof');
+  SKILLS.forEach(sk=>{
+    const lvIdx = parseInt(val('sk-'+sk.n))||0;
+    const bonus = SKILL_LEVELS[lvIdx].b;
+    const attrMod = num('attr-'+sk.a);
+    const total = attrMod + bonus + (lvIdx>0 ? prof : 0);
+    const elTot = $('sk-tot-'+sk.n);
+    if(elTot) elTot.textContent = fmt(total);
+  });
+}
+
+// ---------- Elementos ----------
+function buildElemBox(){
+  $('elemBox').innerHTML = ELEMENTOS.map(e=>`
+    <div class="elem-row">
+      <span class="elem-dot" style="background:${e.c}"></span>
+      <span class="elem-name">${e.n}</span>
+      <select class="elem-sel" id="el-${e.n}">
+        ${RESIST_OPCOES.map(r=>`<option value="${r.v}">${r.l}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+
+// ---------- Conjuração ----------
+function toggleConjuradora(){
+  const show = $('f-conjuradora').checked;
+  $('magiaFields').classList.toggle('show', show);
+}
+
+// ---------- Ações de combate ----------
+function addAction(){
+  acoes.push({nome:'', tipo:'Corpo a Corpo', bonus:'', dano:'', alcance:'', desc:''});
+  renderActions();
+}
+function removeAction(i){
+  acoes.splice(i,1);
+  renderActions();
+}
+function updateAction(i, field, value){
+  acoes[i][field] = value;
+}
+function renderActions(){
+  const box = $('actionsList');
+  if(acoes.length===0){
+    box.innerHTML = `<p class="hint" style="margin:0">Nenhuma ação adicionada ainda. Clique em "+ Adicionar Ação" para criar ataques, habilidades especiais ou reações.</p>`;
+    return;
+  }
+  box.innerHTML = acoes.map((a,i)=>`
+    <div class="action-card">
+      <div class="action-head">
+        <span class="action-title">Ação #${i+1}</span>
+        <button class="action-rm" onclick="removeAction(${i})">Remover</button>
+      </div>
+      <div class="grid2">
+        <div class="fg"><label class="fl">Nome</label><input class="finput" value="${esc(a.nome)}" oninput="updateAction(${i},'nome',this.value)" placeholder="Ex: Garras Sombrias"></div>
+        <div class="fg"><label class="fl">Tipo</label>
+          <select class="finput" onchange="updateAction(${i},'tipo',this.value)">
+            ${TIPOS_ACAO.map(t=>`<option ${a.tipo===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="fg"><label class="fl">Bônus de Ataque / CD</label><input class="finput" value="${esc(a.bonus)}" oninput="updateAction(${i},'bonus',this.value)" placeholder="Ex: +7 ou CD 16"></div>
+        <div class="fg"><label class="fl">Dano / Efeito</label><input class="finput" value="${esc(a.dano)}" oninput="updateAction(${i},'dano',this.value)" placeholder="Ex: 2d8+4 cortante"></div>
+        <div class="fg"><label class="fl">Alcance</label><input class="finput" value="${esc(a.alcance)}" oninput="updateAction(${i},'alcance',this.value)" placeholder="Ex: corpo a corpo / 18m"></div>
+      </div>
+      <div class="fg"><label class="fl">Descrição / Regras especiais</label><textarea class="finput" oninput="updateAction(${i},'desc',this.value)" placeholder="Efeitos adicionais, condições impostas, restrições de uso...">${esc(a.desc)}</textarea></div>
+    </div>`).join('');
+}
+
+// ---------- Resumo consolidado ----------
+function gerarResumo(){
+  const nome = val('f-nome') || '(sem nome)';
+  const conceito = val('f-conceito');
+  const natureza = val('f-natureza') || '—';
+  const tamanho = val('f-tamanho');
+  const papel = val('f-papel') || '—';
+  const nivel = val('f-nivel');
+  const descricao = val('f-descricao');
+
+  const FOR=num('attr-FOR'), DES=num('attr-DES'), VIT=num('attr-VIT'), INT=num('attr-INT'), PRE=num('attr-PRE');
+  const prof = num('f-prof');
+  const vida = 10+VIT+prof*2;
+  const defesa = 10+DES+prof;
+  const iniciativa = DES+prof;
+
+  const cdAttr = val('f-cdAtributo') || 'FOR';
+  const cdAttrName = (ATTRS.find(a=>a.k===cdAttr)||{}).n || '—';
+  const cdResist = 8+num('attr-'+cdAttr)+prof;
+
+  const svExtra = {
+    Reflexo: num('sv-Reflexo'), Vontade: num('sv-Vontade'), Tenacidade: num('sv-Tenacidade'),
+  };
+
+  let txt = '';
+  txt += `===== ${nome.toUpperCase()} =====\n`;
+  if(conceito) txt += `Conceito: ${conceito}\n`;
+  txt += `Natureza: ${natureza}  |  Tamanho: ${tamanho}  |  Papel: ${papel}  |  Nível/ND: ${nivel}\n`;
+  if(descricao) txt += `\nDescrição:\n${descricao}\n`;
+
+  txt += `\n--- Atributos ---\n`;
+  txt += `FOR ${fmt(FOR)}   DES ${fmt(DES)}   VIT ${fmt(VIT)}   INT ${fmt(INT)}   PRE ${fmt(PRE)}   |   Proficiência +${prof}\n`;
+
+  txt += `\n--- Estatísticas Derivadas (sugestão — ajuste conforme o ND) ---\n`;
+  txt += `Vida: ${vida}  (10 + Vitalidade + Proficiência×2)\n`;
+  txt += `Defesa: ${defesa}  (10 + Destreza + Proficiência)\n`;
+  txt += `Iniciativa: ${fmt(iniciativa)}  (Destreza + Proficiência)\n`;
+  txt += `CD de Resistência da Criatura: ${cdResist}  (8 + ${cdAttrName} + Proficiência)\n`;
+
+  txt += `\n--- Salvaguardas (bônus extra além de atributo + Proficiência) ---\n`;
+  txt += `Reflexo +${svExtra.Reflexo}   Vontade +${svExtra.Vontade}   Tenacidade +${svExtra.Tenacidade}\n`;
+
+  const periciasTxt = SKILLS.map(sk=>{
+    const lvIdx = parseInt(val('sk-'+sk.n))||0;
+    if(lvIdx===0) return null;
+    const bonus = SKILL_LEVELS[lvIdx].b;
+    const attrMod = num('attr-'+sk.a);
+    const total = attrMod+bonus+prof;
+    return `${sk.n} (${sk.a}) — ${SKILL_LEVELS[lvIdx].short}: ${fmt(total)}`;
+  }).filter(Boolean);
+  txt += `\n--- Perícias Treinadas ---\n`;
+  txt += periciasTxt.length ? periciasTxt.join('\n')+'\n' : '(nenhuma perícia treinada)\n';
+
+  const resistTxt = ELEMENTOS.map(e=>{
+    const v = val('el-'+e.n);
+    if(!v || v==='normal') return null;
+    const opt = RESIST_OPCOES.find(o=>o.v===v);
+    return `${e.n}: ${opt.l}`;
+  }).filter(Boolean);
+  txt += `\n--- Resistências / Vulnerabilidades Elementais ---\n`;
+  txt += resistTxt.length ? resistTxt.join(' | ')+'\n' : '(reage normalmente a todos os elementos)\n';
+
+  const conjuradora = $('f-conjuradora').checked;
+  txt += `\n--- Conjuração ---\n`;
+  if(conjuradora){
+    const tipoConj = val('f-tipoConjuracao')||'—';
+    const atribConj = val('f-atribConjuracao');
+    const atribConjName = atribConj==='PRE' ? 'Presença' : 'Intelecto';
+    const nivelMagiaMax = val('f-nivelMagiaMax');
+    const ml = MAGIC_LEVELS.find(m=>String(m.nivel)===String(nivelMagiaMax));
+    const mana = val('f-mana') || '0';
+    const elementoPref = val('f-elementoPreferido')||'—';
+    const cdConj = 8+num('attr-'+atribConj)+prof;
+    const magias = val('f-magiasConhecidas');
+    txt += `Tipo: ${tipoConj}  |  Atributo: ${atribConjName}  |  Nível Máx.: ${ml ? ml.nivel+' — '+ml.nome : nivelMagiaMax}\n`;
+    txt += `Mana/PM: ${mana}  |  CD de Conjuração: ${cdConj}  |  Elemento preferido: ${elementoPref}\n`;
+    if(magias) txt += `Magias/Habilidades conhecidas:\n${magias}\n`;
+  } else {
+    txt += `Esta criatura não conjura magias.\n`;
+  }
+
+  txt += `\n--- Ações de Combate ---\n`;
+  if(acoes.length===0){
+    txt += `(nenhuma ação cadastrada)\n`;
+  } else {
+    acoes.forEach((a,i)=>{
+      txt += `${i+1}. ${a.nome||'(sem nome)'} — ${a.tipo}\n`;
+      const linha2 = [];
+      if(a.bonus)   linha2.push(`Bônus/CD: ${a.bonus}`);
+      if(a.dano)    linha2.push(`Dano/Efeito: ${a.dano}`);
+      if(a.alcance) linha2.push(`Alcance: ${a.alcance}`);
+      if(linha2.length) txt += `   ${linha2.join('  |  ')}\n`;
+      if(a.desc) txt += `   ${a.desc}\n`;
+    });
+  }
+
+  txt += `\n=====================================\n`;
+  txt += `Gerado pelo Gerador de Criaturas & NPCs — Reino Mágico\n`;
+
+  $('resumoBox').value = txt;
+}
+
+function copiarResumo(){
+  const box = $('resumoBox');
+  box.select();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(box.value).then(()=>showCopyMsg('Copiado!')).catch(()=>{
+      document.execCommand('copy');
+      showCopyMsg('Copiado!');
+    });
+  } else {
+    document.execCommand('copy');
+    showCopyMsg('Copiado!');
+  }
+}
+function showCopyMsg(msg){
+  const el = $('copyMsg');
+  el.textContent = msg;
+  setTimeout(()=>{ el.textContent=''; }, 2000);
+}
+
+function limparTudo(){
+  if(!confirm('Limpar todos os campos preenchidos?')) return;
+  ['f-nome','f-conceito','f-descricao','f-magiasConhecidas'].forEach(id=>{ if($(id)) $(id).value=''; });
+  ATTRS.forEach(a=>{ $('attr-'+a.k).value = 0; });
+  $('f-prof').value = 2;
+  $('f-nivel').value = 1;
+  $('f-natureza').selectedIndex = 0;
+  $('f-tamanho').value = 'Médio';
+  $('f-papel').selectedIndex = 0;
+  $('f-cdAtributo').selectedIndex = 0;
+  ['sv-Reflexo','sv-Vontade','sv-Tenacidade'].forEach(id=>{ $(id).value = 0; });
+  $('f-conjuradora').checked = false;
+  toggleConjuradora();
+  $('f-tipoConjuracao').selectedIndex = 0;
+  $('f-atribConjuracao').selectedIndex = 0;
+  $('f-nivelMagiaMax').selectedIndex = 0;
+  $('f-mana').value = 0;
+  $('f-elementoPreferido').selectedIndex = 0;
+  acoes = [];
+  renderActions();
+  buildSkillsBox();
+  buildElemBox();
+  renderDerived();
+  $('resumoBox').value = '';
+}
+
+// ---------- Inicialização ----------
+function attachGlobalListeners(){
+  ['FOR','DES','VIT','INT','PRE'].forEach(k=>{
+    $('attr-'+k).addEventListener('input', ()=>{ renderDerived(); updateSkillTotals(); });
+  });
+  $('f-prof').addEventListener('input', ()=>{ renderDerived(); updateSkillTotals(); });
+  $('f-cdAtributo').addEventListener('change', renderCD);
+  $('f-atribConjuracao').addEventListener('change', renderCD);
+  $('f-conjuradora').addEventListener('change', toggleConjuradora);
+}
+
+function init(){
+  $('tabs').innerHTML = TABS.map(t=>`<button class="tab" data-k="${t.k}" onclick="showTab('${t.k}')">${t.l}</button>`).join('');
+  buildSections();
+  buildSkillsBox();
+  buildElemBox();
+  renderActions();
+  attachGlobalListeners();
+  renderDerived();
+  showTab('identidade');
+}
+init();
+</script>
+</body>
+</html>

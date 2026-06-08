@@ -247,17 +247,6 @@ function Cap1() {
 
       <div className={styles.sec}>
         <h3 className={styles.secTitle}>Perícias</h3>
-        <p className={styles.secText}>As perícias representam o refinamento das 
-          habilidades de um personagem — não apenas o que ele é capaz de fazer, 
-          mas o quão bem ele executa essas ações. 
-          Elas são o resultado de treino, experiência e especialização 
-          ao longo da jornada.
-          Sempre que um personagem realiza um teste ou ataque, 
-          ele <strong>rola um número de dados de vinte lados (d20) igual ao valor do atributo</strong> 
-          relacionado à ação. Entre os resultados obtidos, 
-          utiliza-se o maior valor, representando o melhor desempenho possível
-           dentro de sua capacidade.</p>
-
            <p className={styles.secText}>Na criação do personagem, 
             as perícias iniciais são definidas pela classe. 
             Além delas, o jogador pode <strong>escolher 2 perícias adicionais</strong>, 
