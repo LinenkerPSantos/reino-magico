@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://reino-magico.onrender.com/api/:path*" },
+    { "source": "/img/:path*", "destination": "https://reino-magico.onrender.com/img/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
