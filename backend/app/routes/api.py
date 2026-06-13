@@ -49,11 +49,21 @@ async def get_spells():
     return spells
 
 
+@router.get("/bestiary")
+async def get_bestiary():
+    conn = get_db()
+    creatures = [dict(r) for r in conn.execute(
+        "SELECT * FROM bestiary ORDER BY nome"
+    ).fetchall()]
+    conn.close()
+    return creatures
+
+
 @router.get("/status")
 async def get_status():
     conn = get_db()
     counts = {}
-    for tbl in ["spells", "talents", "classes", "races", "skills", "kits", "magic_levels"]:
+    for tbl in ["spells", "talents", "classes", "races", "skills", "kits", "magic_levels", "bestiary"]:
         counts[tbl] = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
     conn.close()
     return {"status": "online", "counts": counts}

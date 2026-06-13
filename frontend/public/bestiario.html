@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚔ Reino Mágico — Bestiário</title>
+<style>
+:root{--bg:#0f0c0a;--bg2:#1a1510;--bg3:#241d14;--border:#4a3820;--gold:#c9a227;--gold-dim:#8a6d1a;--text:#e8d9b8;--text-dim:#9a8870;--card-bg:#1e1710;--card-border:#3a2e1e;--sel:#2a2008;--green:#4a9a5a;--red:#c44;--blue:#4a7fc4;--purple:#8a4ac4;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;min-height:100vh;background-image:radial-gradient(ellipse at center,#1a130a 0%,#080503 100%);}
+#app{max-width:1200px;margin:0 auto;padding:16px;}
+header{text-align:center;padding:16px 0 8px;font-size:1.6em;letter-spacing:3px;color:var(--gold);text-shadow:0 0 20px rgba(201,162,39,.4);border-bottom:2px solid var(--border);margin-bottom:16px;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-dim);}
+
+/* ── Tela de loading / erro ─────────────────────────── */
+#db-loading{position:fixed;inset:0;background:#0f0c0a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;}
+#db-error{position:fixed;inset:0;background:#0f0c0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9998;gap:12px;padding:20px;text-align:center;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:40px;height:40px;border:3px solid #4a3820;border-top-color:#c9a227;border-radius:50%;animation:spin .8s linear infinite;}
+
+/* ── Tela de apresentação ───────────────────────────── */
+.intro{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;}
+.intro-title{font-size:1.4em;color:var(--gold);letter-spacing:2px;}
+.intro-sub{color:var(--text-dim);font-size:.85em;letter-spacing:1px;}
+.intro-map{max-width:100%;border:2px solid var(--border);border-radius:10px;box-shadow:0 0 30px rgba(0,0,0,.6);}
+.intro-text{max-width:760px;text-align:left;line-height:1.7;font-size:.92em;}
+.intro-text p{margin-bottom:10px;}
+.intro-sign{text-align:right;color:var(--gold-dim);font-style:italic;margin-top:6px;}
+.intro-divider{width:120px;height:2px;background:var(--gold-dim);margin:8px auto;}
+
+/* ── Filtros ─────────────────────────────────────────── */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;align-items:center;}
+.fl{font-size:.75em;color:var(--text-dim);white-space:nowrap;}
+.finput, .fselect{padding:6px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:inherit;font-size:.82em;}
+.finput{width:200px;}
+.finput:focus, .fselect:focus{outline:none;border-color:var(--gold);}
+.fselect option{background:var(--bg2);}
+.results-count{font-size:.78em;color:var(--text-dim);margin-bottom:10px;}
+
+/* ── Layout catálogo ─────────────────────────────────── */
+.layout{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start;}
+@media (max-width:860px){.layout{grid-template-columns:1fr;}}
+.creatureList{display:flex;flex-direction:column;gap:6px;max-height:78vh;overflow-y:auto;padding-right:4px;}
+.creatureItem{display:flex;gap:10px;align-items:center;text-align:left;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:8px;cursor:pointer;transition:all .15s;font-family:inherit;color:var(--text);}
+.creatureItem:hover{border-color:var(--gold-dim);background:#221c12;}
+.creatureItem.active{border-color:var(--gold);background:var(--sel);}
+.creatureThumb{width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--card-border);flex-shrink:0;background:var(--bg3);}
+.creatureInfo{flex:1;min-width:0;}
+.creatureName{font-weight:bold;color:var(--gold);font-size:.9em;}
+.creatureMeta{font-size:.7em;color:var(--text-dim);margin-top:2px;}
+.threatTag{font-size:.65em;padding:1px 6px;border-radius:8px;border:1px solid var(--border);color:var(--text-dim);background:var(--bg3);display:inline-block;margin-top:3px;}
+
+/* ── Detalhe ─────────────────────────────────────────── */
+.detailEmpty{display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-dim);font-size:.9em;border:1px dashed var(--border);border-radius:10px;}
+.detailCard{background:var(--bg2);border:2px solid var(--border);border-radius:10px;padding:18px;}
+.detailHead{display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;}
+.detailImg{width:180px;height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--card-border);}
+.detailHeadInfo{flex:1;min-width:200px;}
+.detailName{font-size:1.4em;color:var(--gold);margin-bottom:6px;}
+.detailTags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.tag{font-size:.7em;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);}
+.detailQuote{font-style:italic;color:var(--text-dim);font-size:.85em;border-left:2px solid var(--gold-dim);padding-left:10px;margin-top:6px;white-space:pre-line;}
+
+.sectionTitle{font-size:.8em;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:4px;margin:16px 0 8px;}
+.detailText{font-size:.86em;line-height:1.65;white-space:pre-line;color:var(--text);}
+.detailText + .detailText{margin-top:8px;}
+
+.statsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;}
+.statBox{background:var(--card-bg);border:1px solid var(--card-border);border-radius:6px;padding:8px;text-align:center;}
+.statLabel{font-size:.65em;color:var(--text-dim);letter-spacing:1px;}
+.statValue{font-size:1.1em;color:var(--gold);margin-top:2px;}
+.statValue.empty{color:var(--text-dim);font-size:.75em;}
+
+.infoTable{width:100%;border-collapse:collapse;font-size:.84em;}
+.infoTable td{padding:5px 8px;border-bottom:1px solid var(--bg3);vertical-align:top;}
+.infoTable td:first-child{color:var(--text-dim);white-space:nowrap;width:160px;}
+.infoTable td:last-child{color:var(--text);}
+.empty-val{color:var(--text-dim);font-style:italic;}
+
+.abilityBox{background:var(--card-bg);border:1px solid var(--card-border);border-radius:6px;padding:8px 10px;margin-bottom:6px;font-size:.82em;line-height:1.5;}
+.abilityBox.empty{color:var(--text-dim);font-style:italic;}
+
+.itemsList{display:flex;flex-wrap:wrap;gap:5px;}
+.itemPill{font-size:.74em;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text);}
+
+/* ── Botões de navegação ─────────────────────────────── */
+.topNav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-family:inherit;font-size:.85em;transition:all .2s;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn.primary{background:var(--gold-dim);border-color:var(--gold);color:#1a1000;font-weight:bold;}
+.btn.primary:hover{background:var(--gold);}
+
+/* ── Abas (estilo página Mecânicas) ───────────────────── */
+.tabs{position:sticky;top:0;z-index:50;background:rgba(15,12,10,.96);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);display:flex;gap:0;overflow-x:auto;margin-bottom:18px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tabBtn{padding:12px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:inherit;font-size:.85em;letter-spacing:.8px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.tabBtn:hover{color:var(--text);}
+.tabActive{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ── Cabeçalho de capítulo / seções (estilo Mecânicas) ── */
+.chHero{text-align:center;padding:24px 0 22px;border-bottom:1px solid var(--border);margin-bottom:30px;}
+.chTitle{font-size:1.7em;color:var(--gold);letter-spacing:2px;text-shadow:0 0 20px rgba(201,162,39,.25);margin-bottom:10px;}
+.chDivider{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 14px;}
+.chLead{color:var(--text-dim);font-size:.9em;font-style:italic;line-height:1.6;max-width:620px;margin:0 auto;}
+
+.sec{margin-bottom:36px;}
+.secTitle{font-size:1.05em;color:var(--gold);letter-spacing:2px;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:16px;}
+.secTitle::before{content:'◈ ';color:var(--gold-dim);}
+.secSubTitle{font-size:.85em;color:var(--gold-dim);letter-spacing:1.5px;text-transform:uppercase;margin:18px 0 10px;}
+.secText{color:var(--text);line-height:1.75;font-size:.88em;margin-bottom:12px;}
+
+.cardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.infoCard{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:14px;}
+.infoCardTitle{font-size:.92em;font-weight:bold;color:var(--gold);margin-bottom:6px;}
+.infoCardText{font-size:.8em;color:var(--text);line-height:1.6;}
+.infoCardText p{margin-bottom:6px;}
+.infoCardExample{font-size:.75em;color:var(--text-dim);font-style:italic;margin-top:6px;}
+.elementList{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+.elementPill{font-size:.74em;padding:2px 10px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--gold-dim);}
+</style>
+</head>
+<body>
+<div id="db-loading">
+  <div style="font-size:2em;color:#c9a227;letter-spacing:3px">⚔ REINO MÁGICO ⚔</div>
+  <div style="color:#9a8870;font-size:.9em">Carregando o Bestiário...</div>
+  <div class="spinner"></div>
+</div>
+<div id="db-error">
+  <div style="font-size:1.4em;color:#c9a227">⚔ REINO MÁGICO ⚔</div>
+  <div id="db-error-msg" style="color:#e8d9b8;line-height:1.6;max-width:500px"></div>
+</div>
+
+<div id="app" style="display:none">
+  <header>⚔ O Manual do Novo Aventureiro ⚔</header>
+  <nav class="tabs" id="tabs"></nav>
+  <div id="content"></div>
+</div>
+
+<script>
+const ASTROLONG_INTRO = [
+  "Se este livro chegou às suas mãos, existem apenas duas possibilidades.",
+  "A primeira é que você seja um estudioso em busca de conhecimento.",
+  "A segunda é que você seja um aventureiro prestes a fazer algo extremamente perigoso.",
+  "Independentemente do motivo, espero que as páginas a seguir possam mantê-lo vivo por mais tempo do que a maioria.",
+  "Meu nome é Astrolong TerraNova.",
+  "Nasci entre a nobreza élfica dos grandes bosques do Continente Ancestral. Durante minha juventude, esperavam que eu seguisse o caminho tradicional de minha família: estudar magia, administrar terras e participar dos intermináveis debates políticos que ocupam a vida dos nobres.",
+  "Fiz exatamente o oposto.",
+  "Enquanto meus iguais buscavam influência dentro dos salões de pedra e madeira dourada, eu observava o mundo além das fronteiras conhecidas. Havia algo nas florestas, montanhas e oceanos que me atraía mais do que qualquer título.",
+  "Assim começou uma jornada que duraria séculos.",
+  "Atravessei os bosques dos Elfos, percorri as pradarias dos Faunos, caminhei pelos salões subterrâneos dos Anões e escalei os picos dos Draconianos. Naveguei até as Ilhas dos Dragões, sobrevivi às tempestades das Terras do Norte Gelado e me aventurei pelas profundezas esquecidas da Ilha das Nagas.",
+  "Mais tarde, quando o destino me levou além do mar, testemunhei as cicatrizes deixadas pela queda de Ignareth e vi com meus próprios olhos as terras que hoje chamamos de Terras Devastadas.",
+  "Durante minhas viagens encontrei criaturas magníficas.",
+  "Algumas eram belas.",
+  "Outras eram aterrorizantes.",
+  "Muitas eram incompreendidas.",
+  "A maior parte dos registros existentes descreve monstros apenas como ameaças. Porém, quanto mais viajei, mais percebi que toda criatura possui um papel dentro do mundo. Predadores mantêm o equilíbrio das florestas. Espíritos protegem regiões esquecidas. Bestas ancestrais guardam segredos mais antigos que muitos reinos.",
+  "Até mesmo as criaturas mais perigosas possuem uma razão para existir.",
+  "Foi por isso que comecei a catalogá-las.",
+  "O que começou como anotações pessoais tornou-se uma coleção de centenas de relatos, observações, desenhos, mapas e registros. Reis solicitaram cópias. Guildas de aventureiros passaram a utilizá-las como referência. Exploradores acrescentaram suas próprias descobertas.",
+  "Com o passar dos anos, a obra cresceu além de mim.",
+  "Este livro é o resultado desse esforço.",
+  "Nele você encontrará informações sobre criaturas conhecidas e desconhecidas, seus habitats, comportamentos, níveis de ameaça e curiosidades obtidas diretamente em campo.",
+  "Nem tudo aqui deve ser considerado verdade absoluta.",
+  "O mundo é vasto.",
+  "Novas espécies surgem.",
+  "Antigas espécies desaparecem.",
+  "Lendas às vezes revelam-se reais.",
+  "E algumas verdades são tão estranhas que parecem lendas.",
+  "Portanto, utilize este manual como um guia, não como uma certeza.",
+  "Observe.",
+  "Questione.",
+  "Aprenda.",
+  "E, acima de tudo, sobreviva.",
+  "Pois existe uma diferença fundamental entre um aventureiro experiente e um aventureiro morto.",
+  "O aventureiro experiente sabe quando fugir.",
+];
+
+const TABS = [
+  { id: 'prefacio', label: 'Prefácio' },
+  { id: 'graus', label: 'Graus de Ameaças e Categorias de Criaturas' },
+  { id: 'catalogo', label: 'Catálogo de Criaturas' },
+];
+
+const GRAUS_AMEACA = [
+  { titulo: 'Grau 0 — Inofensivo', paragrafos: [
+    'Criaturas dóceis que raramente apresentam qualquer risco para humanoides.',
+    'Normalmente fogem diante de ameaças e não possuem capacidade real de causar ferimentos graves, mesmo quando acuadas.',
+    'Podem servir como alimento, montaria, companhia ou parte do ecossistema local.',
+    'Exemplos: pequenos animais, aves comuns, criaturas domésticas.',
+  ]},
+  { titulo: 'Grau I — Comum', paragrafos: [
+    'Criaturas geralmente pacíficas que podem reagir quando ameaçadas ou protegendo filhotes.',
+    'Possuem força suficiente para ferir uma pessoa despreparada, mas raramente representam perigo para aventureiros experientes.',
+    'São abundantes e amplamente conhecidas.',
+    'Exemplos: cervos, montarias comuns, grandes herbívoros.',
+  ]},
+  { titulo: 'Grau II — Menor', paragrafos: [
+    'Criaturas ariscas ou naturalmente agressivas.',
+    'Possuem meios eficazes de defesa ou ataque e podem causar ferimentos sérios em indivíduos isolados.',
+    'São consideradas perigosas para viajantes comuns.',
+    'Exemplos: predadores pequenos e médios, criaturas venenosas, animais territoriais.',
+  ]},
+  { titulo: 'Grau III — Ameaça', paragrafos: [
+    'Criaturas capazes de matar um humanoide adulto com relativa facilidade.',
+    'Possuem força, velocidade, venenos ou capacidades naturais suficientemente perigosas para exigir preparação.',
+    'Embora letais, geralmente evitam confrontos desnecessários para conservar energia.',
+    'Exemplos: grandes predadores, monstros de caça especializados.',
+  ]},
+  { titulo: 'Grau IV — Elite', paragrafos: [
+    'Predadores dominantes ou criaturas extremamente agressivas.',
+    'Frequentemente atacam primeiro, defendem vastos territórios e representam ameaça significativa até para grupos organizados.',
+    'Costumam ocupar o topo da cadeia alimentar regional.',
+    'Exemplos: superpredadores, monstros territoriais excepcionais.',
+  ]},
+  { titulo: 'Grau V — Lendário', paragrafos: [
+    'Criaturas cuja simples presença altera o equilíbrio de uma região.',
+    'Possuem inteligência elevada, enorme poder físico ou capacidades sobrenaturais raras.',
+    'São frequentemente tema de lendas, religiões e histórias locais.',
+    'Enfrentá-las exige planejamento, recursos e experiência.',
+    'Exemplos: dragões maiores, matriarcas monstruosas, guardiões ancestrais.',
+  ]},
+  { titulo: 'Grau VI — Mítico', paragrafos: [
+    'Seres dotados de consciência avançada e compreensão do mundo.',
+    'Frequentemente possuem cultura, linguagem, conhecimento ancestral ou poderes capazes de influenciar civilizações inteiras.',
+    'Podem negociar, governar ou manipular eventos históricos.',
+    'Exemplos: dragões extremamente antigos, entidades primordiais menores.',
+  ]},
+  { titulo: 'Grau VII — Cataclísmico', paragrafos: [
+    'Criaturas capazes de destruir cidades, reinos ou regiões inteiras.',
+    'Sua existência representa uma ameaça estratégica para nações.',
+    'O surgimento de uma criatura desse nível costuma mobilizar exércitos inteiros.',
+    'Exemplos: Dragões Anciões, titãs primordiais, monstros do Negativo.',
+  ]},
+  { titulo: 'Grau VIII — Apocalíptico', paragrafos: [
+    'Entidades capazes de alterar o destino do mundo.',
+    'Sua ação pode levar à extinção de espécies, destruição de continentes ou colapso de civilizações inteiras.',
+    'São consideradas ameaças globais.',
+    'Exemplos: entidades supremas do Negativo, Primordiais corrompidos, seres ligados ao fim dos tempos.',
+  ]},
+];
+
+const CATEGORIAS_INTRO = 'Estas categorias são utilizadas para classificar a origem, natureza mágica e comportamento biológico das criaturas catalogadas por estudiosos, aventureiros e exploradores do mundo.';
+
+const CATEGORIAS_CRIATURAS = [
+  { titulo: 'Besta Comum', paragrafos: [
+    'Criaturas naturais que não possuem ligação direta com elementos mágicos ou entidades superiores.',
+    'Embora possuam mana natural em seus corpos, essa energia manifesta-se apenas como Arcano passivo, sem capacidades elementais evidentes.',
+    'São as espécies mais abundantes do mundo e constituem a base da maioria dos ecossistemas conhecidos.',
+    'Exemplos: Cervos, javalis, aves comuns, predadores naturais e montarias.',
+  ]},
+  { titulo: 'Besta Mágica', paragrafos: [
+    'Criaturas naturalmente conectadas a um ou mais elementos fundamentais do mundo:',
+  ], elementos: ['Terra', 'Fogo', 'Água', 'Vento', 'Trovão'], paragrafosFinal: [
+    'Essa conexão pode manifestar-se através de características físicas, resistência sobrenatural ou habilidades mágicas naturais.',
+    'Apesar de possuírem afinidade elemental, normalmente não apresentam inteligência avançada.',
+    'Exemplos: Dragões menores, animais elementais e predadores mágicos.',
+  ]},
+  { titulo: 'Besta Mágica Tribal', paragrafos: [
+    'Criaturas mágicas que desenvolveram consciência, cultura e formas próprias de comunicação.',
+    'Podem formar tribos, aldeias, clãs ou sociedades primitivas.',
+    'Possuem afinidade elemental ou forte conexão com o Arcano, sendo capazes de compreender idiomas, criar tradições e estabelecer relações diplomáticas ou hostis com outras espécies.',
+    'Exemplos: Dríades, Orcés Nagas e algumas raças monstruosas inteligentes.',
+  ]},
+  { titulo: 'Besta Mágica Suprema', paragrafos: [
+    'Criaturas cuja natureza transcende os elementos básicos.',
+    'Além da afinidade elemental, possuem influência direta de forças ligadas às Entidades Sagradas ou Caóticas.',
+    'Frequentemente ocupam posições dominantes em seus ecossistemas e são consideradas seres de enorme importância espiritual ou mística.',
+    'Exemplos: Guardiões ancestrais, monstros sagrados e bestas ligadas aos Primordiais.',
+  ]},
+];
+
+const SUBGRUPOS_CRIATURAS = [
+  { titulo: 'Dragões', categorias: [
+    { titulo: 'Dragão Comum', paragrafos: [
+      'Representam a forma mais comum da linhagem dracônica.',
+      'Possuem afinidade elemental natural e grande capacidade física, sendo considerados predadores dominantes em diversas regiões do mundo.',
+      'Apesar do nome, continuam sendo criaturas raras para a maioria das civilizações.',
+      'Exemplos: Dragões Menores.',
+    ]},
+    { titulo: 'Dragão Superior', paragrafos: [
+      'Dragões que alcançaram um estágio evolutivo muito além de seus parentes comuns.',
+      'Possuem inteligência avançada, grande poder mágico e frequentemente são capazes de comunicação verbal.',
+      'Sua presença costuma influenciar regiões inteiras.',
+      'Exemplos: Dragões Maiores.',
+    ]},
+    { titulo: 'Dragão Primordial', paragrafos: [
+      'Os mais antigos e poderosos representantes da linhagem dracônica.',
+      'Sua origem remonta às Eras das Sementes e aos primeiros momentos da criação do mundo.',
+      'São considerados criaturas próximas às lendas e capazes de alterar o destino de nações inteiras.',
+      'Exemplos: Dragões Anciões.',
+    ]},
+  ]},
+  { titulo: 'Criaturas Aquáticas', categorias: [
+    { titulo: 'Aquático Comum', paragrafos: [
+      'Criaturas marinhas ou lacustres incapazes de sobreviver fora da água por longos períodos.',
+      'Não possuem afinidade elemental, dependendo apenas de sua biologia natural e da mana arcana presente em todos os seres vivos.',
+      'Exemplos: peixes gigantes, predadores marinhos e fauna oceânica comum.',
+    ]},
+    { titulo: 'Aquático Mágico', paragrafos: [
+      'Criaturas aquáticas que desenvolveram afinidade com um ou mais elementos.',
+      'Essas conexões geralmente manifestam-se através de habilidades sobrenaturais ou adaptações incomuns.',
+      'Exemplos: serpentes marinhas elementais, peixes mágicos e predadores oceânicos encantados.',
+    ]},
+    { titulo: 'Aquático Mágico Supremo', paragrafos: [
+      'Criaturas aquáticas associadas não apenas aos elementos, mas também às forças Sagradas ou Caóticas.',
+      'Frequentemente são reverenciadas por povos costeiros e aparecem em lendas marítimas.',
+      'Exemplos: leviatãs sagrados, monstros oceânicos ancestrais e guardiões dos mares.',
+    ]},
+  ]},
+  { titulo: 'Criaturas Místicas', categorias: [
+    { titulo: 'Místico Mágico', paragrafos: [
+      'Criaturas originadas ou fortemente influenciadas pelo Arcano.',
+      'Muitas não pertencem originalmente ao plano material e possuem características impossíveis de serem encontradas em criaturas naturais.',
+      'Podem ou não apresentar afinidades elementais.',
+      'Exemplos: criaturas do reino feéricos, espíritos arcanos, criaturas extraplanares menores.',
+    ]},
+    { titulo: 'Místico Mágico Supremo', paragrafos: [
+      'Seres cuja existência está ligada simultaneamente ao Arcano e às forças Sagradas ou Caóticas.',
+      'Frequentemente são entidades extraplanares ou criaturas associadas aos domínios das Entidades Primordiais.',
+      'Sua simples presença pode alterar a realidade ao redor.',
+      'Exemplos: emissários divinos e espíritos superiores.',
+    ]},
+  ]},
+  { titulo: 'Criaturas Anfíbias', categorias: [
+    { titulo: 'Anfíbio Comum', paragrafos: [
+      'Criaturas que nascem na água, mas conseguem viver em terra firme durante a maior parte de suas vidas.',
+      'Não apresentam afinidade elemental.',
+      'Exemplos: grandes anfíbios, répteis semiaquáticos e espécies costeiras.',
+    ]},
+    { titulo: 'Anfíbio Mágico', paragrafos: [
+      'Criaturas anfíbias com conexão elemental.',
+      'São adaptadas tanto ao ambiente aquático quanto terrestre, utilizando magia natural para sobreviver em ambos.',
+      'Exemplos: salamandras mágicas e predadores de pântano.',
+    ]},
+    { titulo: 'Anfíbio Mágico Supremo', paragrafos: [
+      'Representam o ápice das espécies anfíbias.',
+      'Possuem afinidade elemental e influência direta de energias Sagradas ou Caóticas.',
+      'São frequentemente tratadas como criaturas sagradas, monstros lendários ou guardiões naturais.',
+      'Exemplos: hidras divinas e protetores dos grandes rios.',
+    ]},
+  ]},
+  { titulo: 'Criaturas do Negativo', categorias: [
+    { titulo: 'Criatura do Negativo', paragrafos: [
+      'Seres que foram completamente corrompidos pela influência do Negativo.',
+      'Sua natureza original foi destruída, restando apenas versões distorcidas e hostis de suas antigas formas.',
+      'Frequentemente apresentam mutações, deformidades e comportamento extremamente agressivo.',
+      'São considerados inimigos naturais da vida e das forças primordiais da criação.',
+      'Exemplos: animais corrompidos, monstros mutantes e aberrações do Negativo.',
+    ]},
+    { titulo: 'Criatura do Negativo Supremo', paragrafos: [
+      'Representam as manifestações mais perigosas da corrupção.',
+      'Além da completa perda de sua natureza original, possuem forte ligação com o Nada e com as forças mais profundas do Negativo.',
+      'Sua presença causa deterioração ambiental, corrupção da mana e destruição gradual da vida ao redor.',
+      'São tratados como ameaças existenciais por praticamente todas as civilizações e até mesmo pelas Entidades Primordiais.',
+      'Exemplos: generais do Negativo, horrores ancestrais e servos diretos do Nada.',
+    ]},
+  ]},
+];
+
+let CREATURES = [];
+let screen = 'prefacio'; // 'prefacio' | 'graus' | 'catalogo'
+let filters = { search:'', categoria:'', tipo:'', natureza:'', grau_ameaca:'', tamanho:'' };
+let selected = null;
+
+async function loadFromDB(){
+  const loadEl = document.getElementById('db-loading');
+  const errEl  = document.getElementById('db-error');
+  try{
+    const resp = await fetch('/api/bestiary');
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    CREATURES = await resp.json();
+    loadEl.style.display = 'none';
+    document.getElementById('app').style.display = '';
+    render();
+  }catch(e){
+    loadEl.style.display = 'none';
+    errEl.style.display = 'flex';
+    document.getElementById('db-error-msg').textContent =
+      'Não foi possível conectar ao servidor (' + e.message + '). Verifique se o backend está em execução.';
+  }
+}
+
+function esc(s){
+  if(s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+function val(v, placeholder='A definir'){
+  if(v === null || v === undefined || v === '' ) return `<span class="empty-val">${placeholder}</span>`;
+  return esc(v);
+}
+
+function imgUrl(name){
+  return '/img/Bestiario/' + encodeURIComponent(name);
+}
+
+function renderTabs(){
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = TABS.map(t => `
+    <button class="tabBtn ${screen===t.id?'tabActive':''}" data-tab="${t.id}">${t.label}</button>
+  `).join('');
+  tabs.querySelectorAll('[data-tab]').forEach(el => {
+    el.addEventListener('click', () => { screen = el.dataset.tab; render(); });
+  });
+}
+
+function render(){
+  const content = document.getElementById('content');
+  const active = document.activeElement;
+  const focusFilter = active && active.dataset && active.dataset.filter;
+  const caret = focusFilter ? active.selectionStart : null;
+
+  renderTabs();
+
+  if(screen === 'prefacio') content.innerHTML = renderPrefacio();
+  else if(screen === 'graus') content.innerHTML = renderGraus();
+  else content.innerHTML = renderCatalog();
+
+  if(screen === 'catalogo'){
+    bindCatalogEvents();
+    if(focusFilter){
+      const el = content.querySelector(`[data-filter="${focusFilter}"]`);
+      if(el){
+        el.focus();
+        if(caret !== null && el.setSelectionRange) el.setSelectionRange(caret, caret);
+      }
+    }
+  }
+}
+
+function renderPrefacio(){
+  return `
+    <div class="intro">
+      <p class="intro-sub">Compilado por</p>
+      <h1 class="intro-title">Astrolong TerraNova</h1>
+      <p class="intro-sub">Naturalista, Explorador, Cartógrafo e Membro Honorário de Sete Guildas de Aventureiros</p>
+      <img class="intro-map" src="/img/Bestiario/Mapa%20Mundi.png" alt="Mapa Mundi">
+      <div class="intro-divider"></div>
+      <div class="intro-text">
+        ${ASTROLONG_INTRO.map(p => `<p>${esc(p)}</p>`).join('')}
+        <p class="intro-sign">— Astrolong TerraNova</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderCategoriaCard(c){
+  const elementos = c.elementos ? `<div class="elementList">${c.elementos.map(e => `<span class="elementPill">${esc(e)}</span>`).join('')}</div>` : '';
+  const todos = (c.paragrafos || []).concat(c.paragrafosFinal || []);
+  return `
+    <div class="infoCard">
+      <div class="infoCardTitle">${esc(c.titulo)}</div>
+      <div class="infoCardText">
+        ${c.paragrafos.map(p => `<p>${esc(p)}</p>`).join('')}
+        ${elementos}
+        ${(c.paragrafosFinal || []).map(p => `<p>${esc(p)}</p>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderGraus(){
+  return `
+    <div class="chHero">
+      <h2 class="chTitle">Graus de Ameaça e Categorias de Criaturas</h2>
+      <div class="chDivider"></div>
+      <p class="chLead">O conhecimento catalogado por Astrolong TerraNova ao longo de séculos de exploração.</p>
+    </div>
+
+    <div class="sec">
+      <h3 class="secTitle">Graus de Ameaça</h3>
+      <div class="cardGrid">
+        ${GRAUS_AMEACA.map(g => `
+          <div class="infoCard">
+            <div class="infoCardTitle">${esc(g.titulo)}</div>
+            <div class="infoCardText">${g.paragrafos.map(p => `<p>${esc(p)}</p>`).join('')}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3 class="secTitle">Categorias de Criaturas</h3>
+      <p class="secText">${esc(CATEGORIAS_INTRO)}</p>
+      <div class="cardGrid">
+        ${CATEGORIAS_CRIATURAS.map(renderCategoriaCard).join('')}
+      </div>
+    </div>
+
+    ${SUBGRUPOS_CRIATURAS.map(grupo => `
+      <div class="sec">
+        <h3 class="secTitle">${esc(grupo.titulo)}</h3>
+        <div class="cardGrid">
+          ${grupo.categorias.map(renderCategoriaCard).join('')}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function uniqueValues(field){
+  const set = new Set();
+  CREATURES.forEach(c => { if(c[field]) set.add(c[field]); });
+  return [...set].sort();
+}
+
+function filteredCreatures(){
+  return CREATURES.filter(c => {
+    if(filters.search && !c.nome.toLowerCase().includes(filters.search.toLowerCase())) return false;
+    if(filters.categoria && c.categoria !== filters.categoria) return false;
+    if(filters.tipo && c.tipo !== filters.tipo) return false;
+    if(filters.natureza && c.natureza !== filters.natureza) return false;
+    if(filters.grau_ameaca && c.grau_ameaca !== filters.grau_ameaca) return false;
+    if(filters.tamanho && c.tamanho !== filters.tamanho) return false;
+    return true;
+  }).sort((a,b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+}
+
+function selectOptions(field, label){
+  const opts = uniqueValues(field);
+  return `
+    <select class="fselect" data-filter="${field}">
+      <option value="">${label}</option>
+      ${opts.map(o => `<option value="${esc(o)}" ${filters[field]===o?'selected':''}>${esc(o)}</option>`).join('')}
+    </select>
+  `;
+}
+
+function renderCatalog(){
+  const list = filteredCreatures();
+  const detail = selected ? CREATURES.find(c => c.nome === selected) : null;
+  return `
+    <div class="topNav">
+      <span class="results-count">${list.length} de ${CREATURES.length} criaturas catalogadas</span>
+    </div>
+    <div class="filters">
+      <span class="fl">Filtrar:</span>
+      <input class="finput" type="text" placeholder="Buscar por nome..." data-filter="search" value="${esc(filters.search)}">
+      ${selectOptions('categoria', 'Categoria')}
+      ${selectOptions('tipo', 'Tipo')}
+      ${selectOptions('natureza', 'Natureza')}
+      ${selectOptions('grau_ameaca', 'Grau de Ameaça')}
+      ${selectOptions('tamanho', 'Tamanho')}
+    </div>
+    <div class="layout">
+      <div class="creatureList">
+        ${list.map(c => `
+          <button class="creatureItem ${selected===c.nome?'active':''}" data-nome="${esc(c.nome)}">
+            <img class="creatureThumb" src="${imgUrl(c.imagem)}" alt="${esc(c.nome)}" onerror="this.style.visibility='hidden'">
+            <div class="creatureInfo">
+              <div class="creatureName">${esc(c.nome)}</div>
+              <div class="creatureMeta">${esc(c.categoria)} · ${esc(c.tipo)}</div>
+              <span class="threatTag">${esc(c.grau_ameaca)}</span>
+            </div>
+          </button>
+        `).join('')}
+        ${list.length===0 ? '<div class="detailEmpty">Nenhuma criatura encontrada</div>' : ''}
+      </div>
+      <div class="entDetail">
+        ${detail ? renderDetail(detail) : '<div class="detailEmpty"><span>Selecione uma criatura para ver os detalhes</span></div>'}
+      </div>
+    </div>
+  `;
+}
+
+function renderDetail(c){
+  const stats = [
+    ['FOR', c.for_], ['DES', c.des], ['VIT', c.vit], ['INT', c.int_], ['PRE', c.pre],
+    ['Vida', c.vida], ['Defesa', c.defesa], ['Mana', c.mana],
+  ];
+  const pericias = [
+    ['Atletismo', c.atletismo], ['Reflexo', c.reflexo], ['Tenacidade', c.tenacidade],
+    ['Vontade', c.vontade], ['Foco', c.foco], ['Luta', c.luta], ['Sobrevivência', c.sobrevivencia],
+  ];
+  const habilidades = [c.habilidade1, c.habilidade2, c.habilidade3, c.habilidade4, c.habilidade5];
+  const itens = (c.itens || '').split('\n').map(s => s.trim()).filter(Boolean);
+
+  return `
+    <div class="detailCard">
+      <div class="detailHead">
+        <img class="detailImg" src="${imgUrl(c.imagem)}" alt="${esc(c.nome)}" onerror="this.style.display='none'">
+        <div class="detailHeadInfo">
+          <div class="detailName">${esc(c.nome)}</div>
+          <div class="detailTags">
+            <span class="tag">${esc(c.categoria)}</span>
+            <span class="tag">${esc(c.tipo)}</span>
+            <span class="tag">${esc(c.natureza)}</span>
+            <span class="tag">${esc(c.grau_ameaca)}</span>
+            <span class="tag">${esc(c.tamanho)}</span>
+            <span class="tag">${esc(c.comportamento)}</span>
+          </div>
+          ${c.anotacao ? `<div class="detailQuote">${esc(c.anotacao)}</div>` : ''}
+        </div>
+      </div>
+
+      <div class="sectionTitle">Descrição</div>
+      <div class="detailText">${val(c.descricao)}</div>
+
+      <div class="sectionTitle">Aparência</div>
+      <div class="detailText">${val(c.aparencia)}</div>
+
+      <div class="sectionTitle">Habitat</div>
+      <div class="detailText">${val(c.habitat)}</div>
+
+      <div class="sectionTitle">Curiosidades de Astrolong TerraNova</div>
+      <div class="detailText">${val(c.curiosidades)}</div>
+
+      <div class="sectionTitle">Itens / Materiais</div>
+      ${itens.length ? `<div class="itemsList">${itens.map(i => `<span class="itemPill">${esc(i)}</span>`).join('')}</div>` : `<div class="empty-val">A definir</div>`}
+
+      <div class="sectionTitle">Estatísticas</div>
+      <div class="statsGrid">
+        ${stats.map(([label, v]) => `
+          <div class="statBox">
+            <div class="statLabel">${label}</div>
+            <div class="statValue ${v===null||v===undefined?'empty':''}">${v===null||v===undefined?'—':esc(v)}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <table class="infoTable" style="margin-top:10px">
+        <tr><td>Ataque Básico</td><td>${val(c.ataque_basico)}</td></tr>
+        <tr><td>CD Conjurador</td><td>${val(c.cd_conjurador)}</td></tr>
+        <tr><td>Atributo Conjurador</td><td>${val(c.atributo_conjurador)}</td></tr>
+        <tr><td>Resistência</td><td>${val(c.resistencia)}</td></tr>
+        <tr><td>Fraqueza</td><td>${val(c.fraqueza)}</td></tr>
+      </table>
+
+      <div class="sectionTitle">Habilidades</div>
+      ${habilidades.map((h,i) => {
+        if(!h || h === '-') return `<div class="abilityBox empty">Habilidade ${i+1}: A definir</div>`;
+        return `<div class="abilityBox">${esc(h)}</div>`;
+      }).join('')}
+
+      <div class="sectionTitle">Perícias</div>
+      <div class="statsGrid">
+        ${pericias.map(([label, v]) => `
+          <div class="statBox">
+            <div class="statLabel">${label}</div>
+            <div class="statValue ${v===null||v===undefined?'empty':''}">${v===null||v===undefined?'—':esc(v)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function bindCatalogEvents(){
+  document.querySelectorAll('[data-filter]').forEach(el => {
+    el.addEventListener('input', e => {
+      filters[el.dataset.filter] = e.target.value;
+      render();
+    });
+    el.addEventListener('change', e => {
+      filters[el.dataset.filter] = e.target.value;
+      render();
+    });
+  });
+  document.querySelectorAll('.creatureItem').forEach(el => {
+    el.addEventListener('click', () => {
+      const nome = el.dataset.nome;
+      selected = selected === nome ? null : nome;
+      render();
+    });
+  });
+}
+
+loadFromDB();
+</script>
+</body>
+</html>

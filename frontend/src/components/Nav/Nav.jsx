@@ -47,6 +47,13 @@ export default function Nav() {
                 <span className={styles.dmDesc}>Crie seu aventureiro</span>
               </span>
             </a>
+            <a href="/bestiario.html" target="_blank" rel="noopener noreferrer" onClick={close}>
+              <span className={styles.dmIcon}>🐾</span>
+              <span className={styles.dmInfo}>
+                <span className={styles.dmTitle}>Bestiário</span>
+                <span className={styles.dmDesc}>Catálogo de criaturas</span>
+              </span>
+            </a>
           </div>
         </li>
       </ul>
