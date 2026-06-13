@@ -33,5 +33,8 @@ if os.path.isdir(DIST_DIR):
 
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
+        requested = os.path.join(DIST_DIR, full_path)
+        if os.path.isfile(requested):
+            return FileResponse(requested)
         index = os.path.join(DIST_DIR, "index.html")
         return FileResponse(index)
