@@ -32,3 +32,6 @@ desktop.ini
 *.bak
 create_equipamentos.py
 update_html.py
+
+# Backup local (não faz parte do projeto)
+_Backup/

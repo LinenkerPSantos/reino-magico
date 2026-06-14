@@ -57,7 +57,12 @@ header{text-align:center;padding:16px 0 8px;font-size:1.6em;letter-spacing:3px;c
 .detailEmpty{display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-dim);font-size:.9em;border:1px dashed var(--border);border-radius:10px;}
 .detailCard{background:var(--bg2);border:2px solid var(--border);border-radius:10px;padding:18px;}
 .detailHead{display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;}
-.detailImg{width:180px;height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--card-border);}
+.detailImg{width:180px;height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--card-border);cursor:zoom-in;}
+
+/* ── Lightbox ────────────────────────────────────────── */
+.lightbox{position:fixed;inset:0;background:rgba(8,5,3,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;cursor:zoom-out;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;border:2px solid var(--border);box-shadow:0 0 40px rgba(0,0,0,.7);}
 .detailHeadInfo{flex:1;min-width:200px;}
 .detailName{font-size:1.4em;color:var(--gold);margin-bottom:6px;}
 .detailTags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
@@ -112,6 +117,23 @@ header{text-align:center;padding:16px 0 8px;font-size:1.6em;letter-spacing:3px;c
 .secSubTitle{font-size:.85em;color:var(--gold-dim);letter-spacing:1.5px;text-transform:uppercase;margin:18px 0 10px;}
 .secText{color:var(--text);line-height:1.75;font-size:.88em;margin-bottom:12px;}
 
+.langTree{font-family:'Courier New',monospace;white-space:pre;font-size:.76em;color:var(--text-dim);background:var(--bg3);border:1px solid var(--card-border);border-radius:8px;padding:14px;overflow-x:auto;line-height:1.45;margin-bottom:14px;}
+.secQuote{font-style:italic;color:var(--text-dim);border-left:2px solid var(--gold-dim);padding-left:12px;margin-bottom:14px;font-size:.9em;line-height:1.7;}
+.secSign{text-align:right;color:var(--gold-dim);font-style:italic;font-size:.85em;margin:-4px 0 18px;white-space:pre-line;}
+
+/* ── Sub-abas de capítulo (Idiomas e Culturas) ──────────── */
+.subTabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px;overflow-x:auto;scrollbar-width:none;}
+.subTabs::-webkit-scrollbar{display:none;}
+.subTabBtn{display:flex;align-items:center;gap:6px;padding:12px 18px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:inherit;font-size:.82em;letter-spacing:.5px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.subTabBtn:hover{color:var(--text);}
+.subTabActive{color:var(--gold);border-bottom-color:var(--gold);}
+
+.sectionNav{display:flex;flex-direction:column;gap:6px;margin-bottom:24px;}
+.sectionNavBtn{text-align:left;background:var(--card-bg);border:1px solid var(--card-border);border-left:3px solid var(--card-border);border-radius:0 7px 7px 0;padding:10px 16px;color:var(--text-dim);font-family:inherit;font-size:.82em;cursor:pointer;transition:all .2s;}
+.sectionNavBtn:hover{border-left-color:var(--gold-dim);color:var(--text);background:#1e1810;}
+.sectionNavActive{border-left-color:var(--gold) !important;color:var(--gold) !important;background:#221c10 !important;}
+.sectionHint{font-size:.82em;color:var(--text-dim);font-style:italic;padding:10px 0;}
+
 .cardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
 .infoCard{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:14px;}
 .infoCardTitle{font-size:.92em;font-weight:bold;color:var(--gold);margin-bottom:6px;}
@@ -137,6 +159,10 @@ header{text-align:center;padding:16px 0 8px;font-size:1.6em;letter-spacing:3px;c
   <header>⚔ O Manual do Novo Aventureiro ⚔</header>
   <nav class="tabs" id="tabs"></nav>
   <div id="content"></div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <img id="lightboxImg" src="" alt="">
 </div>
 
 <script>
@@ -181,6 +207,7 @@ const ASTROLONG_INTRO = [
 const TABS = [
   { id: 'prefacio', label: 'Prefácio' },
   { id: 'graus', label: 'Graus de Ameaças e Categorias de Criaturas' },
+  { id: 'idiomas', label: 'Idiomas e Culturas' },
   { id: 'catalogo', label: 'Catálogo de Criaturas' },
 ];
 
@@ -360,10 +387,263 @@ const SUBGRUPOS_CRIATURAS = [
   ]},
 ];
 
+const ARVORE_LINGUISTICA = `PRIMORDIAL ANTIGO
+│
+├── Celestial
+│   ├── Dialetos Divinos Menores
+│   └── Linguagens Litúrgicas Modernas
+│
+├── Selvagem
+│   │
+│   ├── Silvestre
+│   │   │
+│   │   ├── Feérico Antigo
+│   │   │
+│   │   └── Silvestre Moderno
+│   │
+│   └── Dialetos Tribais Perdidos
+│
+├── Naga
+│   ├── Naga Costeiro
+│   ├── Naga Profundo
+│   └── Naga Imperial
+│
+├── Gigante Antigo
+│   │
+│   ├── Gigante
+│   │
+│   ├── Orc
+│   │
+│   └── Infernal Antigo
+│        │
+│        └── Infernal Moderno
+│
+└── Primordial Elemental
+     ├── Dialetos do Fogo
+     ├── Dialetos da Água
+     ├── Dialetos do Ar
+     ├── Dialetos da Terra
+     └── Dialetos da Trovão
+
+
+LÍNGUAS ARCANAS
+(Origem independente)
+│
+ARCANO ANTIGO
+│
+├── Élfico
+│
+├── Comum
+│
+├── Feérico Antigo
+│
+└── Proto-Dracônico
+     │
+     ├── Dracônico
+     └── Fórmulas Dracônicas Arcaicas
+
+
+ORIGENS DESCONHECIDAS
+│
+├── Abissal
+│
+└── Idioma Desconhecido X
+     │
+     └── Proto-Dracônico`;
+
+const CLASSIFICACAO_ACADEMICA = `FAMÍLIA PRIMORDIAL
+├── Celestial
+├── Selvagem
+├── Silvestre
+├── Naga
+├── Gigante
+├── Orc
+├── Infernal
+└── Primordial
+
+FAMÍLIA ARCANA
+├── Arcano
+├── Élfico
+├── Comum
+├── Feérico
+└── Dracônico
+
+LÍNGUAS ISOLADAS
+└── Abissal`;
+
+const IDIOMAS_CAPITULOS = [
+  { id: 'cap1', label: 'Cap. I', icon: '🌍', titulo: 'Capítulo I — A Origem das Línguas e dos Povos Conhecidos', secoes: [
+    { titulo: 'Quatrocentos Anos de Pesquisa', blocos: [
+      { tipo: 'p', texto: 'Durante séculos, estudiosos acreditaram que as línguas surgiram da mesma forma que os reinos: separadamente. Os Anões teriam criado sua linguagem nas profundezas das montanhas, os Elfos desenvolvido a sua entre as florestas ancestrais, os Gigantes herdado palavras dos Titãs e os Nagas aprendido os segredos da fala observando as marés. Cada povo reivindicava para si a origem de sua própria voz, e durante muito tempo ninguém questionou tais narrativas.' },
+      { tipo: 'p', texto: 'Foi apenas após quatrocentos anos de viagens, observações e comparações entre inscrições, pergaminhos, runas, cânticos tribais, registros mágicos e monumentos de civilizações esquecidas que comecei a perceber algo extraordinário. Por trás das diferenças que hoje separam os povos do mundo existiam padrões recorrentes. Palavras semelhantes surgiam em regiões separadas por oceanos. Estruturas gramaticais reapareciam em culturas que jamais mantiveram contato. Símbolos encontrados em ruínas anteriores aos primeiros impérios continuavam presentes, ainda que modificados, nos idiomas modernos.' },
+      { tipo: 'p', texto: 'Inicialmente atribuí tais semelhanças ao acaso. Mais tarde considerei a influência cultural entre civilizações antigas. Contudo, à medida que os registros se acumulavam, tornou-se impossível ignorar a conclusão mais simples: todas aquelas línguas pareciam compartilhar uma ancestralidade comum.' },
+      { tipo: 'p', texto: 'A descoberta não apenas transformou minha compreensão da linguagem, mas também da própria história. Pois se os idiomas possuíam uma origem compartilhada, talvez os povos também compartilhassem um passado muito mais próximo do que imaginavam. Guerras, fronteiras e diferenças culturais haviam criado a ilusão de separação, mas sob as camadas acumuladas pelo tempo permaneciam vestígios de uma herança comum.' },
+      { tipo: 'p', texto: 'Denominei essa língua ancestral de Primordial Antigo. Não porque possa afirmar que tenha sido a primeira língua do mundo, mas porque é a mais antiga cuja existência pode ser inferida através das evidências disponíveis. Seus fragmentos aparecem em quase todos os grandes grupos linguísticos conhecidos. Ecos de sua estrutura sobrevivem no Celestial, no Selvagem, no Naga, no Gigante e até mesmo em idiomas que, à primeira vista, parecem não possuir qualquer relação entre si.' },
+      { tipo: 'p', texto: 'Entretanto, este tratado não trata apenas de palavras. As línguas são testemunhas da história. Elas carregam memórias que os povos esquecem, preservam eventos que os cronistas ignoram e revelam conexões que reis e sacerdotes frequentemente prefeririam manter ocultas. Ao seguir os rastros deixados pelas palavras, descobri migrações perdidas, civilizações desaparecidas e capítulos inteiros da história que jamais foram registrados por escribas ou bardos.' },
+      { tipo: 'p', texto: 'As páginas que seguem representam a soma de quatro séculos de pesquisa. Nelas apresento minhas conclusões sobre a origem das línguas conhecidas, a formação das grandes famílias linguísticas, os povos que as falaram e os mistérios que ainda desafiam nossa compreensão. Algumas dessas conclusões certamente serão contestadas. Outras talvez sejam refutadas por futuras descobertas. Tal é a natureza do conhecimento.' },
+      { tipo: 'p', texto: 'Ainda assim, acredito que qualquer estudioso que percorra os mesmos caminhos, examine as mesmas ruínas e compare os mesmos registros chegará inevitavelmente à mesma pergunta que me acompanhou durante toda a vida:' },
+      { tipo: 'p', texto: 'Se quase todas as línguas descendem de uma origem comum, quem foram os primeiros a pronunciar as palavras que deram forma ao mundo?' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova\nHistoriador, Naturalista e Filósofo da Corte Élfica\nAno 473 da Era dos Reinos' },
+    ]},
+    { titulo: 'Árvore Linguística', blocos: [
+      { tipo: 'pre', texto: ARVORE_LINGUISTICA },
+    ]},
+    { titulo: 'Sobre o Primordial Antigo', blocos: [
+      { tipo: 'p', texto: 'Poucas descobertas moldaram minha compreensão do mundo tanto quanto o estudo das línguas antigas. Quando iniciei minhas pesquisas, ainda acreditava no que a maioria dos estudiosos ensinava nas academias élficas: que cada povo havia desenvolvido seu próprio idioma ao longo dos séculos, de forma independente, moldado por sua cultura, sua geografia e suas necessidades. Parecia uma conclusão lógica. Afinal, o Celestial era falado pelos servos dos deuses, o Selvagem pelas tribos das terras abertas, o Naga pelos antigos povos reptilianos e o Gigante pelos descendentes dos titãs. Tudo indicava que suas origens deveriam ser distintas.' },
+      { tipo: 'p', texto: 'Com o passar dos anos, porém, as evidências começaram a apontar para outra direção. Durante minhas viagens encontrei inscrições separadas por milhares de quilômetros que utilizavam estruturas surpreendentemente semelhantes. Símbolos gravados em ruínas esquecidas nas Montanhas de Ferro compartilhavam padrões encontrados em templos abandonados nas florestas orientais. Palavras utilizadas para representar conceitos fundamentais como vida, morte, céu, fogo e espírito surgiam repetidamente em idiomas que jamais deveriam possuir qualquer parentesco. Quanto mais antigos eram os registros analisados, mais evidentes essas semelhanças se tornavam.' },
+      { tipo: 'p', texto: 'A princípio atribuí tais coincidências ao intercâmbio cultural entre civilizações antigas. Contudo, essa teoria rapidamente se mostrou insuficiente. Muitos dos artefatos examinados pertenciam a períodos anteriores ao surgimento dos primeiros impérios conhecidos. Alguns eram tão antigos que sequer podíamos determinar qual povo os havia produzido. Ainda assim, apresentavam fragmentos linguísticos que sobreviveriam por milênios em idiomas completamente diferentes. Foi nesse momento que abandonei a ideia de múltiplas origens e passei a considerar uma hipótese muito mais ousada: talvez todas essas línguas fossem descendentes de um ancestral comum.' },
+      { tipo: 'p', texto: 'Denominei essa língua de Primordial Antigo. Não por acreditar que tenha sido necessariamente a primeira língua do mundo, mas por ser a mais antiga que podemos identificar através dos vestígios preservados. Tudo indica que ela existiu em uma era anterior aos grandes reinos, anterior às migrações que separaram os povos e talvez anterior até mesmo às civilizações que conhecemos apenas por lendas. Dela surgiram as primeiras ramificações que, ao longo das eras, dariam origem ao Celestial, ao Selvagem, aos antigos dialetos Naga e às línguas dos Gigantes.' },
+      { tipo: 'p', texto: 'Entretanto, o que mais me fascina não é sua antiguidade, mas sua natureza. Os poucos fragmentos preservados sugerem que o Primordial Antigo era muito mais do que um simples meio de comunicação. Suas palavras pareciam representar conceitos fundamentais da própria realidade. Uma única expressão podia descrever simultaneamente um elemento natural, um estado espiritual e uma força mágica. Para seus falantes, não existia separação clara entre conhecimento, linguagem e magia. Nomear algo era compreender sua essência, e compreender sua essência talvez significasse exercer influência sobre ela.' },
+      { tipo: 'p', texto: 'Tal característica explicaria por que certas runas e encantamentos continuam funcionando mesmo quando ninguém mais compreende seus significados originais. As palavras foram esquecidas, os povos desapareceram e os impérios ruíram, mas parte do poder contido naquela língua permanece ecoando através dos séculos. Como raízes ocultas sustentando uma floresta inteira, o Primordial Antigo continua presente em quase tudo o que veio depois, mesmo que poucos sejam capazes de reconhecê-lo.' },
+      { tipo: 'p', texto: 'Ainda hoje não sei quem foram seus criadores. Nenhum registro menciona os primeiros falantes. Nenhuma lenda preserva seus nomes. Talvez fossem mortais pertencentes a uma civilização perdida. Talvez fossem entidades cuja existência antecede a própria história. Ou talvez a verdade tenha sido enterrada tão profundamente pelo tempo que jamais será descoberta. O que sei é apenas isto: todas as estradas da linguística acabam conduzindo ao Primordial Antigo. E quanto mais sigo seus rastros, mais me convenço de que estamos observando apenas a sombra de algo muito maior do que imaginamos.' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova, A Origem das Línguas e dos Povos Conhecidos' },
+    ]},
+  ]},
+
+  { id: 'cap2', label: 'Cap. II', icon: '🔮', titulo: 'Capítulo II — A Família Arcana', secoes: [
+    { titulo: 'Uma Língua Criada, Não Nascida', blocos: [
+      { tipo: 'p', texto: 'Se o estudo do Primordial Antigo me levou às origens dos povos, o estudo da Família Arcana conduziu-me a um mistério completamente diferente. Enquanto as línguas descendentes do Primordial apresentam as marcas naturais da evolução cultural, o Arcano Antigo parece desafiar quase todas as regras observadas pelos estudiosos da linguística. Quanto mais registros examinei, mais difícil se tornou acreditar que aquela língua tivesse surgido de forma espontânea.' },
+      { tipo: 'p', texto: 'As primeiras inscrições arcanas conhecidas aparecem relativamente tarde quando comparadas aos registros do Primordial. Contudo, desde seus exemplares mais antigos, o idioma já demonstra um nível de complexidade extraordinário. Não encontramos formas rudimentares, dialetos experimentais ou estruturas incompletas como seria esperado em uma língua em desenvolvimento. O Arcano surge nos registros históricos como se já estivesse pronto, organizado e perfeitamente capaz de descrever fenômenos mágicos com uma precisão raramente observada em qualquer outro idioma conhecido.' },
+      { tipo: 'p', texto: 'Foi essa peculiaridade que levou muitos estudiosos a defender uma teoria controversa: o Arcano Antigo não evoluiu, foi criado. Não criado por deuses, como afirmam alguns sacerdotes, nem por dragões, como sustentam certas tradições dracônicas, mas por uma ordem de estudiosos cuja identidade se perdeu ao longo das eras. Embora não existam provas definitivas para sustentar essa hipótese, a estrutura do idioma sugere planejamento deliberado. Sua gramática privilegia relações mágicas, suas palavras descrevem energias com precisão incomum e sua escrita parece ter sido concebida para preservar significados mesmo após séculos de deterioração.' },
+      { tipo: 'p', texto: 'Durante minhas pesquisas encontrei evidências de que o Arcano Antigo jamais foi uma língua popular. Diferentemente do Primordial, que provavelmente era utilizado por povos inteiros, o Arcano parece ter permanecido restrito a círculos de conhecimento. Magos, escribas, alquimistas e estudiosos foram seus principais usuários. Poucos indícios sugerem que camponeses, comerciantes ou soldados tenham utilizado o idioma em sua forma original. Ele não nasceu para facilitar a convivência entre povos. Nasceu para registrar conhecimento.' },
+    ]},
+    { titulo: 'Os Descendentes do Arcano Antigo', blocos: [
+      { tipo: 'p', texto: 'Ao longo dos séculos, entretanto, a influência dessa língua tornou-se impossível de conter. À medida que o conhecimento arcano se espalhava, novas culturas começaram a adaptar parte de seu vocabulário e de suas estruturas. Dessa lenta transformação surgiram os primeiros idiomas da Família Arcana. O Élfico foi o que preservou mais elementos da forma original, mantendo sua sonoridade refinada e sua precisão gramatical. Muitos dos textos mágicos utilizados atualmente pelas academias élficas ainda podem ser compreendidos por estudiosos familiarizados com as formas mais antigas do Arcano.' },
+      { tipo: 'p', texto: 'O Comum seguiu um caminho diferente. Conforme reinos cresceram e povos distintos passaram a conviver, tornou-se necessário simplificar estruturas excessivamente complexas. O resultado foi uma língua mais acessível, capaz de ser aprendida por indivíduos de diferentes origens. Embora poucos percebam, uma parcela significativa do vocabulário erudito do Comum possui raízes diretas no Arcano Antigo. Muitos utilizam diariamente palavras cuja origem remonta a tratados mágicos escritos há milhares de anos.' },
+      { tipo: 'p', texto: 'Mais intrigante ainda é o caso do Feérico Antigo. Os registros indicam que ele surgiu quando comunidades ligadas aos Reinos das Fadas passaram a adaptar conceitos arcanos às suas próprias tradições espirituais. O resultado foi uma língua que preservou a elegância do Arcano, mas adquiriu características poéticas e simbólicas inexistentes em sua língua ancestral. Séculos depois, esse idioma desempenharia papel fundamental no surgimento do Silvestre, influenciando profundamente os povos das florestas.' },
+      { tipo: 'p', texto: 'Contudo, nenhum descendente da Família Arcana desperta tantas dúvidas quanto o Dracônico. Durante décadas comparei inscrições dracônicas com manuscritos arcanos preservados em bibliotecas élficas e encontrei semelhanças inegáveis. Grande parte de sua estrutura deriva claramente do Arcano Antigo. Ainda assim, uma parcela significativa de seu vocabulário não possui qualquer equivalente conhecido. São palavras, símbolos e construções gramaticais cuja origem permanece completamente obscura. Essa segunda influência, que costumo chamar de Idioma Desconhecido, representa um dos maiores enigmas da linguística moderna.' },
+      { tipo: 'p', texto: 'Alguns acreditam que tais elementos pertenciam à língua dos primeiros dragões. Outros defendem que foram herdados de uma civilização anterior à história registrada. Existem até aqueles que afirmam tratar-se de fragmentos de um idioma falado pelas entidades que moldaram o mundo durante a Primeira Era. Nenhuma dessas teorias pode ser comprovada. O que sabemos é apenas que o Dracônico não pertence inteiramente à Família Arcana, embora seja impossível negar sua profunda ligação com ela.' },
+    ]},
+    { titulo: 'O Legado Arcano', blocos: [
+      { tipo: 'p', texto: 'Por essa razão, considero o Arcano Antigo uma das maiores realizações intelectuais da história conhecida. Enquanto o Primordial parece representar as raízes do mundo, o Arcano representa o nascimento do conhecimento organizado. Dele surgiram idiomas, tradições mágicas e métodos de registro que moldaram civilizações inteiras. Mesmo aqueles que jamais estudaram magia continuam utilizando palavras cuja origem remonta aos antigos escribas arcanos.' },
+      { tipo: 'p', texto: 'Talvez esse seja seu maior legado. Não uma língua falada por multidões, mas uma língua que ensinou outras a existir.' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova, A Origem das Línguas e dos Povos Conhecidos' },
+    ]},
+  ]},
+
+  { id: 'cap3', label: 'Cap. III', icon: '⚔️', titulo: 'Capítulo III — A Separação entre Gigante, Orc e Infernal', secoes: [
+    { titulo: 'Uma Origem Negada', blocos: [
+      { tipo: 'p', texto: 'Entre todas as famílias linguísticas conhecidas, poucas despertaram tanta controvérsia quanto aquela compartilhada pelos Gigantes, Orcs e Infernais. Durante séculos, estudiosos trataram esses idiomas como criações independentes, argumentando que as diferenças entre eles eram grandes demais para sugerir qualquer parentesco. Os próprios povos que os falavam rejeitavam tal possibilidade. Os Gigantes consideravam sua língua uma herança dos Titãs da Primeira Era. Os Orcs afirmavam que seus ancestrais a receberam dos espíritos da guerra. Já os Infernais sustentavam que sua linguagem havia sido concedida pelos Senhores dos Pactos quando os primeiros contratos foram firmados.' },
+      { tipo: 'p', texto: 'Entretanto, as evidências preservadas nas ruínas mais antigas contam uma história diferente.' },
+      { tipo: 'p', texto: 'Minhas primeiras suspeitas surgiram durante a análise de monumentos encontrados nas Montanhas Cinzentas. Entre inscrições gigantescas esculpidas em pedra, identifiquei símbolos que apresentavam semelhanças inesperadas com marcas utilizadas por tribos orcs distantes. A princípio as diferenças pareciam significativas. Os Gigantes utilizavam estruturas complexas, compostas por longas sequências de runas cuidadosamente organizadas. Os Orcs, por outro lado, empregavam versões simplificadas desses mesmos símbolos, adaptadas para registros rápidos e comunicação prática. Contudo, quando removidas as variações culturais acumuladas ao longo dos séculos, as semelhanças tornavam-se impossíveis de ignorar.' },
+      { tipo: 'p', texto: 'A descoberta tornou-se ainda mais intrigante quando comparei esses registros com os textos infernais preservados por certas ordens de estudiosos. Embora a escrita infernal moderna parecesse quase irreconhecível, seus exemplares mais antigos revelavam padrões que apontavam para a mesma origem. Estruturas gramaticais semelhantes, raízes compartilhadas e construções sintáticas equivalentes apareciam repetidamente. Era como observar três árvores completamente diferentes crescendo a partir de um mesmo tronco há muito desaparecido.' },
+      { tipo: 'p', texto: 'Hoje acredito que todas essas línguas descendem de um ancestral comum que costumo chamar de Gigante Antigo. O nome não implica que os Gigantes tenham criado o idioma, mas apenas que foram aqueles que mais preservaram suas características originais. Os registros sugerem que essa língua surgiu como uma das primeiras grandes ramificações do Primordial Antigo, desenvolvendo-se entre povos ligados aos antigos titãs e às civilizações monumentais que dominaram partes do mundo durante eras esquecidas.' },
+    ]},
+    { titulo: 'Três Caminhos, Uma Raiz', blocos: [
+      { tipo: 'p', texto: 'O Gigante moderno continua sendo o herdeiro mais fiel dessa tradição. Sua gramática permanece extensa e detalhada, permitindo expressar conceitos extremamente específicos através de uma única palavra. Os gigantes valorizam precisão acima de velocidade, motivo pelo qual seus discursos podem parecer lentos para estrangeiros. Em compensação, conceitos que exigiriam frases inteiras em outros idiomas frequentemente são representados por um único termo em sua língua. Não é exagero afirmar que o Gigante foi moldado para registrar história, filosofia e feitos dignos de serem gravados em pedra por milhares de anos.' },
+      { tipo: 'p', texto: 'Os Orcs seguiram um caminho muito diferente. Conforme seus ancestrais abandonaram as antigas civilizações e passaram a viver em sociedades tribais mais dinâmicas, a língua começou a se transformar. Estruturas consideradas desnecessárias foram descartadas. Palavras excessivamente longas foram encurtadas. Regras complexas desapareceram. O resultado foi um idioma direto, agressivo e eficiente. Enquanto o Gigante procura descrever cada detalhe de uma situação, o Orc busca transmitir apenas aquilo que é necessário para agir. Essa característica fez muitos estudiosos acreditarem, incorretamente, que ambas as línguas não possuíam qualquer ligação.' },
+      { tipo: 'p', texto: 'O caso do Infernal é ainda mais singular. Os registros mais antigos sugerem que seus ancestrais compartilhavam a mesma herança linguística dos Gigantes. Contudo, séculos de isolamento, pactos extraplanares e influência de entidades caóticas alteraram profundamente a língua. Palavras passaram a adquirir significados extremamente precisos. Ambiguidades foram eliminadas sempre que possível. Em contratos infernais, uma única sílaba pronunciada incorretamente pode alterar completamente a interpretação de um acordo. Tal rigor moldou o idioma ao longo das eras, transformando-o em algo distante de sua forma original.' },
+    ]},
+    { titulo: 'Ecos na Pedra', blocos: [
+      { tipo: 'p', texto: 'Curiosamente, apesar de suas diferenças atuais, as três línguas ainda preservam traços comuns em sua escrita. As runas utilizadas por Gigantes, Orcs e Infernais compartilham formas geométricas semelhantes, linhas angulares e padrões de construção que dificilmente podem ser atribuídos ao acaso. Alguns estudiosos comparam essa relação à observada entre diferentes alfabetos derivados de um mesmo sistema ancestral. Embora um falante moderno dificilmente consiga compreender os outros idiomas, um linguista treinado consegue identificar imediatamente os laços que os unem.' },
+      { tipo: 'p', texto: 'Essa descoberta oferece uma valiosa lição sobre a natureza da linguagem. Povos podem guerrear durante milênios, construir culturas completamente distintas e até esquecer suas origens, mas as palavras costumam preservar lembranças que a história tenta apagar. As línguas carregam memórias mais antigas que os reinos, mais antigas que as dinastias e, por vezes, mais antigas que os próprios povos que as falam.' },
+      { tipo: 'p', texto: 'Por essa razão, considero a relação entre Gigante, Orc e Infernal uma das maiores provas de que o passado do mundo é muito mais conectado do que imaginamos. Três povos que hoje se enxergam como completamente diferentes ainda carregam, em cada palavra pronunciada, ecos de uma origem compartilhada que o tempo jamais conseguiu apagar.' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova, A Origem das Línguas e dos Povos Conhecidos' },
+    ]},
+  ]},
+
+  { id: 'cap4', label: 'Cap. IV', icon: '🌊', titulo: 'Capítulo IV — Os Filhos das Marés: A Origem dos Nagas', secoes: [
+    { titulo: 'O Povo das Correntes', blocos: [
+      { tipo: 'p', texto: 'Entre todos os povos descendentes do Primordial Antigo, nenhum preservou uma relação tão íntima com o mundo natural quanto os Nagas. Enquanto outras civilizações erguiam muralhas, fundavam reinos e travavam guerras por territórios, os ancestrais dos Nagas observavam as correntes. Aprendiam os ciclos das marés. Decoravam os caminhos das tempestades e os movimentos das estrelas refletidas sobre a superfície dos oceanos.' },
+      { tipo: 'p', texto: 'Os registros mais antigos sugerem que os primeiros Nagas surgiram nas regiões costeiras orientais durante os últimos séculos da Era das Sementes, quando as raças ainda buscavam compreender seu lugar no mundo. Diferentemente dos povos que se espalharam pelas florestas, montanhas ou planícies, os ancestrais naga escolheram um ambiente que poucos consideravam habitável. Estabeleceram-se entre recifes, cavernas inundadas e arquipélagos isolados, vivendo simultaneamente sob e acima das águas.' },
+      { tipo: 'p', texto: 'Foi nesse isolamento que sua língua começou a se diferenciar das demais ramificações do Primordial Antigo.' },
+    ]},
+    { titulo: 'A Língua do Mar', blocos: [
+      { tipo: 'p', texto: 'Enquanto o Celestial evoluiu para descrever conceitos espirituais e o Selvagem adaptou-se às necessidades dos caçadores e nômades, o antigo idioma dos Nagas desenvolveu um vocabulário voltado para correntes marítimas, profundidade, temperatura da água, comportamento de criaturas oceânicas e fenômenos das marés. Conceitos que outras culturas representavam com uma única palavra frequentemente possuíam dezenas de variações entre os Nagas.' },
+      { tipo: 'p', texto: 'Tal característica ainda pode ser observada atualmente. Um marinheiro humano utiliza a palavra "corrente" para descrever o movimento das águas. Um Naga possui palavras diferentes para correntes superficiais, correntes profundas, correntes sazonais, correntes influenciadas pela lua e correntes capazes de alterar rotas de navegação. Essa precisão não surgiu por acaso. Ela foi moldada por milhares de anos vivendo em um ambiente onde compreender o mar significava sobreviver.' },
+      { tipo: 'p', texto: 'Diversas lendas naga afirmam que seus ancestrais aprenderam parte desse conhecimento observando os espíritos elementais da Água. Embora eu não possa confirmar a veracidade dessas histórias, a ligação entre a língua naga e o Primordial Elemental é evidente. Entre todos os idiomas mortais conhecidos, o Naga moderno é aquele que preserva o maior número de raízes diretamente associadas aos elementos aquáticos. Não é incomum que antigos rituais ligados ao mar utilizem palavras naga cuja origem remonta aos primeiros séculos após a fragmentação do Primordial Antigo.' },
+    ]},
+    { titulo: 'O Mar Escuta Tudo', blocos: [
+      { tipo: 'p', texto: 'Talvez seja justamente por essa razão que os Nagas desenvolveram uma visão tão distinta do mundo. Povos terrestres tendem a pensar em fronteiras. O mar não possui fronteiras. Povos terrestres constroem muralhas. O mar contorna muralhas. Povos terrestres acumulam riquezas. O mar leva embora tudo aquilo que não estiver preso com firmeza suficiente.' },
+      { tipo: 'p', texto: 'Os Nagas aprenderam cedo uma lição que muitas civilizações demoraram séculos para compreender: nada permanece imóvel para sempre.' },
+      { tipo: 'p', texto: 'Essa filosofia moldou sua cultura, sua língua e sua posição na história. Enquanto impérios surgiam e desapareciam, enquanto guerras alteravam mapas e reis disputavam coroas, os Nagas permaneceram observando. Escutando. Registrando.' },
+      { tipo: 'p', texto: 'Talvez seja por isso que conheçam tantos segredos.' },
+      { tipo: 'p', texto: 'O mar escuta tudo.' },
+      { tipo: 'p', texto: 'E os Nagas sempre estiveram ouvindo.' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova, A Origem das Línguas e dos Povos Conhecidos' },
+    ]},
+  ]},
+
+  { id: 'cap5', label: 'Cap. V', icon: '🕳️', titulo: 'Capítulo V — O Enigma do Abissal', secoes: [
+    { titulo: 'Uma Língua Sem Raízes', blocos: [
+      { tipo: 'p', texto: 'Se o Primordial Antigo representa a raiz da maioria das línguas conhecidas e o Arcano Antigo revela a busca dos mortais pelo conhecimento, o Abissal permanece como uma afronta a tudo aquilo que acreditamos compreender sobre a evolução da linguagem. Durante mais de duzentos anos de pesquisa encontrei conexões entre povos distantes, reconstruí idiomas perdidos e identifiquei ancestrais comuns onde antes se acreditava existir apenas coincidência. Contudo, toda vez que meus estudos me conduziam ao Abissal, encontrava apenas um vazio.' },
+      { tipo: 'p', texto: 'Não me refiro à ausência de registros. Pelo contrário. Existem inúmeros textos, inscrições, pactos, fragmentos de grimórios e relatos de indivíduos que tiveram contato com essa língua. O problema é que nenhum deles aponta para uma origem. O Abissal simplesmente surge. Não possui raízes identificáveis no Primordial Antigo. Não apresenta estruturas herdadas da Família Arcana. Não compartilha parentesco com os idiomas dos Gigantes, dos Nagas ou de qualquer outro povo conhecido. É como encontrar uma árvore sem sementes, sem raízes e sem solo.' },
+      { tipo: 'p', texto: 'Minhas primeiras investigações concentraram-se nos aspectos gramaticais da língua. A lógica sugeria que, em algum momento, eu encontraria padrões compartilhados com outros idiomas. Entretanto, quanto mais profundamente analisava sua estrutura, mais inquietante a situação se tornava. Certas palavras pareciam mudar de significado dependendo não apenas do contexto, mas da intenção daquele que as pronunciava. Em alguns casos, dois estudiosos diferentes traduziam a mesma frase e chegavam a resultados completamente distintos, mesmo quando utilizavam métodos rigorosos de análise.' },
+    ]},
+    { titulo: 'Ecos de Outro Lugar', blocos: [
+      { tipo: 'p', texto: 'Os relatos mais antigos associados ao Abissal não falam de um povo ou de uma civilização. Falam de lugares. Fendas abertas em regiões remotas. Ruínas onde a realidade parecia enfraquecida. Sonhos compartilhados por indivíduos que jamais haviam se encontrado. Em quase todos os casos, a língua aparece associada ao contato com algo exterior ao mundo conhecido. Algo que observava sem ser visto. Algo que respondia sem possuir voz.' },
+      { tipo: 'p', texto: 'Essa característica levou muitos estudiosos a defender uma hipótese perturbadora. Talvez o Abissal não tenha sido criado por uma civilização. Talvez jamais tenha sido uma língua mortal.' },
+      { tipo: 'p', texto: 'Embora tal conclusão seja frequentemente descartada pelas academias, confesso que nunca encontrei uma explicação melhor. Diversos registros indicam que indivíduos expostos ao Abismo começam a reconhecer palavras antes mesmo de estudá-las. Alguns afirmam ouvir sussurros em idiomas desconhecidos. Outros relatam compreender fragmentos de textos que jamais haviam visto anteriormente. Há inclusive relatos de conjuradores que passaram a falar partes da língua durante sonhos ou estados de transe sem qualquer treinamento prévio.' },
+      { tipo: 'p', texto: 'Naturalmente, tais testemunhos podem ser atribuídos à influência corruptora do próprio Abismo. Ainda assim, o fenômeno permanece intrigante. Em nenhum outro idioma conhecido observamos comportamento semelhante. Línguas são aprendidas. O Abissal, por vezes, parece ser lembrado.' },
+      { tipo: 'p', texto: 'Talvez seja essa a característica mais assustadora de todas.' },
+      { tipo: 'p', texto: 'Enquanto outras línguas descrevem o mundo, o Abissal frequentemente parece descrevê-lo de uma perspectiva externa. Muitos de seus termos não possuem equivalentes em idiomas mortais porque representam conceitos que simplesmente não deveriam existir. Certas palavras descrevem estados impossíveis da matéria. Outras fazem referência a lugares que não aparecem em qualquer mapa conhecido. Algumas sequer possuem tradução, pois seus significados parecem contradizer as próprias leis da realidade.' },
+      { tipo: 'p', texto: 'Essa estranheza também se manifesta em sua escrita. Símbolos abissais raramente seguem padrões consistentes. Manuscritos copiados por escribas diferentes frequentemente apresentam pequenas variações, como se os próprios caracteres resistissem à reprodução exata. Há relatos de textos que parecem alterar detalhes de sua forma após longos períodos de observação. Nunca testemunhei tal fenômeno pessoalmente, mas encontrei registros suficientes para não ignorá-lo completamente.' },
+    ]},
+    { titulo: 'O Que o Abissal Não Conta', blocos: [
+      { tipo: 'p', texto: 'Talvez o maior erro cometido pelos estudiosos seja tentar compreender o Abissal utilizando as mesmas ferramentas empregadas para analisar outros idiomas. Fazemos isso porque assumimos que toda língua nasce para comunicar. Contudo, após décadas estudando seus fragmentos, comecei a suspeitar que essa premissa pode estar errada. Talvez o Abissal não exista para transmitir conhecimento entre indivíduos. Talvez ele exista para outra finalidade.' },
+      { tipo: 'p', texto: 'Qual finalidade seria essa, não ouso afirmar.' },
+      { tipo: 'p', texto: 'O que sei é que toda língua conhecida conta uma história sobre seus criadores. O Celestial fala sobre ordem. O Selvagem sobre adaptação. O Naga sobre observação. O Gigante sobre memória. O Arcano sobre conhecimento.' },
+      { tipo: 'p', texto: 'O Abissal não conta história alguma.' },
+      { tipo: 'p', texto: 'E talvez seja exatamente isso que o torna tão perigoso.' },
+      { tipo: 'p', texto: 'Pois se uma língua existe sem origem, sem povo e sem história... então aquilo que a criou pode ser algo que jamais pertenceu ao nosso mundo.' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova, A Origem das Línguas e dos Povos Conhecidos' },
+    ]},
+  ]},
+
+  { id: 'cap6', label: 'Cap. VI', icon: '📜', titulo: 'Capítulo VI — Classificação Acadêmica Moderna das Línguas', secoes: [
+    { titulo: 'Um Estudo Isolado', blocos: [
+      { tipo: 'p', texto: 'Durante grande parte da história conhecida, as línguas foram estudadas de maneira isolada. Sacerdotes dedicavam-se ao Celestial, magos preservavam o Arcano, anciões gigantes registravam sua própria tradição e estudiosos élficos concentravam seus esforços no Élfico e no Comum. Poucos se preocupavam em compreender como esses idiomas se relacionavam entre si. A maioria acreditava que cada língua havia surgido de forma independente, criada por deuses, espíritos ou pelos próprios povos que a utilizavam.' },
+      { tipo: 'p', texto: 'Somente após séculos de pesquisas, comparações de manuscritos antigos e análises de inscrições encontradas em ruínas de diferentes eras, tornou-se possível construir uma visão mais ampla. Embora muitas lacunas permaneçam sem resposta, a comunidade acadêmica moderna reconhece que a maioria das línguas conhecidas pode ser organizada em grandes famílias linguísticas, agrupadas de acordo com sua origem, evolução e características estruturais.' },
+    ]},
+    { titulo: 'As Grandes Famílias Linguísticas', blocos: [
+      { tipo: 'p', texto: 'A maior delas é a chamada Família Primordial. Seus idiomas descendem, direta ou indiretamente, do Primordial Antigo, a mais antiga língua conhecida pelos estudiosos. Apesar das profundas transformações sofridas ao longo dos milênios, ainda é possível identificar elementos compartilhados entre seus descendentes. O Celestial preservou conceitos ligados à ordem, à espiritualidade e às forças divinas. O Selvagem desenvolveu-se entre tribos nômades e povos adaptados à sobrevivência em ambientes hostis. O Silvestre surgiu mais tarde como resultado da influência feérica sobre antigos dialetos selvagens. O Naga especializou-se em descrever fenômenos marítimos e espirituais associados aos oceanos. O Gigante manteve muitas estruturas ancestrais e continua sendo considerado um dos idiomas mais conservadores do mundo. O Orc simplificou essas mesmas estruturas para atender às necessidades de sociedades tribais guerreiras. O Infernal seguiu um caminho próprio, moldado por pactos e pela busca obsessiva por precisão jurídica e semântica. Já o Primordial moderno representa o descendente mais direto das antigas formas elementais preservadas desde as primeiras eras.' },
+      { tipo: 'p', texto: 'Paralelamente, existe a Família Arcana, cuja origem continua sendo objeto de intenso debate entre os estudiosos. Diferentemente da Família Primordial, que parece ter surgido naturalmente entre os povos antigos, o Arcano Antigo apresenta indícios de planejamento deliberado. Sua estrutura demonstra um nível de organização incomum, levando muitos pesquisadores a acreditar que tenha sido criado especificamente para registrar conhecimento mágico. Dessa tradição nasceram diversos idiomas que moldaram a história intelectual do mundo. O Élfico preservou grande parte da elegância e complexidade do Arcano original. O Comum simplificou seus elementos para facilitar a comunicação entre diferentes povos e civilizações. O Feérico adaptou conceitos arcanos às tradições espirituais dos Reinos das Fadas, desenvolvendo características poéticas próprias. O Dracônico, por sua vez, permanece como um dos maiores enigmas linguísticos conhecidos, combinando estruturas arcanas com elementos oriundos de uma fonte desconhecida. Apesar de suas diferenças, todos compartilham raízes suficientemente profundas para serem reconhecidos como membros da mesma família.' },
+      { tipo: 'p', texto: 'Entretanto, nem toda língua pode ser encaixada nessas classificações. Algumas resistem a qualquer tentativa de categorização. Entre elas destaca-se o Abissal, atualmente classificado como uma língua isolada. Nenhuma relação convincente foi estabelecida entre ele e qualquer outro idioma conhecido. Não compartilha estruturas fundamentais com a Família Primordial nem apresenta vínculos claros com a Família Arcana. Sua origem permanece desconhecida, assim como a identidade de seus primeiros falantes. Essa ausência de conexões faz do Abissal uma exceção singular entre todas as línguas estudadas até hoje.' },
+    ]},
+    { titulo: 'Limitações e o Futuro', blocos: [
+      { tipo: 'p', texto: 'Embora a Classificação Acadêmica Moderna seja amplamente aceita pelas principais academias do mundo, seus próprios defensores reconhecem suas limitações. Novas descobertas arqueológicas continuam surgindo a cada década. Ruínas anteriormente inacessíveis revelam inscrições desconhecidas. Bibliotecas esquecidas trazem à luz textos que desafiam teorias estabelecidas. É possível que futuras gerações ampliem ou modifiquem essa classificação. Talvez novas famílias sejam identificadas. Talvez idiomas considerados isolados revelem ancestrais ocultos. Talvez até mesmo o Primordial Antigo deixe de ocupar o lugar que atualmente lhe atribuímos.' },
+      { tipo: 'p', texto: 'Ainda assim, até que novas evidências sejam encontradas, esta permanece como a melhor representação da história linguística conhecida. Uma árvore incompleta, certamente, mas suficiente para demonstrar que as palavras carregam memórias muito mais antigas do que aqueles que as pronunciam. Sob diferentes sotaques, alfabetos e tradições, quase todas as línguas do mundo continuam ecoando fragmentos de um passado comum, preservando em cada sílaba vestígios de eras que a própria história quase esqueceu.' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova, A Origem das Línguas e dos Povos Conhecidos' },
+    ]},
+    { titulo: 'Árvore de Classificação', blocos: [
+      { tipo: 'pre', texto: CLASSIFICACAO_ACADEMICA },
+    ]},
+  ]},
+
+  { id: 'cap7', label: 'Cap. VII', icon: '🏕️', titulo: 'Capítulo VII — Os Povos Entre os Reinos', secoes: [
+    { titulo: 'Civilização Sem Muralhas', blocos: [
+      { tipo: 'p', texto: 'Nem toda civilização ergue muralhas.' },
+      { tipo: 'p', texto: 'Os cartógrafos gostam de desenhar o mundo como se ele fosse composto por reinos. Fronteiras coloridas. Capitais marcadas com símbolos elaborados. Estradas ligando cidades importantes. É uma forma confortável de enxergar a realidade.' },
+      { tipo: 'p', texto: 'Também é uma das mais incompletas.' },
+      { tipo: 'p', texto: 'Entre os grandes reinos existem povos que nunca desejaram construir impérios. Povos que não enviam representantes ao Grande Conselho, não cunham moedas próprias e não disputam territórios através de tratados diplomáticos. Alguns são mais antigos que os próprios reinos. Outros surgiram após catástrofes que destruíram civilizações inteiras. Todos compartilham uma característica em comum: sobreviveram sem precisar se tornar aquilo que o restante do mundo considera civilizado.' },
+    ]},
+    { titulo: 'Caminhos Diferentes', blocos: [
+      { tipo: 'p', texto: 'Os Orcs mantiveram suas tribos quando impérios surgiram e desapareceram ao seu redor. Não possuem uma capital para ser conquistada nem um rei cuja morte encerre uma dinastia. Quando uma tribo cai, outra continua. Quando uma rota desaparece, uma nova é encontrada. É uma forma de existência difícil de destruir porque não depende de um único ponto de apoio.' },
+      { tipo: 'p', texto: 'Os Nagas seguiram um caminho diferente. Enquanto outros povos disputavam fronteiras em terra firme, eles aprenderam que o mar não reconhece fronteiras. Construíram sua sociedade entre correntes, ilhas e recifes, observando o mundo mudar sem sentir necessidade de participar de cada mudança. Conhecem segredos que atravessaram eras simplesmente porque permaneceram observando enquanto os demais estavam ocupados guerreando.' },
+      { tipo: 'p', texto: 'Os Gigantes escolheram o isolamento. Habitam montanhas tão remotas que muitos viajantes atravessam seus territórios sem perceber. Não buscam aliados, comércio ou influência. Sua civilização existe para si mesma e, ao que tudo indica, está perfeitamente satisfeita com isso.' },
+      { tipo: 'p', texto: 'Nas profundezas da Floresta Negra vivem os Magins, um povo que desafia qualquer tentativa de classificação. São tribais, agressivos e aparentemente primitivos. Ainda assim, preservam fragmentos do Primordial Antigo que estudiosos modernos não conseguem traduzir completamente. Há mais história escondida em suas aldeias do que muitos reinos gostariam de admitir.' },
+      { tipo: 'p', texto: 'No Vale dos Abissais, onde a maioria das criaturas responde à presença de estrangeiros tentando devorá-los, os Bogles construíram algo raro: comunidades. Tribos. Tradições. Uma língua própria. Sobreviveram a transformações que destruíram quase tudo ao redor e desenvolveram uma cultura moldada pelo ambiente mais hostil conhecido.' },
+      { tipo: 'p', texto: 'Até mesmo as Dríades, que muitos insistem em tratar como espíritos ou criaturas mágicas, mantêm pequenas sociedades escondidas entre árvores ancestrais, vivendo de acordo com ritmos que pouco têm a ver com as preocupações dos povos civilizados.' },
+    ]},
+    { titulo: 'O Que é Civilização', blocos: [
+      { tipo: 'p', texto: 'Talvez esse seja o erro mais comum cometido pelos estudiosos das grandes cidades. Assumem que civilização e reino são a mesma coisa.' },
+      { tipo: 'p', texto: 'Não são.' },
+      { tipo: 'p', texto: 'Um reino é apenas uma forma de organização.' },
+      { tipo: 'p', texto: 'Civilização é algo muito maior.' },
+      { tipo: 'p', texto: 'Civilização é memória compartilhada. É cultura transmitida entre gerações. É um povo que encontra uma maneira de existir no mundo e decide continuar existindo.' },
+      { tipo: 'p', texto: 'Sob essa definição, algumas das civilizações mais antigas ainda vivas jamais construíram uma única capital.' },
+      { tipo: 'p', texto: 'E talvez seja justamente por isso que sobreviveram por tanto tempo.' },
+      { tipo: 'sign', texto: '— Astrolong TerraNova, Povos Entre os Reinos' },
+    ]},
+  ]},
+];
+
 let CREATURES = [];
-let screen = 'prefacio'; // 'prefacio' | 'graus' | 'catalogo'
+let screen = 'prefacio'; // 'prefacio' | 'graus' | 'idiomas' | 'catalogo'
 let filters = { search:'', categoria:'', tipo:'', natureza:'', grau_ameaca:'', tamanho:'' };
 let selected = null;
+let idiomaCap = IDIOMAS_CAPITULOS[0].id;
+let idiomaSec = null;
 
 async function loadFromDB(){
   const loadEl = document.getElementById('db-loading');
@@ -412,15 +692,24 @@ function render(){
   const active = document.activeElement;
   const focusFilter = active && active.dataset && active.dataset.filter;
   const caret = focusFilter ? active.selectionStart : null;
+  const prevList = content.querySelector('.creatureList');
+  const listScroll = prevList ? prevList.scrollTop : 0;
 
   renderTabs();
 
   if(screen === 'prefacio') content.innerHTML = renderPrefacio();
   else if(screen === 'graus') content.innerHTML = renderGraus();
+  else if(screen === 'idiomas') content.innerHTML = renderIdiomas();
   else content.innerHTML = renderCatalog();
+
+  if(screen === 'idiomas'){
+    bindIdiomasEvents();
+  }
 
   if(screen === 'catalogo'){
     bindCatalogEvents();
+    const newList = content.querySelector('.creatureList');
+    if(newList) newList.scrollTop = listScroll;
     if(focusFilter){
       const el = content.querySelector(`[data-filter="${focusFilter}"]`);
       if(el){
@@ -499,6 +788,62 @@ function renderGraus(){
       </div>
     `).join('')}
   `;
+}
+
+function renderBlocoIdioma(b){
+  if(b.tipo === 'pre') return `<pre class="langTree">${esc(b.texto)}</pre>`;
+  if(b.tipo === 'sub') return `<div class="secSubTitle">${esc(b.texto)}</div>`;
+  if(b.tipo === 'sign') return `<p class="secSign">${esc(b.texto)}</p>`;
+  if(b.tipo === 'quote') return `<p class="secQuote">${esc(b.texto)}</p>`;
+  return `<p class="secText">${esc(b.texto)}</p>`;
+}
+
+function renderIdiomas(){
+  const cap = IDIOMAS_CAPITULOS.find(c => c.id === idiomaCap) || IDIOMAS_CAPITULOS[0];
+  const sec = cap.secoes.find(s => s.titulo === idiomaSec);
+
+  return `
+    <div class="chHero">
+      <h2 class="chTitle">Idiomas e Culturas</h2>
+      <div class="chDivider"></div>
+      <p class="chLead">Um estudo de Astrolong TerraNova sobre a origem das línguas e dos povos do mundo conhecido.</p>
+    </div>
+
+    <div class="subTabs">
+      ${IDIOMAS_CAPITULOS.map(c => `
+        <button class="subTabBtn ${c.id===idiomaCap?'subTabActive':''}" data-idioma-cap="${c.id}">${c.icon} ${esc(c.label)}</button>
+      `).join('')}
+    </div>
+
+    <div class="sec">
+      <h3 class="secTitle">${esc(cap.titulo)}</h3>
+      <div class="sectionNav">
+        ${cap.secoes.map(s => `
+          <button class="sectionNavBtn ${s.titulo===idiomaSec?'sectionNavActive':''}" data-idioma-sec="${esc(s.titulo)}">${esc(s.titulo)}</button>
+        `).join('')}
+      </div>
+      ${sec
+        ? sec.blocos.map(renderBlocoIdioma).join('')
+        : `<p class="sectionHint">Selecione uma seção acima para ler.</p>`}
+    </div>
+  `;
+}
+
+function bindIdiomasEvents(){
+  document.querySelectorAll('[data-idioma-cap]').forEach(el => {
+    el.addEventListener('click', () => {
+      idiomaCap = el.dataset.idiomaCap;
+      idiomaSec = null;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-idioma-sec]').forEach(el => {
+    el.addEventListener('click', () => {
+      const titulo = el.dataset.idiomaSec;
+      idiomaSec = (idiomaSec === titulo) ? null : titulo;
+      render();
+    });
+  });
 }
 
 function uniqueValues(field){
@@ -666,7 +1011,28 @@ function bindCatalogEvents(){
       render();
     });
   });
+  const detailImg = document.querySelector('.detailImg');
+  if(detailImg){
+    detailImg.addEventListener('click', () => openLightbox(detailImg.src, detailImg.alt));
+  }
 }
+
+function openLightbox(src, alt){
+  const lightbox = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  img.src = src;
+  img.alt = alt;
+  lightbox.classList.add('open');
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+document.getElementById('lightbox').addEventListener('click', closeLightbox);
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeLightbox();
+});
 
 loadFromDB();
 </script>

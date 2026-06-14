@@ -1,7 +1,0 @@
-# RPG Reino Mágico — Dependências do servidor
-# Apenas biblioteca padrão do Python 3.8+ necessária.
-# sqlite3, http.server, json, os — todas incluídas no Python.
-
-# Opcional: instale Flask para funcionalidades avançadas (não requerido)
-# flask>=2.0
-# flask-cors>=3.0
